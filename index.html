@@ -14,7 +14,6 @@
             height: 100vh; box-sizing: border-box; overflow: hidden;
         }
 
-        /* Общие стили */
         .header { width: 100%; text-align: center; margin-bottom: 20px; font-size: 20px; font-weight: bold; color: #94a3b8; }
         .hidden { display: none !important; }
 
@@ -33,7 +32,6 @@
             cursor: grab; user-select: none;
         }
         
-        /* Лицевая и обратная сторона карточки */
         .card-front, .card-back {
             position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -58,36 +56,51 @@
         .btn-swipe:active { transform: scale(0.9); }
 
         /* =========================================
-           РЕЖИМ 2: МАГНИТНАЯ ГРАММАТИКА
+           РЕЖИМ 2: ОРДИНАРНЫЙ КВИЗ И ГРАММАТИКА
            ========================================= */
-        #grammar-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; }
-        .grammar-sentence {
-            background: white; color: #0f172a; width: 100%; max-width: 350px;
-            border-radius: 20px; padding: 40px 20px; margin-top: 30px;
-            font-size: 28px; font-weight: bold; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            line-height: 1.5;
-        }
-        .drop-zone {
-            display: inline-block; min-width: 50px; height: 40px;
-            border-bottom: 4px dashed #94a3b8; color: #4f46e5; vertical-align: bottom;
-            margin: 0 10px; transition: 0.3s;
-        }
-        .drop-zone.filled { border-bottom: 4px solid #10b981; color: #10b981; }
-        .drop-zone.error { border-bottom: 4px solid #ef4444; color: #ef4444; animation: shake 0.4s; }
+        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; }
+        
+        .progress-container { width: 100%; max-width: 400px; background: #334155; border-radius: 10px; height: 12px; overflow: hidden; margin-bottom: 20px; }
+        .progress-bar { height: 100%; background: #10b981; width: 0%; transition: width 0.4s ease-out; }
 
-        .particles-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 50px; width: 100%; max-width: 350px;}
-        .particle-btn {
-            background: #f1f5f9; border: 2px solid #e2e8f0; color: #334155;
-            font-size: 24px; font-weight: bold; width: 70px; height: 70px; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;
+        .question-card {
+            background: white; color: #0f172a; width: 100%; max-width: 400px;
+            border-radius: 20px; padding: 30px 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; box-sizing: border-box; position: relative;
         }
-        .particle-btn:active { transform: scale(0.9); background: #e2e8f0; }
+
+        .symbol-container { display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .symbol { font-size: 60px; font-weight: bold; margin: 0; color: #1e293b; }
+        
+        .speaker-btn {
+            background: #e2e8f0; border-radius: 50%; width: 40px; height: 40px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; margin-left: 15px; transition: 0.2s;
+        }
+        .speaker-btn:active { transform: scale(0.9); background: #cbd5e1; }
+
+        .blank-slot {
+            display: inline-block; min-width: 50px; height: 40px; border-bottom: 3px solid #64748b;
+            color: #4f46e5; font-weight: bold; vertical-align: bottom;
+        }
+
+        .question-text { font-size: 16px; color: #64748b; margin-top: 0; margin-bottom: 20px; }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-top: 20px;}
+
+        .btn-option {
+            background: #f1f5f9; border: 2px solid #e2e8f0; color: #334155;
+            font-size: 18px; font-weight: bold; padding: 15px 10px; border-radius: 15px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-option:active { transform: scale(0.95); }
+        .btn-option.correct { background: #10b981; border-color: #059669; color: white; transform: scale(1.05); }
+        .btn-option.wrong { background: #ef4444; border-color: #dc2626; color: white; }
 
         /* Экраны финала */
         #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
         .claim-btn { background: #8b5cf6; color: white; font-size: 20px; font-weight: bold; border: none; padding: 15px 40px; border-radius: 15px; width: 100%; max-width: 300px; margin-top: 30px;}
-
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+        .claim-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #7c3aed; }
     </style>
 </head>
 <body>
@@ -103,14 +116,20 @@
         </div>
     </div>
 
-    <!-- РЕЖИМ ГРАММАТИКИ -->
-    <div id="grammar-mode" class="hidden">
-        <div class="grammar-sentence" id="grammar-sentence">
-            <!-- Сюда JS вставит фразу -->
+    <!-- РЕЖИМ КВИЗА / ГРАММАТИКИ -->
+    <div id="quiz-mode" class="hidden">
+        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+        
+        <div class="question-card">
+            <div class="symbol-container">
+                <span class="symbol" id="symbol-display">...</span>
+                <div class="speaker-btn" id="speaker-btn" onclick="speakText()">🔊</div>
+            </div>
+            <p class="question-text" id="hint-text">Выберите правильный перевод</p>
         </div>
-        <div class="particles-grid" id="particles-grid">
-            <!-- Сюда JS вставит кнопки-частицы -->
-        </div>
+        
+        <!-- Кнопки вынесены ИЗ карточки, чтобы всегда было место -->
+        <div class="options-grid" id="options-container"></div>
     </div>
 
     <!-- ФИНАЛ -->
@@ -125,7 +144,7 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        let appData = { mode: "swipe", items: [] };
+        let appData = { mode: "quiz", items: [] };
         let currentIndex = 0;
         let score = 0;
 
@@ -133,27 +152,140 @@
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const rawData = urlParams.get('data');
-            const mode = urlParams.get('mode') || 'swipe';
+            const mode = urlParams.get('mode');
             
             if (rawData) {
                 try {
                     appData.items = JSON.parse(decodeURIComponent(escape(atob(rawData))));
-                    appData.mode = mode;
-                } catch(e) { alert("Ошибка данных"); }
-            } else {
-                // Тестовые данные, если открыть напрямую
-                if (mode === 'grammar') {
-                    appData.mode = 'grammar';
-                    appData.items = [{q: "わたし ___ がくせい", c: "は", a: ["を","は","に","で"]}];
-                } else {
-                    appData.mode = 'swipe';
-                    appData.items = [{q: "水", r: "mizu", t: "Вода"}, {q: "火", r: "hi", t: "Огонь"}];
+                    appData.mode = mode || (appData.items[0].t ? "quiz" : "swipe");
+                } catch(e) { 
+                    alert("Ошибка загрузки данных. Пожалуйста, перезапустите бота."); 
                 }
+            } else {
+                // ДЕФОЛТНЫЙ ТЕСТ (если ссылка сломалась)
+                appData.mode = 'quiz';
+                appData.items = [
+                    { t: "word", q: "水", a: ["Огонь", "Вода", "Дерево", "Земля"], c: 1 },
+                    { t: "grammar", q: "わたし ___ がくせい", a: ["を","は","に","で"], c: 1 }
+                ];
             }
 
             if (appData.mode === 'swipe') initSwipeMode();
-            else initGrammarMode();
+            else initQuizMode();
         };
+
+        /* =========================================
+           ОБЩЕЕ (ОЗВУЧКА И ФИНАЛ)
+           ========================================= */
+        function speakText() {
+            const item = appData.items[currentIndex];
+            let textToSpeak = item.q;
+            if (item.t === "grammar") textToSpeak = textToSpeak.replace("___", "");
+            
+            const googleTTSUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textToSpeak)}&tl=ja&client=tw-ob`;
+            const audio = new Audio(googleTTSUrl);
+            audio.play().catch(e => console.log("Браузер заблокировал аудио", e));
+        }
+
+        function showResults() {
+            document.getElementById('swipe-mode').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.add('hidden');
+            document.getElementById('header-title').classList.add('hidden');
+            
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            document.getElementById('result-desc').innerText = `Счет: ${score} из ${appData.items.length}`;
+        }
+
+        function claimReward() {
+            // Если была ошибка с mode, шлем стандартный
+            let safeMode = appData.mode || "quiz";
+            tg.sendData(`${safeMode}_result_${score}`);
+        }
+
+        /* =========================================
+           РЕЖИМ КВИЗА / ГРАММАТИКИ
+           ========================================= */
+        let isWaiting = false;
+
+        function initQuizMode() {
+            document.getElementById('quiz-mode').classList.remove('hidden');
+            document.getElementById('header-title').innerText = "Проверка знаний";
+            renderQuizCard();
+        }
+
+        function renderQuizCard() {
+            isWaiting = false;
+            if (currentIndex >= appData.items.length) { showResults(); return; }
+
+            const item = appData.items[currentIndex];
+            document.getElementById('progress-bar').style.width = ((currentIndex / appData.items.length) * 100) + "%";
+            
+            // Если это грамматика
+            if (item.t === "grammar" || item.q.includes("___")) {
+                document.getElementById('symbol-display').innerHTML = item.q.replace("___", `<span class="blank-slot" id="grammar-blank"></span>`);
+                document.getElementById('hint-text').innerText = "Вставьте пропущенную частицу";
+                document.getElementById('symbol-display').style.fontSize = "35px";
+                document.getElementById('speaker-btn').style.display = "none";
+            } else {
+                document.getElementById('symbol-display').innerHTML = item.q;
+                document.getElementById('hint-text').innerText = "Выберите правильный перевод";
+                document.getElementById('symbol-display').style.fontSize = "60px";
+                document.getElementById('speaker-btn').style.display = "inline-flex";
+            }
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            
+            // Защита от пустых массивов ответов
+            let options = item.a || ["Ошибка 1", "Ошибка 2"];
+            
+            options.forEach((opt, index) => {
+                const btn = document.createElement("button");
+                btn.className = "btn-option";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (isWaiting) return;
+            isWaiting = true;
+            
+            const item = appData.items[currentIndex];
+            const allButtons = document.querySelectorAll('.btn-option');
+            
+            // Если это грамматика - заполняем пропуск
+            if (item.t === "grammar" || item.q.includes("___")) {
+                let blank = document.getElementById('grammar-blank');
+                if (blank) blank.innerText = item.a[selectedIndex];
+            }
+
+            // У нас может быть либо c (index), либо просто проверка по строке
+            let isCorrect = false;
+            if (item.c !== undefined) {
+                isCorrect = (selectedIndex === item.c);
+            } else {
+                // Если забыли передать correctIndex, считаем последний элемент правильным
+                isCorrect = (selectedIndex === item.a.length - 1); 
+            }
+
+            if (isCorrect) {
+                btnElement.classList.add("correct");
+                score++;
+                try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){}
+            } else {
+                btnElement.classList.add("wrong");
+                if (item.c !== undefined) allButtons[item.c].classList.add("correct");
+                try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){}
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                renderQuizCard();
+            }, 1200);
+        }
 
         /* =========================================
            ЛОГИКА СВАЙПОВ (TINDER)
@@ -170,19 +302,16 @@
             const stack = document.getElementById('card-stack');
             stack.innerHTML = "";
             
-            // Рисуем карточки в обратном порядке, чтобы первая была сверху
             for (let i = appData.items.length - 1; i >= currentIndex; i--) {
                 const item = appData.items[i];
                 const card = document.createElement('div');
                 card.className = 'swipe-card';
                 card.style.zIndex = appData.items.length - i;
                 
-                // Физика только для верхней карточки
                 if (i === currentIndex) {
                     activeCard = card;
                     setupCardPhysics(card);
                 } else {
-                    // Остальные чуть меньше и ниже для эффекта стопки
                     card.style.transform = `scale(${1 - (i-currentIndex)*0.05}) translateY(${(i-currentIndex)*10}px)`;
                 }
 
@@ -192,8 +321,8 @@
                         <div class="tap-hint">Нажми, чтобы перевернуть</div>
                     </div>
                     <div class="card-back" onclick="flipCard(this.parentElement)">
-                        <div class="card-reading">${item.r}</div>
-                        <div class="card-hint">${item.t}</div>
+                        <div class="card-reading">${item.r || "Японский"}</div>
+                        <div class="card-hint">${item.t || "Перевод"}</div>
                     </div>
                 `;
                 stack.appendChild(card);
@@ -211,43 +340,30 @@
         }
 
         function setupCardPhysics(card) {
-            let startX = 0, currentX = 0;
-            let isDragging = false;
-
+            let startX = 0, currentX = 0, isDragging = false;
             const onStart = (e) => {
                 isDragging = true;
                 startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
                 card.style.transition = 'none';
             };
-
             const onMove = (e) => {
                 if (!isDragging) return;
                 currentX = (e.type.includes('mouse') ? e.pageX : e.touches[0].pageX) - startX;
-                const rotate = currentX * 0.1;
-                // Не сбрасываем flip, если он есть
                 const isFlipped = card.style.transform.includes('rotateY');
-                card.style.transform = `translate(${currentX}px, ${Math.abs(currentX)*0.1}px) rotate(${rotate}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`;
+                card.style.transform = `translate(${currentX}px, ${Math.abs(currentX)*0.1}px) rotate(${currentX*0.1}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`;
             };
-
             const onEnd = () => {
                 isDragging = false;
                 card.style.transition = 'transform 0.3s ease';
                 if (currentX > 100) swipeCard('right');
                 else if (currentX < -100) swipeCard('left');
                 else {
-                    // Возврат в центр
                     const isFlipped = card.style.transform.includes('rotateY');
                     card.style.transform = `translate(0px, 0px) rotate(0deg) ${isFlipped ? 'rotateY(180deg)' : ''}`;
                 }
             };
-
-            card.addEventListener('mousedown', onStart);
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onEnd);
-            
-            card.addEventListener('touchstart', onStart, {passive: true});
-            document.addEventListener('touchmove', onMove, {passive: true});
-            document.addEventListener('touchend', onEnd);
+            card.addEventListener('mousedown', onStart); document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
+            card.addEventListener('touchstart', onStart, {passive: true}); document.addEventListener('touchmove', onMove, {passive: true}); document.addEventListener('touchend', onEnd);
         }
 
         function swipeCard(direction) {
@@ -256,12 +372,8 @@
             activeCard.style.transition = 'transform 0.4s ease-out';
             activeCard.style.transform = `translate(${flyX}px, 100px) rotate(${direction==='right'?30:-30}deg)`;
             
-            if (direction === 'right') {
-                score++;
-                try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){}
-            } else {
-                try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){}
-            }
+            if (direction === 'right') { score++; try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){} } 
+            else { try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){} }
 
             activeCard = null;
             setTimeout(() => {
@@ -269,68 +381,6 @@
                 if (currentIndex >= appData.items.length) showResults();
                 else renderCards();
             }, 300);
-        }
-
-        /* =========================================
-           РЕЖИМ 2: МАГНИТНАЯ ГРАММАТИКА
-           ========================================= */
-        function initGrammarMode() {
-            document.getElementById('grammar-mode').classList.remove('hidden');
-            document.getElementById('header-title').innerText = "Вставь пропущенное слово";
-            renderGrammar();
-        }
-
-        function renderGrammar() {
-            if (currentIndex >= appData.items.length) { showResults(); return; }
-            
-            const item = appData.items[currentIndex];
-            const sentenceBox = document.getElementById('grammar-sentence');
-            // Рисуем лунку
-            sentenceBox.innerHTML = item.q.replace("___", `<span class="drop-zone" id="grammar-zone"></span>`);
-            
-            const grid = document.getElementById('particles-grid');
-            grid.innerHTML = "";
-            
-            item.a.forEach(particle => {
-                const btn = document.createElement('div');
-                btn.className = 'particle-btn';
-                btn.innerText = particle;
-                btn.onclick = () => insertParticle(particle, item.c);
-                grid.appendChild(btn);
-            });
-        }
-
-        function insertParticle(selected, correct) {
-            const zone = document.getElementById('grammar-zone');
-            zone.innerText = selected;
-            
-            if (selected === correct) {
-                zone.className = "drop-zone filled";
-                score++;
-                try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){}
-                setTimeout(() => { currentIndex++; renderGrammar(); }, 1000);
-            } else {
-                zone.className = "drop-zone error";
-                try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){}
-                setTimeout(() => { zone.innerText = ""; zone.className = "drop-zone"; }, 600);
-            }
-        }
-
-        /* =========================================
-           ФИНАЛ
-           ========================================= */
-        function showResults() {
-            document.getElementById('swipe-mode').classList.add('hidden');
-            document.getElementById('grammar-mode').classList.add('hidden');
-            document.getElementById('header-title').classList.add('hidden');
-            
-            const resultScreen = document.getElementById('result-screen');
-            resultScreen.classList.remove('hidden');
-            document.getElementById('result-desc').innerText = `Счет: ${score} из ${appData.items.length}`;
-        }
-
-        function claimReward() {
-            tg.sendData(`${appData.mode}_result_${score}`);
         }
     </script>
 </body>
