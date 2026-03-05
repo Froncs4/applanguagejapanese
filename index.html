@@ -10,116 +10,86 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: white; margin: 0; padding: 20px;
-            display: flex; flex-direction: column; align-items: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; box-sizing: border-box; overflow: hidden;
         }
-
-        .header { width: 100%; text-align: center; margin-bottom: 20px; font-size: 20px; font-weight: bold; color: #94a3b8; }
+        .header { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; }
         .hidden { display: none !important; }
 
-        /* =========================================
-           РЕЖИМ 1: СВАЙПЫ (TINDER)
-           ========================================= */
-        #swipe-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; position: relative; }
-        .card-stack { position: relative; width: 300px; height: 400px; margin-top: 20px; perspective: 1000px; }
-        
+        /* === РЕЖИМ: СВАЙПЫ === */
+        #swipe-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .card-stack { position: relative; width: 300px; height: 400px; perspective: 1000px; }
         .swipe-card {
-            position: absolute; width: 100%; height: 100%;
-            background: white; border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform-style: preserve-3d; transition: transform 0.3s ease;
-            cursor: grab; user-select: none;
+            position: absolute; width: 100%; height: 100%; background: white; border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transform-style: preserve-3d; transition: transform 0.3s ease; cursor: grab; user-select: none;
         }
-        
         .card-front, .card-back {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 20px; padding: 20px; box-sizing: border-box;
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 20px; padding: 20px; box-sizing: border-box;
         }
         .card-front { background: white; color: #0f172a; }
         .card-back { background: #4f46e5; color: white; transform: rotateY(180deg); }
-
         .card-symbol { font-size: 80px; font-weight: bold; margin: 0; }
         .card-reading { font-size: 30px; font-weight: bold; margin-bottom: 10px; }
         .card-hint { font-size: 18px; color: #cbd5e1; text-align: center; }
         .tap-hint { position: absolute; bottom: 20px; font-size: 14px; color: #94a3b8; }
 
-        .swipe-actions { display: flex; justify-content: space-between; width: 300px; margin-top: 40px; }
-        .btn-swipe { 
-            width: 70px; height: 70px; border-radius: 50%; border: none; 
-            font-size: 30px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); cursor: pointer; transition: 0.2s;
-        }
-        .btn-swipe.left { background: #ef4444; color: white; }
-        .btn-swipe.right { background: #10b981; color: white; }
-        .btn-swipe:active { transform: scale(0.9); }
-
-        /* =========================================
-           РЕЖИМ 2: ОРДИНАРНЫЙ КВИЗ И ГРАММАТИКА
-           ========================================= */
-        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; }
-        
-        .progress-container { width: 100%; max-width: 400px; background: #334155; border-radius: 10px; height: 12px; overflow: hidden; margin-bottom: 20px; }
+        /* === РЕЖИМ: КВИЗ И ГРАММАТИКА === */
+        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .progress-container { position: absolute; top: 60px; width: 90%; max-width: 400px; background: #334155; border-radius: 10px; height: 12px; overflow: hidden; }
         .progress-bar { height: 100%; background: #10b981; width: 0%; transition: width 0.4s ease-out; }
-
-        .question-card {
-            background: white; color: #0f172a; width: 100%; max-width: 400px;
-            border-radius: 20px; padding: 30px 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; box-sizing: border-box; position: relative;
-        }
-
+        .question-card { background: white; color: #0f172a; width: 100%; max-width: 400px; border-radius: 20px; padding: 30px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; box-sizing: border-box; margin-top: 20px;}
         .symbol-container { display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
         .symbol { font-size: 60px; font-weight: bold; margin: 0; color: #1e293b; }
-        
-        .speaker-btn {
-            background: #e2e8f0; border-radius: 50%; width: 40px; height: 40px;
-            display: inline-flex; align-items: center; justify-content: center;
-            font-size: 20px; cursor: pointer; margin-left: 15px; transition: 0.2s;
-        }
+        .speaker-btn { background: #e2e8f0; border-radius: 50%; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; margin-left: 15px; transition: 0.2s; }
         .speaker-btn:active { transform: scale(0.9); background: #cbd5e1; }
-
-        .blank-slot {
-            display: inline-block; min-width: 50px; height: 40px; border-bottom: 3px solid #64748b;
-            color: #4f46e5; font-weight: bold; vertical-align: bottom;
-        }
-
-        .question-text { font-size: 16px; color: #64748b; margin-top: 0; margin-bottom: 20px; }
-
+        .blank-slot { display: inline-block; min-width: 50px; height: 40px; border-bottom: 3px solid #64748b; color: #4f46e5; font-weight: bold; vertical-align: bottom; }
+        .question-text { font-size: 16px; color: #64748b; margin-top: 0; margin-bottom: 10px; }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; margin-top: 20px;}
-
-        .btn-option {
-            background: #f1f5f9; border: 2px solid #e2e8f0; color: #334155;
-            font-size: 18px; font-weight: bold; padding: 15px 10px; border-radius: 15px;
-            cursor: pointer; transition: all 0.2s;
-        }
+        .btn-option { background: #f1f5f9; border: 2px solid #e2e8f0; color: #334155; font-size: 18px; font-weight: bold; padding: 15px 10px; border-radius: 15px; cursor: pointer; transition: all 0.2s; }
         .btn-option:active { transform: scale(0.95); }
         .btn-option.correct { background: #10b981; border-color: #059669; color: white; transform: scale(1.05); }
         .btn-option.wrong { background: #ef4444; border-color: #dc2626; color: white; }
 
-        /* Экраны финала */
+        /* === РЕЖИМ: ГОЛОСОВАЯ КОМНАТА ИИ === */
+        #voice-mode { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+        .ai-avatar { font-size: 100px; animation: float 3s ease-in-out infinite; margin-bottom: 20px;}
+        .mic-btn { width: 100px; height: 100px; border-radius: 50%; background: #ef4444; color: white; font-size: 40px; border: none; box-shadow: 0 0 20px #ef4444; cursor: pointer; transition: 0.2s; margin: 20px 0; display:flex; justify-content:center; align-items:center;}
+        .mic-btn.listening { animation: pulse 1s infinite; background: #10b981; box-shadow: 0 0 30px #10b981;}
+        .transcription-box { width: 90%; min-height: 60px; background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; text-align: center; font-size: 18px; color: #cbd5e1;}
+        .send-ai-btn { margin-top: 20px; background: #4f46e5; color: white; border: none; padding: 15px 30px; border-radius: 15px; font-size: 18px; font-weight: bold; display: none;}
+
+        /* === РЕЖИМ: КОЛЕСО ФОРТУНЫ === */
+        #wheel-mode { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+        .wheel-container { position: relative; width: 260px; height: 260px; margin-bottom: 40px;}
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 20px rgba(0,0,0,0.5); transition: transform 4s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: conic-gradient( #ef4444 0 90deg, #f59e0b 90deg 180deg, #10b981 180deg 270deg, #3b82f6 270deg 360deg ); position: relative; overflow: hidden; }
+        .slice-text { position: absolute; font-weight: bold; font-size: 24px; text-shadow: 1px 1px 2px black; }
+        .slice-1 { top: 20px; right: 60px; transform: rotate(45deg); }
+        .slice-2 { bottom: 60px; right: 20px; transform: rotate(135deg); }
+        .slice-3 { bottom: 20px; left: 60px; transform: rotate(225deg); }
+        .slice-4 { top: 60px; left: 20px; transform: rotate(315deg); }
+        .pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); font-size: 40px; color: white; z-index: 10; text-shadow: 0 2px 5px black;}
+        .spin-btn { background: #f59e0b; color: #78350f; border: none; padding: 15px 40px; border-radius: 15px; font-size: 24px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 0 #b45309; transition: 0.1s;}
+        .spin-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #b45309; }
+
+        /* ФИНАЛ */
         #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
         .claim-btn { background: #8b5cf6; color: white; font-size: 20px; font-weight: bold; border: none; padding: 15px 40px; border-radius: 15px; width: 100%; max-width: 300px; margin-top: 30px;}
-        .claim-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #7c3aed; }
+
+        @keyframes float { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-20px);} }
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.1);} 100% {transform: scale(1);} }
     </style>
 </head>
 <body>
-
     <div class="header" id="header-title">Загрузка...</div>
 
-    <!-- РЕЖИМ СВАЙПОВ -->
+    <!-- КОНТЕЙНЕРЫ РЕЖИМОВ -->
     <div id="swipe-mode" class="hidden">
         <div class="card-stack" id="card-stack"></div>
-        <div class="swipe-actions">
-            <button class="btn-swipe left" onclick="swipeCard('left')">❌</button>
-            <button class="btn-swipe right" onclick="swipeCard('right')">✅</button>
-        </div>
     </div>
 
-    <!-- РЕЖИМ КВИЗА / ГРАММАТИКИ -->
     <div id="quiz-mode" class="hidden">
         <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
-        
         <div class="question-card">
             <div class="symbol-container">
                 <span class="symbol" id="symbol-display">...</span>
@@ -127,15 +97,31 @@
             </div>
             <p class="question-text" id="hint-text">Выберите правильный перевод</p>
         </div>
-        
         <div class="options-grid" id="options-container"></div>
     </div>
 
-    <!-- ФИНАЛ -->
+    <div id="voice-mode" class="hidden">
+        <div class="ai-avatar">🦊</div>
+        <div class="transcription-box" id="t-box">Нажми на микрофон и говори!</div>
+        <button class="mic-btn" id="mic" onclick="toggleMic()">🎙</button>
+        <button class="send-ai-btn" id="send-ai" onclick="sendToAI()">Отправить Сенсею</button>
+    </div>
+
+    <div id="wheel-mode" class="hidden">
+        <div class="wheel-container">
+            <div class="pointer">▼</div>
+            <div class="wheel" id="wheel">
+                <div class="slice-text slice-1">10 XP</div><div class="slice-text slice-2">50 XP</div>
+                <div class="slice-text slice-3">0 XP</div><div class="slice-text slice-4">100 XP</div>
+            </div>
+        </div>
+        <button class="spin-btn" id="spin-btn" onclick="spin()">Крутить!</button>
+    </div>
+
     <div id="result-screen" class="hidden">
         <div style="font-size: 80px;">🎉</div>
-        <h2 style="margin:10px 0;">Урок завершен!</h2>
-        <p style="color:#cbd5e1;" id="result-desc">Вы отлично справились</p>
+        <h2 style="margin:10px 0;">Завершено!</h2>
+        <p style="color:#cbd5e1;" id="result-desc"></p>
         <button class="claim-btn" onclick="claimReward()">Забрать награду</button>
     </div>
 
@@ -143,88 +129,160 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
+        // --- ВСТРОЕННЫЕ СЛОВАРИ ДЛЯ ГЕНЕРАЦИИ ВОПРОСОВ ---
+        const DICT_KANJI = {"一":"один", "二":"два", "三":"три", "四":"четыре", "五":"пять", "日":"день/солнце", "月":"луна/месяц", "火":"огонь", "水":"вода", "木":"дерево", "金":"золото/деньги", "土":"земля", "人":"человек", "大":"большой", "小":"маленький"};
+        const DICT_WORDS = {"こんにちは":"здравствуйте", "ありがとう":"спасибо", "さようなら":"до свидания", "たべる":"кушать", "のむ":"пить", "いく":"идти", "くる":"приходить", "ねこ":"кошка", "いぬ":"собака", "くるま":"машина", "ほん":"книга", "みず":"вода"};
+        const DICT_GRAMMAR = {"わたし ___ がくせい です": "は", "りんご ___ たべる": "を", "がっこう ___ いく": "に", "ペン ___ かきます": "で", "いぬ ___ ねこ が います": "と", "あそこ ___ あります": "に", "だれ ___ きますか": "が", "としょかん ___ ほんをよむ": "で"};
+
         let appData = { mode: "quiz", items: [] };
         let currentIndex = 0;
         let score = 0;
 
-        // Инициализация при запуске
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            // Читаем данные и из ?data=, и из ?d= (чтобы работало на 100%)
-            const rawData = urlParams.get('d') || urlParams.get('data');
-            const mode = urlParams.get('mode');
-            
-            if (rawData) {
-                try {
-                    // Расшифровываем JSON от Питона
-                    appData.items = JSON.parse(decodeURIComponent(rawData));
-                    // Если мод не передан явно, определяем его по типу вопроса
-                    appData.mode = mode || (appData.items[0].t ? "quiz" : "swipe");
-                } catch(e) { 
-                    alert("Ошибка загрузки данных. Пожалуйста, закройте и откройте заново."); 
-                }
-            } else {
-                // ДЕФОЛТНЫЙ ТЕСТОВЫЙ НАБОР (Если открыть ссылку в браузере с ПК)
-                appData.mode = 'quiz';
-                appData.items = [
-                    { t: "word", q: "水", a: ["Огонь", "Вода", "Дерево", "Земля"], c: 1 },
-                    { t: "word", q: "ねこ", a: ["Собака", "Птица", "Кошка", "Рыба"], c: 2 },
-                    { t: "grammar", q: "わたし ___ がくせい", a: ["を","は","に","で"], c: 1 }
-                ];
+        function generateQuestions(mode) {
+            let items = [];
+            const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
+            if (mode === 'swipe') {
+                let keys = shuffle(Object.keys(DICT_KANJI)).slice(0, 5);
+                items = keys.map(k => ({ q: k, r: "Кандзи", t: DICT_KANJI[k] }));
+            } else if (mode === 'grammar') {
+                let keys = shuffle(Object.keys(DICT_GRAMMAR)).slice(0, 5);
+                let particles = ["は", "を", "に", "で", "が", "と", "も"];
+                items = keys.map(k => {
+                    let correct = DICT_GRAMMAR[k];
+                    let options = shuffle(particles.filter(p => p !== correct)).slice(0, 3);
+                    options.push(correct);
+                    options = shuffle(options);
+                    return { t: "grammar", q: k, a: options, c: options.indexOf(correct) };
+                });
+            } else if (mode === 'quiz') {
+                let keys = shuffle(Object.keys(DICT_WORDS)).slice(0, 5);
+                let allVals = Object.values(DICT_WORDS);
+                items = keys.map(k => {
+                    let correct = DICT_WORDS[k];
+                    let options = shuffle(allVals.filter(v => v !== correct)).slice(0, 3);
+                    options.push(correct);
+                    options = shuffle(options);
+                    return { t: "word", q: k, a: options, c: options.indexOf(correct) };
+                });
             }
+            return items;
+        }
 
-            if (appData.mode === 'swipe') initSwipeMode();
-            else initQuizMode();
+        window.onload = () => {
+            const mode = new URLSearchParams(window.location.search).get('mode') || 'quiz';
+            appData.mode = mode;
+            
+            // Запускаем нужный модуль
+            if (mode === 'voice') initVoice();
+            else if (mode === 'wheel') initWheel();
+            else {
+                appData.items = generateQuestions(mode);
+                if (mode === 'swipe') initSwipeMode();
+                else initQuizMode();
+            }
         };
 
-        /* =========================================
-           ОБЩЕЕ (ОЗВУЧКА И ФИНАЛ)
-           ========================================= */
+        // ==========================================
+        // ЛОГИКА ГОЛОСОВОГО ИИ
+        // ==========================================
+        let recognition;
+        let isRecording = false;
+        let finalTranscript = "";
+
+        function initVoice() {
+            document.getElementById('voice-mode').classList.remove('hidden');
+            document.getElementById('header-title').innerText = "Разговор с Акирой";
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (window.SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'ja-JP'; 
+                recognition.interimResults = true;
+                recognition.onresult = (event) => {
+                    let text = Array.from(event.results).map(r => r[0].transcript).join("");
+                    document.getElementById('t-box').innerText = text;
+                    if (event.results[0].isFinal) finalTranscript = text;
+                };
+                recognition.onend = () => {
+                    isRecording = false;
+                    document.getElementById('mic').classList.remove('listening');
+                    if (finalTranscript.length > 0) document.getElementById('send-ai').style.display = 'block';
+                };
+            } else {
+                document.getElementById('t-box').innerText = "Браузер не поддерживает микрофон 😔";
+            }
+        }
+        function toggleMic() {
+            if (!recognition) return;
+            if (isRecording) recognition.stop();
+            else {
+                finalTranscript = "";
+                document.getElementById('send-ai').style.display = 'none';
+                document.getElementById('mic').classList.add('listening');
+                document.getElementById('t-box').innerText = "Слушаю...";
+                recognition.start();
+                isRecording = true;
+                try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
+            }
+        }
+        function sendToAI() { if (finalTranscript) tg.sendData("voice_query_" + finalTranscript); }
+
+        // ==========================================
+        // ЛОГИКА КОЛЕСА ФОРТУНЫ
+        // ==========================================
+        function initWheel() {
+            document.getElementById('wheel-mode').classList.remove('hidden');
+            document.getElementById('header-title').innerText = "Ежедневная рулетка";
+        }
+        function spin() {
+            document.getElementById('spin-btn').style.display = "none";
+            let randomDeg = Math.floor(Math.random() * 360);
+            let totalDeg = 1440 + randomDeg; 
+            document.getElementById('wheel').style.transform = `rotate(${totalDeg}deg)`;
+            try { tg.HapticFeedback.impactOccurred("heavy"); } catch(e){}
+            setTimeout(() => {
+                let actualDeg = (360 - (randomDeg % 360)) % 360;
+                let prize = 0;
+                if (actualDeg >= 0 && actualDeg < 90) prize = 10;
+                else if (actualDeg >= 90 && actualDeg < 180) prize = 50;
+                else if (actualDeg >= 180 && actualDeg < 270) prize = 0;
+                else prize = 100;
+                tg.sendData("wheel_reward_" + prize);
+            }, 4200);
+        }
+
+        // ==========================================
+        // КВИЗ, СВАЙПЫ, ЗВУК И ФИНАЛ
+        // ==========================================
         function speakText() {
             const item = appData.items[currentIndex];
-            let textToSpeak = item.q;
-            if (item.t === "grammar") textToSpeak = textToSpeak.replace("___", "");
-            
+            let textToSpeak = item.q.replace("___", "");
             const googleTTSUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textToSpeak)}&tl=ja&client=tw-ob`;
-            const audio = new Audio(googleTTSUrl);
-            audio.play().catch(e => console.log("Браузер заблокировал аудио", e));
+            new Audio(googleTTSUrl).play().catch(e => console.log(e));
         }
 
         function showResults() {
+            document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden')); // Скрываем всё
             document.getElementById('swipe-mode').classList.add('hidden');
             document.getElementById('quiz-mode').classList.add('hidden');
             document.getElementById('header-title').classList.add('hidden');
             
-            const resultScreen = document.getElementById('result-screen');
-            resultScreen.classList.remove('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('result-desc').innerText = `Счет: ${score} из ${appData.items.length}`;
         }
+        function claimReward() { tg.sendData(`${appData.mode}_result_${score}`); }
 
-        function claimReward() {
-            let safeMode = appData.mode || "quiz";
-            tg.sendData(`${safeMode}_result_${score}`);
-        }
-
-        /* =========================================
-           РЕЖИМ КВИЗА / ГРАММАТИКИ
-           ========================================= */
         let isWaiting = false;
-
         function initQuizMode() {
             document.getElementById('quiz-mode').classList.remove('hidden');
-            document.getElementById('header-title').innerText = "Проверка знаний";
+            document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : "Проверка знаний";
             renderQuizCard();
         }
-
         function renderQuizCard() {
             isWaiting = false;
-            // Проверяем, не закончились ли вопросы
             if (currentIndex >= appData.items.length) { showResults(); return; }
-
             const item = appData.items[currentIndex];
             document.getElementById('progress-bar').style.width = ((currentIndex / appData.items.length) * 100) + "%";
-            
-            if (item.t === "grammar" || item.q.includes("___")) {
+            if (item.t === "grammar") {
                 document.getElementById('symbol-display').innerHTML = item.q.replace("___", `<span class="blank-slot" id="grammar-blank"></span>`);
                 document.getElementById('hint-text').innerText = "Вставьте пропущенную частицу";
                 document.getElementById('symbol-display').style.fontSize = "35px";
@@ -235,116 +293,61 @@
                 document.getElementById('symbol-display').style.fontSize = "60px";
                 document.getElementById('speaker-btn').style.display = "inline-flex";
             }
-            
             const container = document.getElementById('options-container');
             container.innerHTML = "";
-            
-            let options = item.a || ["Ошибка"];
-            
-            options.forEach((opt, index) => {
+            item.a.forEach((opt, index) => {
                 const btn = document.createElement("button");
-                btn.className = "btn-option";
-                btn.innerText = opt;
+                btn.className = "btn-option"; btn.innerText = opt;
                 btn.onclick = () => checkAnswer(index, btn);
                 container.appendChild(btn);
             });
         }
-
         function checkAnswer(selectedIndex, btnElement) {
             if (isWaiting) return;
             isWaiting = true;
-            
             const item = appData.items[currentIndex];
             const allButtons = document.querySelectorAll('.btn-option');
-            
-            if (item.t === "grammar" || item.q.includes("___")) {
-                let blank = document.getElementById('grammar-blank');
-                if (blank) blank.innerText = item.a[selectedIndex];
-            }
-
-            let isCorrect = false;
-            if (item.c !== undefined) {
-                isCorrect = (selectedIndex === item.c);
-            } else {
-                isCorrect = (selectedIndex === item.a.length - 1); 
-            }
-
-            if (isCorrect) {
-                btnElement.classList.add("correct");
-                score++;
+            if (item.t === "grammar") document.getElementById('grammar-blank').innerText = item.a[selectedIndex];
+            if (selectedIndex === item.c) {
+                btnElement.classList.add("correct"); score++;
                 try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){}
             } else {
-                btnElement.classList.add("wrong");
-                if (item.c !== undefined) allButtons[item.c].classList.add("correct");
+                btnElement.classList.add("wrong"); allButtons[item.c].classList.add("correct");
                 try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){}
             }
-
-            // Ждем 1 секунду и листаем дальше!
-            setTimeout(() => {
-                currentIndex++;
-                renderQuizCard();
-            }, 1000);
+            setTimeout(() => { currentIndex++; renderQuizCard(); }, 1200);
         }
 
-        /* =========================================
-           ЛОГИКА СВАЙПОВ (TINDER)
-           ========================================= */
         let activeCard = null;
-
         function initSwipeMode() {
             document.getElementById('swipe-mode').classList.remove('hidden');
             document.getElementById('header-title').innerText = "Свайп: Вправо-Помню, Влево-Забыл";
             renderCards();
         }
-
         function renderCards() {
             const stack = document.getElementById('card-stack');
             stack.innerHTML = "";
-            
             for (let i = appData.items.length - 1; i >= currentIndex; i--) {
                 const item = appData.items[i];
                 const card = document.createElement('div');
                 card.className = 'swipe-card';
                 card.style.zIndex = appData.items.length - i;
+                if (i === currentIndex) { activeCard = card; setupCardPhysics(card); } 
+                else card.style.transform = `scale(${1 - (i-currentIndex)*0.05}) translateY(${(i-currentIndex)*10}px)`;
                 
-                if (i === currentIndex) {
-                    activeCard = card;
-                    setupCardPhysics(card);
-                } else {
-                    card.style.transform = `scale(${1 - (i-currentIndex)*0.05}) translateY(${(i-currentIndex)*10}px)`;
-                }
-
-                card.innerHTML = `
-                    <div class="card-front" onclick="flipCard(this.parentElement)">
-                        <h1 class="card-symbol">${item.q}</h1>
-                        <div class="tap-hint">Нажми, чтобы перевернуть</div>
-                    </div>
-                    <div class="card-back" onclick="flipCard(this.parentElement)">
-                        <div class="card-reading">${item.r || "Японский"}</div>
-                        <div class="card-hint">${item.t || "Перевод"}</div>
-                    </div>
-                `;
+                card.innerHTML = `<div class="card-front" onclick="flipCard(this.parentElement)"><h1 class="card-symbol">${item.q}</h1><div class="tap-hint">Нажми, чтобы перевернуть</div></div>
+                                  <div class="card-back" onclick="flipCard(this.parentElement)"><div class="card-reading">${item.r}</div><div class="card-hint">${item.t}</div></div>`;
                 stack.appendChild(card);
             }
         }
-
         function flipCard(card) {
             const currentRotation = card.style.transform;
-            if (currentRotation.includes('rotateY(180deg)')) {
-                card.style.transform = 'rotateY(0deg)';
-            } else {
-                card.style.transform = 'rotateY(180deg)';
-                try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
-            }
+            if (currentRotation.includes('rotateY(180deg)')) card.style.transform = 'rotateY(0deg)';
+            else { card.style.transform = 'rotateY(180deg)'; try { tg.HapticFeedback.impactOccurred("light"); } catch(e){} }
         }
-
         function setupCardPhysics(card) {
             let startX = 0, currentX = 0, isDragging = false;
-            const onStart = (e) => {
-                isDragging = true;
-                startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
-                card.style.transition = 'none';
-            };
+            const onStart = (e) => { isDragging = true; startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; card.style.transition = 'none'; };
             const onMove = (e) => {
                 if (!isDragging) return;
                 currentX = (e.type.includes('mouse') ? e.pageX : e.touches[0].pageX) - startX;
@@ -352,8 +355,7 @@
                 card.style.transform = `translate(${currentX}px, ${Math.abs(currentX)*0.1}px) rotate(${currentX*0.1}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`;
             };
             const onEnd = () => {
-                isDragging = false;
-                card.style.transition = 'transform 0.3s ease';
+                isDragging = false; card.style.transition = 'transform 0.3s ease';
                 if (currentX > 100) swipeCard('right');
                 else if (currentX < -100) swipeCard('left');
                 else {
@@ -364,24 +366,16 @@
             card.addEventListener('mousedown', onStart); document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
             card.addEventListener('touchstart', onStart, {passive: true}); document.addEventListener('touchmove', onMove, {passive: true}); document.addEventListener('touchend', onEnd);
         }
-
         function swipeCard(direction) {
             if (!activeCard) return;
             const flyX = direction === 'right' ? window.innerWidth : -window.innerWidth;
             activeCard.style.transition = 'transform 0.4s ease-out';
             activeCard.style.transform = `translate(${flyX}px, 100px) rotate(${direction==='right'?30:-30}deg)`;
-            
             if (direction === 'right') { score++; try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){} } 
             else { try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){} }
-
             activeCard = null;
-            setTimeout(() => {
-                currentIndex++;
-                if (currentIndex >= appData.items.length) showResults();
-                else renderCards();
-            }, 300);
+            setTimeout(() => { currentIndex++; if (currentIndex >= appData.items.length) showResults(); else renderCards(); }, 300);
         }
     </script>
 </body>
 </html>
-
