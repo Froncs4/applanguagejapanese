@@ -157,7 +157,7 @@
             if (rawData) {
                 try {
                     // Расшифровываем JSON от Питона
-                    appData.items = JSON.parse(decodeURIComponent(escape(atob(rawData))));
+                    appData.items = JSON.parse(decodeURIComponent(rawData));
                     // Если мод не передан явно, определяем его по типу вопроса
                     appData.mode = mode || (appData.items[0].t ? "quiz" : "swipe");
                 } catch(e) { 
@@ -384,3 +384,4 @@
     </script>
 </body>
 </html>
+
