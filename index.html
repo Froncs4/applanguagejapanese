@@ -241,53 +241,79 @@
         };
 
         // ==========================================
-        // ЛОГИКА ГОЛОСОВОГО ИИ (ИСПРАВЛЕНО)
+        // ЛОГИКА ГОЛОСОВОГО ИИ (ИСПРАВЛЕНО И УЛУЧШЕНО)
         // ==========================================
-        let recognition, isRecording = false, finalTranscript = "";
+        let recognition;
+        let finalTranscript = "";
 
         function initVoice() {
             document.getElementById('voice-mode').classList.remove('hidden');
             document.getElementById('header-title').innerText = "Разговор с Акирой";
+            
+            // Инициализация Web Speech API
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
             if (window.SpeechRecognition) {
                 recognition = new SpeechRecognition();
-                recognition.lang = 'ja-JP'; 
+                // БАГФИКС: Меняем на русский, чтобы общаться с Сенсеем и просить советы!
+                recognition.lang = 'ru-RU'; 
                 recognition.interimResults = true;
+                
+                recognition.onstart = () => {
+                    document.getElementById('mic').classList.add('listening');
+                    document.getElementById('t-box').innerText = "Слушаю вас...";
+                    document.getElementById('send-ai').style.display = 'none';
+                    try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
+                };
+
                 recognition.onresult = (event) => {
                     let text = Array.from(event.results).map(r => r[0].transcript).join("");
                     document.getElementById('t-box').innerText = text;
                     if (event.results[0].isFinal) finalTranscript = text;
                 };
+
                 recognition.onend = () => {
-                    isRecording = false;
+                    // Как только вы замолкаете, микрофон выключается сам!
                     document.getElementById('mic').classList.remove('listening');
-                    if (finalTranscript.length > 0) document.getElementById('send-ai').style.display = 'block';
-                    else document.getElementById('t-box').innerText = "Не расслышал. Попробуйте еще раз!";
+                    if (finalTranscript.trim().length > 0) {
+                        document.getElementById('send-ai').style.display = 'block';
+                    } else {
+                        document.getElementById('t-box').innerText = "Нажмите микрофон и задайте вопрос!";
+                    }
+                };
+                
+                recognition.onerror = (event) => {
+                    document.getElementById('mic').classList.remove('listening');
+                    document.getElementById('t-box').innerText = "Ошибка: " + event.error;
                 };
             } else {
                 document.getElementById('t-box').innerText = "Браузер не поддерживает микрофон 😔";
             }
         }
+
         function toggleMic() {
             if (!recognition) return;
-            if (isRecording) recognition.stop();
-            else {
-                finalTranscript = "";
-                document.getElementById('send-ai').style.display = 'none';
-                document.getElementById('mic').classList.add('listening');
-                document.getElementById('t-box').innerText = "Слушаю (Говорите по-японски)...";
+            // Убрали сложную логику on/off. Один клик = один старт записи!
+            finalTranscript = "";
+            try {
                 recognition.start();
-                isRecording = true;
-                try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
+            } catch (e) {
+                // Если случайно нажали дважды, игнорируем
             }
         }
+
         function sendToAI() { 
-            if (finalTranscript) {
-                // БАГФИКС: Обрезаем слишком длинный текст, чтобы не сломать sendData
-                let safeText = finalTranscript.substring(0, 100); 
-                tg.sendData("voice_query_" + safeText); 
+            if (finalTranscript.trim().length > 0) {
+                // БАГФИКС 2: Очищаем текст от переносов строк и спецсимволов, которые ломают sendData
+                let safeText = finalTranscript.replace(/[\n\r]/g, ' ').replace(/[#_*\[\]]/g, '');
+                safeText = safeText.substring(0, 150); // Увеличили лимит до 150 символов
+                
+                // Чтобы 100% не сломать sendData, кодируем в uri-формат
+                let payload = "voice_query_" + encodeURIComponent(safeText);
+                tg.sendData(payload); 
             }
         }
+
 
         // ==========================================
         // ОСТАЛЬНАЯ ЛОГИКА (РУЛЕТКА, КВИЗ) ОСТАЛАСЬ ТАКОЙ ЖЕ
@@ -388,3 +414,4 @@
     </script>
 </body>
 </html>
+
