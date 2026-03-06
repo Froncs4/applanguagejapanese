@@ -1387,7 +1387,7 @@
     </style>
 </head>
 <body>
-    <!-- Loading -->
+        <!-- Loading -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
         <div class="loading-text">YomuBot</div>
@@ -1702,8 +1702,7 @@
             <span>Ещё</span>
         </button>
     </nav>
-
-    <script>
+       <script>
         // ==================== TELEGRAM ====================
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -1719,7 +1718,9 @@
             achievements: [],
             settings: { sound: true, vibration: true },
             lastDaily: null,
-            perfectTests: 0
+            perfectTests: 0,
+            quests: {},
+            questsDate: null
         };
 
         let currentScreen = 'home';
@@ -1742,7 +1743,7 @@
             wrong: 0
         };
 
-        // ==================== ДАННЫЕ ====================
+        // ==================== ACHIEVEMENTS ====================
         const ACHIEVEMENTS = [
             {id: 'first', name: 'Первый шаг', icon: '👶', check: u => u.cardsLearned >= 1},
             {id: 'streak3', name: 'Огонёк', icon: '🔥', check: u => u.streak >= 3},
@@ -1779,90 +1780,47 @@
                 initData: tg.initData
             };
             tg.sendData(JSON.stringify(data));
+            // Здесь мы не ждём ответа от сервера, так как сервер недоступен
         }
 
-        // ==================== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ С СЕРВЕРА ====================
-        async function fetchUserData() {
-            try {
-                const response = await fetch('https://your-bot-domain.com/api/user', {
-                    method: 'GET',
-                    headers: {
-                        'X-Telegram-Init-Data': tg.initData
-                    }
-                });
-                if (!response.ok) throw new Error('Failed to fetch user data');
-                const data = await response.json();
-                if (data.success) {
-                    user.id = data.user.id;
-                    user.name = data.user.name;
-                    user.xp = data.user.xp;
-                    user.streak = data.user.streak;
-                    user.cardsLearned = data.user.cards_learned;
-                    // Другие поля, если есть
-                    saveUser();
-                    updateUI();
-                }
-            } catch (e) {
-                console.error('Error fetching user data:', e);
-                loadUserFromStorage();
-            }
-        }
-
-        function loadUserFromStorage() {
+        // ==================== ЗАГРУЗКА ДАННЫХ ИЗ STORAGE ====================
+        function loadUser() {
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
                 const data = JSON.parse(saved);
                 user = {...user, ...data};
             }
+            // Устанавливаем имя из Telegram, если есть
             if (tg.initDataUnsafe?.user) {
                 user.name = tg.initDataUnsafe.user.first_name || 'Пользователь';
                 user.id = tg.initDataUnsafe.user.id;
             }
             updateUI();
+            loadAvatar();
         }
 
-        // ==================== ЗАГРУЗКА АВАТАРКИ ====================
+        // ==================== СОХРАНЕНИЕ ДАННЫХ ====================
+        function saveUser() {
+            localStorage.setItem('yomubot_user', JSON.stringify(user));
+        }
+
+        // ==================== АВАТАРКА ====================
         function loadAvatar() {
-            if (!user.id) {
-                // Если нет ID, показываем инициалы
-                const initial = user.name.charAt(0).toUpperCase();
-                document.getElementById('userAvatar').textContent = initial;
-                document.getElementById('profileAvatar').textContent = initial;
-                return;
-            }
-            // Пробуем загрузить через Telegram CDN
-            const avatarUrl = `https://t.me/i/userpic/320/${user.id}.jpg`;
-            const img = new Image();
-            img.onload = () => {
-                document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
-                document.getElementById('userAvatar').textContent = '';
-                document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
-                document.getElementById('profileAvatar').textContent = '';
-            };
-            img.onerror = () => {
-                // Если не загрузилось, показываем инициалы
-                const initial = user.name.charAt(0).toUpperCase();
-                document.getElementById('userAvatar').textContent = initial;
-                document.getElementById('profileAvatar').textContent = initial;
-            };
-            img.src = avatarUrl;
+            const name = user.name;
+            const initial = name.charAt(0).toUpperCase();
+            // Используем сервис ui-avatars.com для генерации аватарки с инициалами
+            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=128`;
+            document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
+            document.getElementById('userAvatar').textContent = '';
+            document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
+            document.getElementById('profileAvatar').textContent = '';
         }
 
         // ==================== INIT ====================
         function init() {
-            // Сначала пробуем получить данные с сервера
-            fetchUserData().then(() => {
-                loadAvatar();
-                createWheel();
-                document.getElementById('loadingScreen').classList.add('hidden');
-            }).catch(() => {
-                loadUserFromStorage();
-                loadAvatar();
-                createWheel();
-                document.getElementById('loadingScreen').classList.add('hidden');
-            });
+            loadUser();
 
-            // Update daily quest (локально)
+            // Update daily quest
             const today = new Date().toDateString();
             if (!user.questsDate || user.questsDate !== today) {
                 user.questsDate = today;
@@ -1871,6 +1829,13 @@
             if (!user.quests) user.quests = {};
             user.quests.login = 1;
             saveUser();
+            updateUI();
+
+            // Hide loading
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                createWheel();
+            }, 800);
         }
 
         // ==================== NAVIGATION ====================
@@ -1896,17 +1861,14 @@
             document.getElementById('userCards').textContent = user.cardsLearned;
             document.getElementById('userBadge').textContent = rank.badge;
             document.getElementById('userRankName').textContent = rank.name;
-            document.getElementById('profileName').textContent = user.name;
-            document.getElementById('profileXp').textContent = user.xp;
-            document.getElementById('profileStreak').textContent = user.streak;
-            document.getElementById('profileCards').textContent = user.cardsLearned;
-            document.getElementById('profileBadge').textContent = rank.badge;
-            document.getElementById('profileRankName').textContent = rank.name;
             renderQuests();
-            renderAchievements();
         }
 
         function getRank(xp) {
+            if (typeof RANKS === 'undefined') {
+                // Если RANKS не определён (например, не загрузился data.js), используем заглушку
+                return {min: 0, name: 'Новичок', badge: '🥚', frame: 1};
+            }
             let rank = RANKS[0];
             for (const r of RANKS) {
                 if (xp >= r.min) rank = r;
@@ -1936,20 +1898,6 @@
             }).join('');
         }
 
-        function renderAchievements() {
-            const grid = document.getElementById('achievementsGrid');
-            if (!grid) return;
-            grid.innerHTML = ACHIEVEMENTS.map(a => {
-                const unlocked = a.check(user);
-                return `
-                    <div class="achievement ${unlocked ? '' : 'locked'}">
-                        <div class="achievement-icon">${a.icon}</div>
-                        <div class="achievement-name">${a.name}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
         // ==================== ALPHABET ====================
         function setAlphabetTab(tab) {
             alphabetTab = tab;
@@ -1966,6 +1914,10 @@
         }
 
         function renderAlphabet() {
+            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') {
+                console.error('Data not loaded');
+                return;
+            }
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
             if (alphabetView === 'grid') {
@@ -2012,6 +1964,10 @@
 
         // ==================== STUDY ====================
         function renderStudy(category = null) {
+            if (typeof KANJI_N5 === 'undefined' || typeof KANJI_N4 === 'undefined' || typeof KANJI_N3 === 'undefined' || typeof WORDS_N5 === 'undefined') {
+                console.error('Data not loaded');
+                return;
+            }
             const categories = [
                 {id: 'kanji_n5', name: 'Кандзи N5', icon: '🈁', desc: '103 базовых иероглифа', data: KANJI_N5},
                 {id: 'kanji_n4', name: 'Кандзи N4', icon: '🈁', desc: '181 иероглиф', data: KANJI_N4},
@@ -2115,6 +2071,7 @@
 
         // ==================== QUIZ ====================
         function startQuiz(type) {
+            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             const count = type === 'full' ? 15 : 5;
             quiz = {
@@ -2130,6 +2087,7 @@
         }
 
         function startAlphabetQuiz(count) {
+            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
             quiz = {
@@ -2146,6 +2104,7 @@
         }
 
         function startRowQuiz(rowIndex) {
+            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const row = rows[rowIndex];
             quiz = {
@@ -2257,6 +2216,7 @@
 
         // ==================== SWIPE ====================
         function startSwipe() {
+            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             swipe = {
                 items: shuffle(allKana).slice(0, 10),
@@ -2421,6 +2381,27 @@
             }, 4500);
         }
 
+        // ==================== PROFILE ====================
+        function renderProfile() {
+            const rank = getRank(user.xp);
+            document.getElementById('profileName').textContent = user.name;
+            document.getElementById('profileXp').textContent = user.xp;
+            document.getElementById('profileStreak').textContent = user.streak;
+            document.getElementById('profileCards').textContent = user.cardsLearned;
+            document.getElementById('profileBadge').textContent = rank.badge;
+            document.getElementById('profileRankName').textContent = rank.name;
+            const grid = document.getElementById('achievementsGrid');
+            grid.innerHTML = ACHIEVEMENTS.map(a => {
+                const unlocked = a.check(user);
+                return `
+                    <div class="achievement ${unlocked ? '' : 'locked'}">
+                        <div class="achievement-icon">${a.icon}</div>
+                        <div class="achievement-name">${a.name}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         // ==================== SETTINGS ====================
         function toggleSetting(key) {
             user.settings[key] = !user.settings[key];
@@ -2444,10 +2425,6 @@
         }
 
         // ==================== HELPERS ====================
-        function saveUser() {
-            localStorage.setItem('yomubot_user', JSON.stringify(user));
-        }
-
         function shuffle(arr) {
             const a = [...arr];
             for (let i = a.length - 1; i > 0; i--) {
