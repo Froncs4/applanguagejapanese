@@ -3,731 +3,1271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TeleLingo Premium Web</title>
+    <title>Japanese Learning</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; margin: 0; padding: 5px; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; box-sizing: border-box; }
-        .hidden { display: none !important; }
-        .header { position: absolute; top: 5px; width: 100%; text-align: center; font-size: 18px; font-weight: bold; color: #94a3b8; z-index: 10; animation: fadeIn 0.5s;}
-        .glass-panel { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); border-radius: 30px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* === АЗБУКА === */
-        #alphabet-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; box-sizing: border-box;}
-        .main-tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 12px; padding: 5px; }
-        .sub-tabs { display: flex; width: 100%; max-width: 350px; border-bottom: 2px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 8px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; }
-        .main-tabs .tab-btn { border-radius: 10px; }
-        .main-tabs .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
-        .sub-tabs .tab-btn { font-size: 13px; padding: 8px 5px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-        .sub-tabs .tab-btn.active { color: white; border-bottom: 2px solid #10b981; }
-        .alphabet-container { width: 100%; max-width: 360px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
-        
-        .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; animation: slideUp 0.4s ease-out;}
-        .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #10b981; padding-left: 10px;}
-        .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        .kana-cell { background: rgba(255,255,255,0.9); color: #0f172a; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.2); transition: 0.2s; }
-        .kana-cell:active { transform: scale(0.9); background: #e2e8f0; }
-        .kana-char { font-size: 26px; font-weight: 900; margin-bottom: 2px; }
-        .kana-romaji { font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-        .test-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 350px; }
-        .test-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 20px 10px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .test-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
+        .container {
+            padding: 16px;
+            max-width: 100%;
+        }
 
-        /* Всплывающее окно (Модалка) */
-        #modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
-        #modal-overlay.active { opacity: 1; pointer-events: all; }
-        .modal-card { background: white; width: 85%; max-width: 320px; border-radius: 30px; padding: 30px; text-align: center; color: #0f172a; transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; max-height: 80vh; overflow-y: auto;}
-        #modal-overlay.active .modal-card { transform: scale(1); }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; font-weight: bold; padding: 10px;}
-        .modal-symbol { font-size: 90px; font-weight: 900; line-height: 1; margin: 20px 0;}
-        .modal-gif { width: 150px; height: 150px; margin: 0 auto 20px auto; display: none; border-radius: 15px; border: 2px solid #e2e8f0; object-fit: contain;}
-        .modal-romaji { font-size: 24px; font-weight: bold; color: #4f46e5; margin-bottom: 5px; text-transform: uppercase;}
-        .modal-hint { font-size: 16px; color: #64748b; margin-bottom: 30px;}
-        .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .modal-btn { padding: 12px; border-radius: 15px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-audio { background: #e0e7ff; color: #4f46e5; }
-        .btn-audio:active { background: #c7d2fe; }
-        .btn-gif { background: #f1f5f9; color: #334155; }
-        .btn-gif:active { background: #e2e8f0; }
+        /* ========== HEADER ========== */
+        .header {
+            text-align: center;
+            padding: 20px 16px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 0 0 24px 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
 
-        /* === КВИЗ И ГРАММАТИКА === */
-        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .progress-container { position: absolute; top: 45px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.6); border-radius: 15px; height: 16px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3); z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #22c55e, #10b981, #059669); width: 0%; transition: width 0.4s ease-out; box-shadow: inset 0 2px 4px rgba(255,255,255,0.3); }
-        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 55px; text-align: center; box-sizing: border-box; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
-        .symbol { font-size: 60px; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.3);}
-        .speaker-btn { background: rgba(255,255,255,0.2); border-radius: 50%; width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; margin-left: 15px; transition: 0.2s;}
-        .speaker-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4);}
-        .blank-slot { display: inline-block; min-width: 50px; height: 40px; border-bottom: 4px solid #fcd34d; color: #fcd34d; font-weight: bold; vertical-align: bottom; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 360px; margin-top: 20px; animation: slideUp 0.5s ease-out;}
-        .btn-option { background: rgba(255,255,255,0.9); color: #1e293b; font-size: 18px; font-weight: 900; padding: 18px 10px; border-radius: 20px; cursor: pointer; border: none; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
-        .btn-option:active { transform: scale(0.95); }
-        .btn-option.correct { background: #10b981; color: white; transform: scale(1.05); }
-        .btn-option.wrong { background: #ef4444; color: white; animation: shake 0.4s; }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
 
-        /* === РУЛЕТКА === */
-        #wheel-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .wheel-container { position: relative; width: 320px; height: 320px; margin-bottom: 40px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)); }
-        .wheel-outer { position: absolute; top: -10px; left: -10px; width: calc(100% + 20px); height: calc(100% + 20px); border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706, #fcd34d); z-index: -1; box-shadow: 0 0 30px rgba(245,158,11,0.5); }
-        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: transform 5s cubic-bezier(0.2, 0.9, 0.2, 1); position: relative; overflow: hidden; background: conic-gradient(#3b82f6 0deg 72deg, #10b981 72deg 144deg, #f59e0b 144deg 216deg, #ef4444 216deg 288deg, #8b5cf6 288deg 360deg); }
-        .slice-text { position: absolute; top: 50%; left: 50%; font-weight: 900; font-size: 22px; color: white; text-shadow: 0 3px 6px rgba(0,0,0,0.8); transform-origin: 0 0; display: flex; align-items: center; justify-content: center; }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
 
-        /* === СВАЙПЫ === */
-        #swipe-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .swipe-hint-top { font-size: 18px; font-weight: bold; color: #fcd34d; margin-bottom: 20px; animation: pulseHint 2s infinite; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; }
-        .card-stack { position: relative; width: 300px; height: 400px; perspective: 1000px; }
-        .swipe-card { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: grab; user-select: none; }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 30px; padding: 20px; box-sizing: border-box; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
-        .card-front { background: rgba(255,255,255,0.95); color: #0f172a; }
-        .card-back { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; transform: rotateY(180deg); }
-        .card-symbol { font-size: 80px; font-weight: 900; margin: 0; }
-        .card-reading { font-size: 30px; font-weight: bold; margin-bottom: 10px; }
-        .card-hint { font-size: 18px; color: #e2e8f0; text-align: center; }
+        /* ========== TABS (Alphabet) ========== */
+        .tabs-container {
+            margin-top: 16px;
+        }
 
-        /* ФИНАЛ */
-        #result-screen { position: absolute; top: 50px; left: 0; width: 100%; height: calc(100% - 50px); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding: 20px; box-sizing: border-box; z-index: 100;}
-        .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 16px; font-weight: bold; border: none; padding: 10px 20px; border-radius: 25px; width: 100%; max-width: 250px; margin-top: 10px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
-        
-        #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: -1; }
-        
-        @keyframes float { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-25px);} }
-        @keyframes popIn { 0% {transform: scale(0.8); opacity: 0;} 100% {transform: scale(1); opacity: 1;} }
-        @keyframes slideUp { 0% {transform: translateY(30px); opacity: 0;} 100% {transform: translateY(0); opacity: 1;} }
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
-        @keyframes pulseHint { 0%, 100% {opacity: 1;} 50% {opacity: 0.5;} }
-        @keyframes fadeIn { 0% {opacity: 0; transform: scale(0.9);} 100% {opacity: 1; transform: scale(1);} }
-        @keyframes fadeOut { 0% {opacity: 1; transform: scale(1);} 100% {opacity: 0; transform: scale(0.9);} }
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* ========== KANA GRID ========== */
+        .kana-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            padding: 0 4px;
+        }
+
+        .kana-card {
+            aspect-ratio: 1;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            padding: 4px;
+        }
+
+        .kana-card:active {
+            transform: scale(0.95);
+        }
+
+        .kana-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .kana-card .char {
+            font-size: 28px;
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .kana-card .reading {
+            font-size: 11px;
+            color: var(--tg-theme-hint-color, #999);
+            margin-top: 2px;
+        }
+
+        /* ========== CARD DETAIL MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--tg-theme-bg-color, #fff);
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-char {
+            font-size: 80px;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .modal-reading {
+            font-size: 32px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .modal-hint {
+            font-size: 16px;
+            color: var(--tg-theme-hint-color, #999);
+            margin-bottom: 24px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn.sound {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .modal-btn.close {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+        }
+
+        /* ========== SWIPE MODE ========== */
+        .swipe-container {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+            padding-top: 30px;
+        }
+
+        .swipe-container.active {
+            display: flex;
+        }
+
+        .swipe-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 10px;
+        }
+
+        .swipe-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--tg-theme-text-color, #000);
+            margin-bottom: 10px;
+        }
+
+        .swipe-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--tg-theme-hint-color, #999);
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: var(--tg-theme-secondary-bg-color, #e0e0e0);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .swipe-cards-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .swipe-card {
+            position: absolute;
+            width: 280px;
+            height: 380px;
+            background: linear-gradient(145deg, #ffffff, #f5f5f5);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            user-select: none;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .swipe-card.dragging {
+            cursor: grabbing;
+            transition: none;
+        }
+
+        .swipe-card .card-char {
+            font-size: 120px;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+
+        .swipe-card .card-question {
+            font-size: 18px;
+            color: var(--tg-theme-hint-color, #999);
+        }
+
+        .swipe-card .card-answer {
+            font-size: 36px;
+            color: #667eea;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .swipe-card.show-answer .card-answer {
+            opacity: 1;
+        }
+
+        .swipe-card.show-answer .card-question {
+            display: none;
+        }
+
+        .swipe-indicators {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .indicator {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .indicator.know {
+            background: #4ade80;
+            color: white;
+        }
+
+        .indicator.dont-know {
+            background: #f87171;
+            color: white;
+        }
+
+        .swipe-hint {
+            text-align: center;
+            padding: 20px;
+            color: var(--tg-theme-hint-color, #999);
+            font-size: 14px;
+        }
+
+        .swipe-hint span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* ========== QUIZ MODE ========== */
+        .quiz-container {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .quiz-container.active {
+            display: flex;
+        }
+
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .quiz-header h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .quiz-score {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            font-size: 16px;
+        }
+
+        .quiz-score .correct {
+            color: #4ade80;
+        }
+
+        .quiz-score .wrong {
+            color: #f87171;
+        }
+
+        .quiz-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .quiz-card .char {
+            font-size: 100px;
+            color: white;
+            line-height: 1;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            padding: 18px;
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:active {
+            transform: scale(0.98);
+        }
+
+        .quiz-option.correct {
+            background: #4ade80;
+            color: white;
+            border-color: #22c55e;
+        }
+
+        .quiz-option.wrong {
+            background: #f87171;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        .quiz-option.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* ========== GRAMMAR MODE ========== */
+        .grammar-container {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .grammar-container.active {
+            display: flex;
+        }
+
+        .grammar-header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-top: 20px;
+        }
+
+        .grammar-header h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .grammar-card {
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .grammar-sentence {
+            font-size: 28px;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .grammar-blank {
+            display: inline-block;
+            min-width: 60px;
+            border-bottom: 3px solid #667eea;
+            margin: 0 4px;
+        }
+
+        .grammar-translation {
+            text-align: center;
+            color: var(--tg-theme-hint-color, #999);
+            font-size: 16px;
+        }
+
+        .grammar-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .grammar-option {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .grammar-option:active {
+            transform: scale(0.95);
+        }
+
+        .grammar-option.correct {
+            background: #4ade80;
+        }
+
+        .grammar-option.wrong {
+            background: #f87171;
+        }
+
+        /* ========== RESULTS ========== */
+        .results-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .results-container.active {
+            display: flex;
+        }
+
+        .results-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .results-score {
+            font-size: 48px;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .results-subtitle {
+            font-size: 16px;
+            color: var(--tg-theme-hint-color, #999);
+            margin-bottom: 30px;
+        }
+
+        .results-btn {
+            padding: 16px 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* ========== LOADING ========== */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Hide all modes by default */
+        .alphabet-container,
+        .swipe-container,
+        .quiz-container,
+        .grammar-container,
+        .results-container {
+            display: none;
+        }
+
+        .alphabet-container.active,
+        .swipe-container.active,
+        .quiz-container.active,
+        .grammar-container.active,
+        .results-container.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .alphabet-container.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <div id="parallax-bg"></div>
-    <div class="overlay"></div>
-    <div class="header" id="header-title">
-        <span>Загрузка...</span>
-        <div style="position: absolute; right: 20px; top: 0; font-size: 12px; display: flex; gap: 5px;">
-            <button onclick="testAudio()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 8px; border-radius: 5px; cursor: pointer;">🔊Тест</button>
-            <button onclick="testGif()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 8px; border-radius: 5px; cursor: pointer;">🎬Тест</button>
+    <!-- LOADING -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- ALPHABET MODE -->
+    <div class="alphabet-container" id="alphabetMode">
+        <div class="header">
+            <h1>🎌 Японская Азбука</h1>
+            <p>Нажми на символ для изучения</p>
+            
+            <!-- TABS MOVED INSIDE HEADER WITH MARGIN -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab active" data-tab="hiragana">Хирагана</button>
+                    <button class="tab" data-tab="katakana">Катакана</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="kana-grid" id="kanaGrid"></div>
         </div>
     </div>
 
-    <!-- АЗБУКА С ВКЛАДКАМИ -->
-    <div id="alphabet-mode" class="hidden">
-        <div class="main-tabs">
-            <div class="tab-btn active" id="tab-hira" onclick="switchMainTab('hira')">Хирагана</div>
-            <div class="tab-btn" id="tab-kata" onclick="switchMainTab('kata')">Катакана</div>
+    <!-- SWIPE MODE -->
+    <div class="swipe-container" id="swipeMode">
+        <div class="swipe-header">
+            <h2>📚 Учим карточки</h2>
+            <div class="swipe-progress">
+                <span id="swipeCount">0 / 10</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="swipeProgress" style="width: 0%"></div>
+                </div>
+            </div>
         </div>
-        <div class="sub-tabs">
-            <div class="tab-btn active" id="sub-groups" onclick="switchSubTab('groups')">По группам</div>
-            <div class="tab-btn" id="sub-all" onclick="switchSubTab('all')">Все символы</div>
-            <div class="tab-btn" id="sub-tests" onclick="switchSubTab('tests')">🎯 ТЕСТЫ</div>
+
+        <div class="swipe-cards-area" id="swipeArea">
+            <div class="swipe-card" id="swipeCard">
+                <div class="swipe-indicators">
+                    <div class="indicator dont-know">Не знаю 👎</div>
+                    <div class="indicator know">Знаю 👍</div>
+                </div>
+                <div class="card-char">あ</div>
+                <div class="card-question">Нажми чтобы увидеть ответ</div>
+                <div class="card-answer">a</div>
+            </div>
         </div>
-        <div class="alphabet-container" id="alphabet-container"></div>
+
+        <div class="swipe-hint">
+            <span>👈 Не знаю &nbsp;&nbsp;|&nbsp;&nbsp; Знаю 👉</span>
+        </div>
     </div>
 
-    <!-- МОДАЛКА (КАРТОЧКА БУКВЫ) -->
-    <div id="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-close" onclick="closeModal()">✕</div>
-            <div class="modal-symbol" id="mod-sym">あ</div>
-            <img class="modal-gif" id="mod-gif" src="" alt="Ожидание GIF...">
-            <div class="modal-romaji" id="mod-rom">a</div>
-            <div class="modal-hint" id="mod-hint">Буква А с завитком</div>
-            <div class="modal-actions">
-                <button class="modal-btn btn-audio" onclick="playModalAudio()">🔊 Звук</button>
-                <button class="modal-btn btn-gif" onclick="toggleGif()">✍️ Начертание</button>
+    <!-- QUIZ MODE -->
+    <div class="quiz-container" id="quizMode">
+        <div class="quiz-header">
+            <h2>🎯 Тест</h2>
+            <div class="quiz-progress">
+                <span id="quizCount">1 / 5</span>
+            </div>
+            <div class="quiz-score">
+                <span class="correct">✓ <span id="correctCount">0</span></span>
+                <span class="wrong">✗ <span id="wrongCount">0</span></span>
+            </div>
+        </div>
+
+        <div class="quiz-card">
+            <div class="char" id="quizChar">あ</div>
+        </div>
+
+        <div class="quiz-options" id="quizOptions"></div>
+    </div>
+
+    <!-- GRAMMAR MODE -->
+    <div class="grammar-container" id="grammarMode">
+        <div class="grammar-header">
+            <h2>📖 Грамматика N5</h2>
+            <div class="quiz-progress">
+                <span id="grammarCount">1 / 5</span>
+            </div>
+        </div>
+
+        <div class="grammar-card">
+            <div class="grammar-sentence" id="grammarSentence">
+                わたし <span class="grammar-blank"></span> がくせい です
+            </div>
+            <div class="grammar-translation" id="grammarTranslation">Я студент</div>
+        </div>
+
+        <div class="grammar-options" id="grammarOptions"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-container" id="resultsMode">
+        <div class="results-icon" id="resultsIcon">🎉</div>
+        <div class="results-title" id="resultsTitle">Отлично!</div>
+        <div class="results-score" id="resultsScore">5 / 5</div>
+        <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
+        <button class="results-btn" onclick="sendResults()">Завершить</button>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-content">
+            <div class="modal-char" id="modalChar">あ</div>
+            <div class="modal-reading" id="modalReading">a</div>
+            <div class="modal-hint" id="modalHint">Подсказка</div>
+            <div class="modal-buttons">
+                <button class="modal-btn sound" onclick="playSound()">🔊</button>
+                <button class="modal-btn close" onclick="closeModal()">✕</button>
             </div>
         </div>
     </div>
-
-    <!-- РУЛЕТКА -->
-    <div id="wheel-mode" class="hidden"><div class="wheel-container"><div class="wheel-outer"></div><div class="pointer">▼</div><div class="wheel" id="wheel"></div></div><button class="spin-btn" id="spin-btn" onclick="spin()">Крутить!</button></div>
-
-    <!-- СВАЙПЫ -->
-    <div id="swipe-mode" class="hidden">
-        <div class="swipe-hint-top">Нажми для перевода 👆</div>
-        <div class="card-stack" id="card-stack"></div>
-    </div>
-
-    <!-- КВИЗ -->
-    <div id="quiz-mode" class="hidden">
-        <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
-        <div class="question-card glass-panel" id="q-card"><div style="display:flex; justify-content:center; align-items:center;"><span class="symbol" id="symbol-display">...</span><div class="speaker-btn" id="speaker-btn" onclick="speakText()">🔊</div></div><p style="color:rgba(255,255,255,0.7); margin-top:10px;" id="hint-text">Перевод</p></div>
-        <div class="options-grid" id="options-container"></div>
-    </div>
-
-    <!-- ФИНАЛ -->
-        <div id="result-screen" class="hidden">
-            <div style="font-size: 80px; margin: 5px 0;">🎉</div>
-            <h2 style="font-size: 32px; margin: 5px 0;" id="result-title">Завершено!</h2>
-            <p style="font-size: 18px; color: rgba(255,255,255,0.9); margin: 5px 0;" id="result-desc"></p>
-            <div id="result-buttons" style="display: flex; flex-direction: column; gap: 5px; margin-top: 10px; width: 100%; max-width: 350px; align-items: center;">
-                <button class="claim-btn" id="claim-btn" onclick="claimReward()">Забрать награду</button>
-            </div>
-        </div>
 
     <script>
+        // ==================== INIT ====================
         const tg = window.Telegram.WebApp;
-        tg.ready(); tg.expand();
+        tg.expand();
+        tg.ready();
 
-        document.addEventListener('mousemove', (e) => {
-            const bg = document.getElementById('parallax-bg');
-            const x = (e.clientX / window.innerWidth - 0.5) * 20;
-            const y = (e.clientY / window.innerHeight - 0.5) * 20;
-            bg.style.transform = `translate(${-x}px, ${-y}px)`;
+        // Data
+        const HIRAGANA = [
+            {char: 'あ', reading: 'a', hint: 'Буква А с завитком'},
+            {char: 'い', reading: 'i', hint: 'Две палочки'},
+            {char: 'う', reading: 'u', hint: 'Похоже на У'},
+            {char: 'え', reading: 'e', hint: 'Треугольник'},
+            {char: 'お', reading: 'o', hint: 'Человечек'},
+            {char: 'か', reading: 'ka', hint: 'Лезвие катаны'},
+            {char: 'き', reading: 'ki', hint: 'Ключ'},
+            {char: 'く', reading: 'ku', hint: 'Клюв птицы'},
+            {char: 'け', reading: 'ke', hint: 'Кегля'},
+            {char: 'こ', reading: 'ko', hint: 'Два коромысла'},
+            {char: 'さ', reading: 'sa', hint: 'Самурай'},
+            {char: 'し', reading: 'shi', hint: 'Рыболовный крючок'},
+            {char: 'す', reading: 'su', hint: 'Сушки на верёвке'},
+            {char: 'せ', reading: 'se', hint: 'Сено'},
+            {char: 'そ', reading: 'so', hint: 'Соломинка'},
+            {char: 'た', reading: 'ta', hint: 'Танец'},
+            {char: 'ち', reading: 'chi', hint: 'Цифра 5'},
+            {char: 'つ', reading: 'tsu', hint: 'Улыбка цунами'},
+            {char: 'て', reading: 'te', hint: 'Телевизор'},
+            {char: 'と', reading: 'to', hint: 'Торнадо'},
+            {char: 'な', reading: 'na', hint: 'Узел на верёвке'},
+            {char: 'に', reading: 'ni', hint: 'Нитка'},
+            {char: 'ぬ', reading: 'nu', hint: 'Лапша нудл'},
+            {char: 'ね', reading: 'ne', hint: 'Кошка нэко'},
+            {char: 'の', reading: 'no', hint: 'Знак номера'},
+            {char: 'は', reading: 'ha', hint: 'Смеётся ХА'},
+            {char: 'ひ', reading: 'hi', hint: 'Хихикает'},
+            {char: 'ふ', reading: 'fu', hint: 'Гора Фудзи'},
+            {char: 'へ', reading: 'he', hint: 'Волна'},
+            {char: 'ほ', reading: 'ho', hint: 'Холодильник'},
+            {char: 'ま', reading: 'ma', hint: 'Мама'},
+            {char: 'み', reading: 'mi', hint: 'Цифра 21'},
+            {char: 'む', reading: 'mu', hint: 'Корова МУ'},
+            {char: 'め', reading: 'me', hint: 'Глаз мэ'},
+            {char: 'も', reading: 'mo', hint: 'Рыба в море'},
+            {char: 'や', reading: 'ya', hint: 'Яхта'},
+            {char: 'ゆ', reading: 'yu', hint: 'Юла'},
+            {char: 'よ', reading: 'yo', hint: 'Йо-йо'},
+            {char: 'ら', reading: 'ra', hint: 'Рамен'},
+            {char: 'り', reading: 'ri', hint: 'Лента ribbon'},
+            {char: 'る', reading: 'ru', hint: 'Рулон'},
+            {char: 'れ', reading: 're', hint: 'Река'},
+            {char: 'ろ', reading: 'ro', hint: 'Рот открыт'},
+            {char: 'わ', reading: 'wa', hint: 'Ваза'},
+            {char: 'を', reading: 'wo', hint: 'Ворота'},
+            {char: 'ん', reading: 'n', hint: 'Звук Н'}
+        ];
+
+        const KATAKANA = [
+            {char: 'ア', reading: 'a', hint: 'Похоже на А'},
+            {char: 'イ', reading: 'i', hint: 'Две палочки'},
+            {char: 'ウ', reading: 'u', hint: 'У с короной'},
+            {char: 'エ', reading: 'e', hint: 'Этажерка'},
+            {char: 'オ', reading: 'o', hint: 'О бежит'},
+            {char: 'カ', reading: 'ka', hint: 'Острый угол'},
+            {char: 'キ', reading: 'ki', hint: 'Ключ'},
+            {char: 'ク', reading: 'ku', hint: 'Куб'},
+            {char: 'ケ', reading: 'ke', hint: 'Кетчуп'},
+            {char: 'コ', reading: 'ko', hint: 'Коробка'},
+            {char: 'サ', reading: 'sa', hint: 'Сабля'},
+            {char: 'シ', reading: 'shi', hint: 'Широкая улыбка'},
+            {char: 'ス', reading: 'su', hint: 'Сундук'},
+            {char: 'セ', reading: 'se', hint: 'Сэндвич'},
+            {char: 'ソ', reading: 'so', hint: 'Сок'},
+            {char: 'タ', reading: 'ta', hint: 'Таблица'},
+            {char: 'チ', reading: 'chi', hint: 'Число'},
+            {char: 'ツ', reading: 'tsu', hint: 'Цунами'},
+            {char: 'テ', reading: 'te', hint: 'Телевизор'},
+            {char: 'ト', reading: 'to', hint: 'Торт'},
+            {char: 'ナ', reading: 'na', hint: 'Нож'},
+            {char: 'ニ', reading: 'ni', hint: 'Ни (два)'},
+            {char: 'ヌ', reading: 'nu', hint: 'Нудл'},
+            {char: 'ネ', reading: 'ne', hint: 'Нэт'},
+            {char: 'ノ', reading: 'no', hint: 'Нос'},
+            {char: 'ハ', reading: 'ha', hint: 'Хата'},
+            {char: 'ヒ', reading: 'hi', hint: 'Хихи'},
+            {char: 'フ', reading: 'fu', hint: 'Фудзи'},
+            {char: 'ヘ', reading: 'he', hint: 'Хэй'},
+            {char: 'ホ', reading: 'ho', hint: 'Хор'},
+            {char: 'マ', reading: 'ma', hint: 'Мама'},
+            {char: 'ミ', reading: 'mi', hint: 'Ми (три)'},
+            {char: 'ム', reading: 'mu', hint: 'Му'},
+            {char: 'メ', reading: 'me', hint: 'Мэч'},
+            {char: 'モ', reading: 'mo', hint: 'Море'},
+            {char: 'ヤ', reading: 'ya', hint: 'Яхта'},
+            {char: 'ユ', reading: 'yu', hint: 'Юла'},
+            {char: 'ヨ', reading: 'yo', hint: 'Йо-йо'},
+            {char: 'ラ', reading: 'ra', hint: 'Радио'},
+            {char: 'リ', reading: 'ri', hint: 'Рис'},
+            {char: 'ル', reading: 'ru', hint: 'Рука'},
+            {char: 'レ', reading: 're', hint: 'Река'},
+            {char: 'ロ', reading: 'ro', hint: 'Рот'},
+            {char: 'ワ', reading: 'wa', hint: 'Ваза'},
+            {char: 'ヲ', reading: 'wo', hint: 'Вок'},
+            {char: 'ン', reading: 'n', hint: 'Н (смайлик)'}
+        ];
+
+        const GRAMMAR_N5 = [
+            {sentence: 'わたし ___ がくせい です', answer: 'は', options: ['は', 'が', 'を', 'に'], translation: 'Я студент'},
+            {sentence: 'りんご ___ たべる', answer: 'を', options: ['を', 'は', 'に', 'で'], translation: 'Ем яблоко'},
+            {sentence: 'がっこう ___ いく', answer: 'に', options: ['に', 'を', 'は', 'で'], translation: 'Иду в школу'},
+            {sentence: 'ペン ___ かきます', answer: 'で', options: ['で', 'を', 'に', 'は'], translation: 'Пишу ручкой'},
+            {sentence: 'ほん ___ よむ', answer: 'を', options: ['を', 'は', 'に', 'が'], translation: 'Читаю книгу'}
+        ];
+
+        // State
+        let currentMode = 'alphabet';
+        let currentTab = 'hiragana';
+        let currentData = HIRAGANA;
+        let currentIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let quizItems = [];
+        let swipeStartX = 0;
+        let swipeCurrentX = 0;
+        let isDragging = false;
+
+        // ==================== ROUTING ====================
+        function init() {
+            const params = new URLSearchParams(window.location.search);
+            const mode = params.get('mode') || 'alphabet';
+
+            document.getElementById('loading').style.display = 'none';
+
+            switch(mode) {
+                case 'swipe':
+                    startSwipeMode();
+                    break;
+                case 'quiz':
+                    startQuizMode();
+                    break;
+                case 'grammar':
+                    startGrammarMode();
+                    break;
+                case 'alphabet':
+                default:
+                    startAlphabetMode();
+                    break;
+            }
+        }
+
+        // ==================== ALPHABET MODE ====================
+        function startAlphabetMode() {
+            currentMode = 'alphabet';
+            document.getElementById('alphabetMode').classList.add('active');
+            renderKanaGrid();
+            setupTabs();
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentTab = tab.dataset.tab;
+                    currentData = currentTab === 'hiragana' ? HIRAGANA : KATAKANA;
+                    renderKanaGrid();
+                });
+            });
+        }
+
+        function renderKanaGrid() {
+            const grid = document.getElementById('kanaGrid');
+            grid.innerHTML = currentData.map((item, idx) => `
+                <div class="kana-card" onclick="showKanaDetail(${idx})">
+                    <div class="char">${item.char}</div>
+                    <div class="reading">${item.reading}</div>
+                </div>
+            `).join('');
+        }
+
+        function showKanaDetail(idx) {
+            const item = currentData[idx];
+            document.getElementById('modalChar').textContent = item.char;
+            document.getElementById('modalReading').textContent = item.reading;
+            document.getElementById('modalHint').textContent = item.hint;
+            document.getElementById('modal').classList.add('show');
+            try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        function playSound() {
+            const char = document.getElementById('modalChar').textContent;
+            const utterance = new SpeechSynthesisUtterance(char);
+            utterance.lang = 'ja-JP';
+            speechSynthesis.speak(utterance);
+            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
         });
 
-        const hiraGroups = [
-            { t: "Гласные", id: "vowels", i: [{k:'あ',r:'a'}, {k:'い',r:'i'}, {k:'う',r:'u'}, {k:'え',r:'e'}, {k:'お',r:'o'}] },
-            { t: "Ряд К", id: "k", i: [{k:'か',r:'ka'}, {k:'き',r:'ki'}, {k:'く',r:'ku'}, {k:'け',r:'ke'}, {k:'こ',r:'ko'}] },
-            { t: "Ряд С", id: "s", i: [{k:'さ',r:'sa'}, {k:'し',r:'shi'}, {k:'す',r:'su'}, {k:'せ',r:'se'}, {k:'そ',r:'so'}] },
-            { t: "Ряд Т", id: "t", i: [{k:'た',r:'ta'}, {k:'ち',r:'chi'}, {k:'つ',r:'tsu'}, {k:'て',r:'te'}, {k:'と',r:'to'}] },
-            { t: "Ряд Н", id: "n", i: [{k:'な',r:'na'}, {k:'に',r:'ni'}, {k:'ぬ',r:'nu'}, {k:'ね',r:'ne'}, {k:'の',r:'no'}] },
-            { t: "Ряд Х", id: "h", i: [{k:'は',r:'ha'}, {k:'ひ',r:'hi'}, {k:'ふ',r:'fu'}, {k:'へ',r:'he'}, {k:'ほ',r:'ho'}] },
-            { t: "Ряд М", id: "m", i: [{k:'ま',r:'ma'}, {k:'み',r:'mi'}, {k:'む',r:'mu'}, {k:'め',r:'me'}, {k:'も',r:'mo'}] },
-            { t: "Ряд Й", id: "y", i: [{k:'や',r:'ya'}, {k:'ゆ',r:'yu'}, {k:'よ',r:'yo'}] },
-            { t: "Ряд Р", id: "r", i: [{k:'ら',r:'ra'}, {k:'り',r:'ri'}, {k:'る',r:'ru'}, {k:'れ',r:'re'}, {k:'ろ',r:'ro'}] },
-            { t: "Ряд В/Н", id: "w", i: [{k:'わ',r:'wa'}, {k:'を',r:'wo'}, {k:'ん',r:'n'}] }
-        ];
-        
-        const kataGroups = [
-            { t: "Гласные", id: "vowels", i: [{k:'ア',r:'a'}, {k:'イ',r:'i'}, {k:'ウ',r:'u'}, {k:'エ',r:'e'}, {k:'オ',r:'o'}] },
-            { t: "Ряд К", id: "k", i: [{k:'カ',r:'ka'}, {k:'キ',r:'ki'}, {k:'ク',r:'ku'}, {k:'ケ',r:'ke'}, {k:'コ',r:'ko'}] },
-            { t: "Ряд С", id: "s", i: [{k:'サ',r:'sa'}, {k:'シ',r:'shi'}, {k:'ス',r:'su'}, {k:'セ',r:'se'}, {k:'ソ',r:'so'}] },
-            { t: "Ряд Т", id: "t", i: [{k:'タ',r:'ta'}, {k:'チ',r:'chi'}, {k:'ツ',r:'tsu'}, {k:'テ',r:'te'}, {k:'ト',r:'to'}] },
-            { t: "Ряд Н", id: "n", i: [{k:'ナ',r:'na'}, {k:'ニ',r:'ni'}, {k:'ヌ',r:'nu'}, {k:'ネ',r:'ne'}, {k:'ノ',r:'no'}] },
-            { t: "Ряд Х", id: "h", i: [{k:'ハ',r:'ha'}, {k:'ヒ',r:'hi'}, {k:'フ',r:'fu'}, {k:'ヘ',r:'he'}, {k:'ホ',r:'ho'}] },
-            { t: "Ряд М", id: "m", i: [{k:'マ',r:'ma'}, {k:'ミ',r:'mi'}, {k:'ム',r:'mu'}, {k:'メ',r:'me'}, {k:'モ',r:'mo'}] },
-            { t: "Ряд Й", id: "y", i: [{k:'ヤ',r:'ya'}, {k:'ユ',r:'yu'}, {k:'ヨ',r:'yo'}] },
-            { t: "Ряд Р", id: "r", i: [{k:'ラ',r:'ra'}, {k:'リ',r:'ri'}, {k:'ル',r:'ru'}, {k:'レ',r:'re'}, {k:'ロ',r:'ro'}] },
-            { t: "Ряд В/Н", id: "w", i: [{k:'ワ',r:'wa'}, {k:'ヲ',r:'wo'}, {k:'ン',r:'n'}] }
-        ];
-
-        const DICT_KANJI = {"一":"один", "二":"два", "三":"три", "四":"четыре", "五":"пять", "日":"день", "月":"месяц", "火":"огонь", "水":"вода", "木":"дерево", "金":"золото", "土":"земля", "人":"человек", "大":"большой", "小":"маленький"};
-        const DICT_WORDS = {"こんにちは":"здравствуйте", "ありがとう":"спасибо", "さようなら":"до свидания", "たべる":"кушать", "のむ":"пить", "いく":"идти", "くる":"приходить", "ねこ":"кошка", "いぬ":"собака", "くるま":"машина", "ほん":"книга", "みず":"вода"};
-        const DICT_GRAMMAR = {"わたし ___ がくせい です": "は", "りんご ___ たべる": "を", "がっこう ___ いく": "に", "ペン ___ かきます": "で", "いぬ ___ ねこ が います": "と", "あそこ ___ あります": "に", "だれ ___ きますか": "が", "としょかん ___ ほんをよむ": "で"};
-
-        let appData = { mode: "quiz", items: [] };
-        let currentIndex = 0, score = 0;
-        let currentModalChar = "", currentModalRomaji = "";
-
-        // === ИДЕАЛЬНАЯ ОЗВУЧКА ===
-        // Работает через несколько источников TTS
-        function playAudio(text) {
-            if (!text) return;
-            console.log("Попытка воспроизвести звук для:", text);
-            
-            // Источник 1: Google Translate TTS
-            try {
-                const url1 = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
-                console.log("URL аудио (Google):", url1);
-                
-                const a = new Audio(url1);
-                a.play().then(() => {
-                    console.log("Аудио успешно воспроизведено (Google)");
-                }).catch(e => {
-                    console.warn("Google TTS не сработал, пробуем источник 2:", e);
-                    tryAlternativeTTS(text);
-                });
-            } catch(err) {
-                console.error("Ошибка источника 1:", err);
-                tryAlternativeTTS(text);
-            }
-        }
-        
-        function tryAlternativeTTS(text) {
-            // Источник 2: Альтернативный Google TTS
-            try {
-                const url2 = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=${encodeURIComponent(text)}`;
-                console.log("URL аудио (Alt):", url2);
-                
-                const a = new Audio(url2);
-                a.play().then(() => {
-                    console.log("Аудио успешно воспроизведено (Alt)");
-                }).catch(e => {
-                    console.warn("Alt TTS не сработал, используем Speech Synthesis:", e);
-                    trySpeechSynthesis(text);
-                });
-            } catch(err) {
-                console.error("Ошибка источника 2:", err);
-                trySpeechSynthesis(text);
-            }
-        }
-        
-        function trySpeechSynthesis(text) {
-            // Fallback: Web Speech API
-            try {
-                console.log("Используем Speech Synthesis для:", text);
-                let u = new SpeechSynthesisUtterance(text);
-                u.lang = 'ja-JP';
-                u.rate = 0.9;
-                u.pitch = 1.0;
-                u.volume = 1.0;
-                
-                u.onstart = () => console.log("Speech Synthesis начат");
-                u.onend = () => console.log("Speech Synthesis завершен");
-                u.onerror = (e) => console.error("Speech Synthesis ошибка:", e);
-                
-                window.speechSynthesis.speak(u);
-            } catch(err) {
-                console.error("Speech Synthesis тоже не сработал:", err);
-            }
-        }
-
-        function generateQuestions(mode, azbuka, group) {
-            let items = [];
-            const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
-            
-            if (mode === 'alphatest') {
-                const targetGroups = azbuka === 'hiragana' ? hiraGroups : kataGroups;
-                const targetGroup = targetGroups.find(g => g.id === group);
-                if (targetGroup) {
-                    items = targetGroup.i.map(item => {
-                        let correct = item.r;
-                        let allRomaji = [];
-                        targetGroups.forEach(g => g.i.forEach(i => allRomaji.push(i.r)));
-                        let opts = shuffle(allRomaji.filter(r => r !== correct)).slice(0, 3);
-                        opts.push(correct);
-                        return { t: "word", q: item.k, a: shuffle(opts), c: -1 }; 
-                    });
-                    items.forEach(i => { i.c = i.a.indexOf(targetGroup.i.find(x => x.k === i.q).r) });
-                    items = shuffle(items);
-                }
-            } 
-            else if (mode === 'swipe') {
-                let keys = shuffle(Object.keys(DICT_KANJI)).slice(0, 5);
-                items = keys.map(k => ({ q: k, r: "Кандзи", t: DICT_KANJI[k] }));
-            } 
-            else if (mode === 'grammar') {
-                let keys = shuffle(Object.keys(DICT_GRAMMAR)).slice(0, 5);
-                let particles = ["は", "を", "に", "で", "が", "と", "も"];
-                items = keys.map(k => {
-                    let c = DICT_GRAMMAR[k];
-                    let opts = shuffle(particles.filter(p => p !== c)).slice(0, 3);
-                    opts.push(c); opts = shuffle(opts);
-                    return { t: "grammar", q: k, a: opts, c: opts.indexOf(c) };
-                });
-            } 
-            else {
-                let keys = shuffle(Object.keys(DICT_WORDS)).slice(0, 5);
-                let allVals = Object.values(DICT_WORDS);
-                items = keys.map(k => {
-                    let c = DICT_WORDS[k];
-                    let opts = shuffle(allVals.filter(v => v !== c)).slice(0, 3);
-                    opts.push(c); opts = shuffle(opts);
-                    return { t: "word", q: k, a: opts, c: opts.indexOf(c) };
-                });
-            }
-            return items;
-        }
-
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const mode = urlParams.get('mode') || 'alphabet';
-            appData.mode = mode;
-            
-            if (mode === 'wheel') initWheel();
-            else if (mode === 'alphabet') initAlphabet();
-            else {
-                const azbukaType = urlParams.get('azbuka');
-                const groupType = urlParams.get('group');
-                appData.items = generateQuestions(mode, azbukaType, groupType);
-                if (mode === 'swipe') initSwipeMode();
-                else initQuizMode(); 
-            }
-        };
-
-        // ==========================================
-        // РЕЖИМ 1: УМНАЯ АЗБУКА 
-        // ==========================================
-        let currentAlphaType = 'hira';
-        let currentViewMode = 'groups'; 
-
-        function initAlphabet() {
-            document.getElementById('alphabet-mode').classList.remove('hidden');
-            document.getElementById('header-title').innerText = "Японская Азбука";
-            renderKana();
-        }
-
-        function switchMainTab(type) {
-            currentAlphaType = type;
-            document.getElementById('tab-hira').classList.remove('active');
-            document.getElementById('tab-kata').classList.remove('active');
-            document.getElementById(`tab-${type}`).classList.add('active');
-            renderKana();
-        }
-
-        function switchSubTab(viewMode) {
-            currentViewMode = viewMode;
-            document.getElementById('sub-all').classList.remove('active');
-            document.getElementById('sub-groups').classList.remove('active');
-            document.getElementById('sub-tests').classList.remove('active');
-            document.getElementById(`sub-${viewMode}`).classList.add('active');
-            renderKana();
-        }
-
-        function renderKana() {
-            const container = document.getElementById('alphabet-container');
-            container.innerHTML = "";
-            const groups = currentAlphaType === 'hira' ? hiraGroups : kataGroups;
-            
-            if (currentViewMode === 'all') {
-                const grid = document.createElement('div');
-                grid.className = 'kana-grid';
-                groups.forEach(group => { group.i.forEach(item => { grid.appendChild(createKanaCell(item)); }); });
-                container.appendChild(grid);
-            } else if (currentViewMode === 'groups') {
-                groups.forEach(group => {
-                    const rowBlock = document.createElement('div');
-                    rowBlock.className = 'row-group';
-                    const title = document.createElement('div');
-                    title.className = 'row-title'; title.innerText = group.t;
-                    rowBlock.appendChild(title);
-                    
-                    const grid = document.createElement('div');
-                    grid.className = 'kana-grid';
-                    group.i.forEach(item => { grid.appendChild(createKanaCell(item)); });
-                    
-                    rowBlock.appendChild(grid);
-                    container.appendChild(rowBlock);
-                });
-            } else {
-                // МЕНЮ ТЕСТОВ
-                const testGrid = document.createElement('div');
-                testGrid.className = 'test-menu-grid';
-                groups.forEach(group => {
-                    const btn = document.createElement('button');
-                    btn.className = 'test-btn';
-                    btn.innerText = `Тест: ${group.t}`;
-                    btn.onclick = () => {
-                        try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
-                        appData.mode = "alphatest";
-                        currentIndex = 0;
-                        score = 0;
-                        appData.items = generateQuestions("alphatest", currentAlphaType, group.id);
-                        document.getElementById('alphabet-mode').classList.add('hidden');
-                        initQuizMode();
-                    };
-                    testGrid.appendChild(btn);
-                });
-                container.appendChild(testGrid);
-            }
-        }
-
-        function createKanaCell(item) {
-            const cell = document.createElement('div');
-            cell.className = 'kana-cell';
-            cell.innerHTML = `<div class="kana-char">${item.k}</div><div class="kana-romaji">${item.r}</div>`;
-            cell.onclick = () => {
-                try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
-                openModal(item.k, item.r, item.h);
-            };
-            return cell;
-        }
-
-        function openModal(char, romaji, hint) {
-            currentModalChar = char;
-            currentModalRomaji = romaji;
-            
-            document.getElementById('mod-sym').innerText = char;
-            document.getElementById('mod-rom').innerText = romaji;
-            document.getElementById('mod-hint').innerText = hint || "Основа языка";
-            
-            document.getElementById('mod-sym').style.display = "block";
-            document.getElementById('mod-gif').style.display = "none";
-            document.getElementById('modal-overlay').classList.add('active');
-        }
-
-        function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
-        
-        function playModalAudio() { 
-            try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
-            console.log("Нажата кнопка звука для:", currentModalChar);
-            playAudio(currentModalChar); 
-        }
-
-        // Тестовая функция для проверки звука
-        function testAudio() {
-            console.log("Тест звука");
-            playAudio('あ');
-        }
-
-        // Тестовая функция для проверки GIF
-        function testGif() {
-            console.log("Тест GIF");
-            currentModalChar = 'あ';
-            currentModalRomaji = 'a';
-            currentAlphaType = 'hira';
-            toggleGif();
-        }
-
-        // === ИДЕАЛЬНАЯ ЗАГРУЗКА GIF ===
-        function toggleGif() {
-            try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
-            const sym = document.getElementById('mod-sym');
-            const gif = document.getElementById('mod-gif');
-            
-            if (gif.style.display === "none") {
-                sym.style.display = "none";
-                gif.style.display = "block";
-                
-                let prefix = currentAlphaType === 'hira' ? 'Hiragana' : 'Katakana';
-                let r = currentModalRomaji.toLowerCase();
-                if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
-                
-                console.log(`Загрузка GIF для: ${prefix}_${r}`);
-                
-                gif.dataset.retried = "false";
-                gif.dataset.attempts = "0";
-                
-                // Пробуем несколько источников
-                const sources = [
-                    `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`,
-                    `https://raw.githubusercontent.com/marmooo/japanese/main/gifs/${prefix}_${r}.gif`,
-                    `https://github.com/marmooo/japanese/raw/main/gifs/${prefix}_${r}.gif`
-                ];
-                
-                function tryNextSource(index) {
-                    if (index >= sources.length) {
-                        console.warn("Все источники GIF не сработали, показываю заглушку");
-                        // Если все источники не сработали, показываем заглушку
-                        gif.onerror = null;
-                        gif.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Crect width='150' height='150' fill='%23f0f0f0'/%3E%3Ctext x='75' y='75' text-anchor='middle' dy='.3em' font-family='Arial' font-size='14' fill='%23666'%3EGIF недоступен%3C/text%3E%3C/svg%3E";
-                        return;
-                    }
-                    
-                    console.log(`Попытка загрузки GIF источник ${index + 1}:`, sources[index]);
-                    gif.src = sources[index];
-                    gif.onerror = function() {
-                        let attempts = parseInt(gif.dataset.attempts) + 1;
-                        gif.dataset.attempts = attempts;
-                        console.warn(`Источник ${index + 1} не сработал, пробую следующий`);
-                        
-                        if (attempts < sources.length) {
-                            tryNextSource(attempts);
-                        }
-                    };
-                    gif.onload = function() {
-                        console.log(`GIF успешно загружен из источника ${index + 1}`);
-                    };
-                }
-                
-                tryNextSource(0);
-            } else {
-                console.log("Скрытие GIF");
-                sym.style.display = "block";
-                gif.style.display = "none";
-                gif.src = "";
-            }
-        }
-
-        // ==========================================
-        // РЕЖИМ 2: РУЛЕТКА
-        // ==========================================
-        const PRIZES = [100, 300, 500, 800, 1200];
-        function initWheel() { 
-            document.getElementById('wheel-mode').classList.remove('hidden'); 
-            document.getElementById('header-title').innerText = "Испытай удачу!"; 
-            const wheel = document.getElementById('wheel');
-            PRIZES.forEach((prize, index) => {
-                let el = document.createElement('div');
-                el.className = 'slice-text';
-                el.style.transform = `translate(-50%, -50%) rotate(${index * 72 + 36}deg) translateY(-110px)`;
-                el.innerText = prize;
-                wheel.appendChild(el);
-            });
-        }
-        function spin() {
-            document.getElementById('spin-btn').style.display = "none";
-            let r = Math.random() * 100;
-            let winningIndex = 0; 
-            if (r < 1) winningIndex = 4; else if (r < 11) winningIndex = 3; else if (r < 41) winningIndex = 2; else if (r < 71) winningIndex = 1; else winningIndex = 0;
-            let targetCenterDeg = winningIndex * 72 + 36; 
-            let finalRotation = 1800 + (360 - targetCenterDeg) + (Math.random() * 40 - 20);
-            document.getElementById('wheel').style.transform = `rotate(${finalRotation}deg)`;
-            try { tg.HapticFeedback.impactOccurred("heavy"); } catch(e){}
-            setTimeout(() => { tg.sendData("wheel_reward_" + PRIZES[winningIndex]); }, 5200);
-        }
-
-        // ==========================================
-        // КВИЗ И СВАЙПЫ
-        // ==========================================
-        function speakText() {
-            let textToSpeak = appData.items[currentIndex].q.replace("___", "");
-            playAudio(textToSpeak);
-        }
-        
-        // === ИСПРАВЛЕННЫЙ ЭКРАН РЕЗУЛЬТАТОВ ===
-        function showResults() {
-            // Плавно скрываем элементы теста
-            const quizMode = document.getElementById('quiz-mode');
-            const progressBar = document.querySelector('.progress-container');
-            const questionCard = document.querySelector('.question-card');
-            const optionsGrid = document.querySelector('.options-grid');
-            
-            // Добавляем анимацию исчезновения
-            if (progressBar) progressBar.style.animation = 'fadeOut 0.5s ease-out forwards';
-            if (questionCard) questionCard.style.animation = 'fadeOut 0.5s ease-out forwards';
-            if (optionsGrid) optionsGrid.style.animation = 'fadeOut 0.5s ease-out forwards';
-            
-            // Запускаем конфетти
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            
-            // Показываем результаты через 0.6с после анимации
-            setTimeout(() => {
-                document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
-                document.getElementById('result-screen').classList.remove('hidden');
-                
-                let rTitle = document.getElementById('result-title');
-                let rDesc = document.getElementById('result-desc');
-                let buttonContainer = document.getElementById('result-buttons');
-                
-                if (appData.mode === 'alphatest') {
-                    rTitle.innerText = "Тест завершен!";
-                    rDesc.innerHTML = `Вы набрали: <b style="color:#fcd34d">${score * 10} очков</b>!<br><br><span style="font-size:16px">Верных ответов: ${score} из ${appData.items.length}</span>`;
-                    
-                    // Три кнопки: Повторить, Вернуться, К азбуке
-                    buttonContainer.innerHTML = `
-                        <button class="claim-btn" onclick="retryTest()" style="flex: 1; margin-bottom: 10px;">🔄 Повторить</button>
-                        <button class="claim-btn" onclick="backToMenu()" style="flex: 1; margin-bottom: 10px; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">⬅️ Вернуться</button>
-                        <button class="claim-btn" onclick="backToAlphabet()" style="flex: 1; background: linear-gradient(135deg, #64748b, #475569);">🔤 К азбуке</button>
-                    `;
-                } else {
-                    rTitle.innerText = "Завершено!";
-                    rDesc.innerText = `Верных ответов: ${score} из ${appData.items.length}`;
-                    buttonContainer.innerHTML = `
-                        <button class="claim-btn" onclick="claimReward()" style="flex: 1;">Забрать награду</button>
-                        <button class="claim-btn" onclick="backToMenu()" style="flex: 1; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">⬅️ Вернуться</button>
-                    `;
-                }
-                
-                // Анимация появления результатов
-                document.getElementById('result-screen').style.animation = 'fadeIn 0.5s ease-out';
-            }, 600);
-        }
-        
-        function retryTest() {
-            console.log("Повтор теста");
+        // ==================== SWIPE MODE ====================
+        function startSwipeMode() {
+            currentMode = 'swipe';
             currentIndex = 0;
-            score = 0;
-            document.getElementById('result-screen').classList.add('hidden');
-            document.getElementById('quiz-mode').classList.remove('hidden');
-            initQuizMode();
-        }
-        
-        function backToMenu() {
-            console.log("Возврат в меню");
-            document.getElementById('result-screen').classList.add('hidden');
-            document.getElementById('quiz-mode').classList.add('hidden');
-            // Показываем главное меню азбуки
-            initAlphabet();
-            switchSubTab('groups');
-        }
-        
-        function backToAlphabet() {
-            console.log("Возврат к азбуке");
-            document.getElementById('result-screen').classList.add('hidden');
-            document.getElementById('quiz-mode').classList.add('hidden');
-            initAlphabet();
-            switchSubTab('tests');
-        }
-        
-        function claimReward() { 
-            let eventName = appData.mode === 'alphatest' ? 'alphatest' : appData.mode;
-            tg.sendData(`${eventName}_result_${score}`); 
+            correctCount = 0;
+            wrongCount = 0;
+
+            // Mix hiragana and katakana
+            const allKana = [...HIRAGANA, ...KATAKANA];
+            quizItems = shuffleArray(allKana).slice(0, 10);
+
+            document.getElementById('swipeMode').classList.add('active');
+            renderSwipeCard();
+            setupSwipeGestures();
         }
 
-        let isWaiting = false;
-        function initQuizMode() { 
-            document.getElementById('quiz-mode').classList.remove('hidden'); 
-            document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : (appData.mode === 'alphatest' ? "Тест Азбуки" : "Проверка знаний"); 
-            renderQuizCard(); 
-        }
-        
-        function renderQuizCard() {
-            isWaiting = false; if (currentIndex >= appData.items.length) { showResults(); return; }
-            const item = appData.items[currentIndex];
-            document.getElementById('progress-bar').style.width = ((currentIndex / appData.items.length) * 100) + "%";
-            
-            const qCard = document.getElementById('q-card');
-            qCard.style.animation = 'none'; qCard.offsetHeight; qCard.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            
-            if (item.t === "grammar") {
-                document.getElementById('symbol-display').innerHTML = item.q.replace("___", `<span class="blank-slot" id="grammar-blank"></span>`);
-                document.getElementById('hint-text').innerText = "Вставьте частицу";
-                document.getElementById('symbol-display').style.fontSize = "38px";
-                document.getElementById('speaker-btn').style.display = "none";
-            } else {
-                document.getElementById('symbol-display').innerHTML = item.q;
-                document.getElementById('hint-text').innerText = appData.mode === 'alphatest' ? "Выберите правильное чтение" : "Выберите перевод";
-                document.getElementById('symbol-display').style.fontSize = "70px";
-                document.getElementById('speaker-btn').style.display = "inline-flex";
+        function renderSwipeCard() {
+            if (currentIndex >= quizItems.length) {
+                showResults();
+                return;
             }
-            
-            const container = document.getElementById('options-container'); container.innerHTML = "";
-            item.a.forEach((opt, index) => {
-                const btn = document.createElement("button"); btn.className = "btn-option"; btn.innerText = opt;
-                btn.onclick = () => checkAnswer(index, btn); container.appendChild(btn);
+
+            const item = quizItems[currentIndex];
+            const card = document.getElementById('swipeCard');
+
+            card.querySelector('.card-char').textContent = item.char;
+            card.querySelector('.card-answer').textContent = item.reading;
+            card.classList.remove('show-answer');
+            card.style.transform = 'translateX(0) rotate(0deg)';
+            card.style.opacity = '1';
+
+            document.getElementById('swipeCount').textContent = `${currentIndex + 1} / ${quizItems.length}`;
+            document.getElementById('swipeProgress').style.width = `${(currentIndex / quizItems.length) * 100}%`;
+
+            // Reset indicators
+            document.querySelectorAll('.indicator').forEach(ind => ind.style.opacity = '0');
+        }
+
+        function setupSwipeGestures() {
+            const card = document.getElementById('swipeCard');
+            const area = document.getElementById('swipeArea');
+
+            // Show answer on tap
+            card.addEventListener('click', () => {
+                if (!isDragging) {
+                    card.classList.toggle('show-answer');
+                }
             });
-        }
-        
-        function checkAnswer(selectedIndex, btnElement) {
-            if (isWaiting) return; isWaiting = true;
-            const item = appData.items[currentIndex]; const allButtons = document.querySelectorAll('.btn-option');
-            if (item.t === "grammar") document.getElementById('grammar-blank').innerText = item.a[selectedIndex];
-            if (selectedIndex === item.c) { btnElement.classList.add("correct"); score++; try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){} } 
-            else { btnElement.classList.add("wrong"); allButtons[item.c].classList.add("correct"); try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){} }
-            setTimeout(() => { currentIndex++; renderQuizCard(); }, 1200);
+
+            // Touch events
+            card.addEventListener('touchstart', handleTouchStart, {passive: true});
+            card.addEventListener('touchmove', handleTouchMove, {passive: false});
+            card.addEventListener('touchend', handleTouchEnd);
+
+            // Mouse events for desktop
+            card.addEventListener('mousedown', handleMouseDown);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
         }
 
-        let activeCard = null;
-        function initSwipeMode() { document.getElementById('swipe-mode').classList.remove('hidden'); document.getElementById('header-title').innerText = "Изучение слов"; renderCards(); }
-        
-        function renderCards() {
-            const stack = document.getElementById('card-stack'); stack.innerHTML = "";
-            for (let i = appData.items.length - 1; i >= currentIndex; i--) {
-                const item = appData.items[i]; const card = document.createElement('div'); card.className = 'swipe-card'; card.style.zIndex = appData.items.length - i;
-                if (i === currentIndex) { activeCard = card; setupCardPhysics(card); } else card.style.transform = `scale(${1 - (i-currentIndex)*0.05}) translateY(${(i-currentIndex)*10}px)`;
-                card.innerHTML = `<div class="card-front" onclick="flipCard(this.parentElement, event)"><h1 class="card-symbol">${item.q}</h1></div><div class="card-back" onclick="flipCard(this.parentElement, event)"><div class="card-reading">${item.r}</div><div class="card-hint">${item.t}</div></div>`;
-                stack.appendChild(card);
+        function handleTouchStart(e) {
+            swipeStartX = e.touches[0].clientX;
+            isDragging = true;
+            document.getElementById('swipeCard').classList.add('dragging');
+        }
+
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            swipeCurrentX = e.touches[0].clientX;
+            updateCardPosition();
+        }
+
+        function handleTouchEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            document.getElementById('swipeCard').classList.remove('dragging');
+            handleSwipeEnd();
+        }
+
+        function handleMouseDown(e) {
+            swipeStartX = e.clientX;
+            isDragging = true;
+            document.getElementById('swipeCard').classList.add('dragging');
+        }
+
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            swipeCurrentX = e.clientX;
+            updateCardPosition();
+        }
+
+        function handleMouseUp() {
+            if (!isDragging) return;
+            isDragging = false;
+            document.getElementById('swipeCard').classList.remove('dragging');
+            handleSwipeEnd();
+        }
+
+        function updateCardPosition() {
+            const diff = swipeCurrentX - swipeStartX;
+            const card = document.getElementById('swipeCard');
+            const rotation = diff * 0.1;
+            card.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
+
+            // Show indicators
+            const knowInd = document.querySelector('.indicator.know');
+            const dontKnowInd = document.querySelector('.indicator.dont-know');
+
+            if (diff > 50) {
+                knowInd.style.opacity = Math.min((diff - 50) / 100, 1);
+                dontKnowInd.style.opacity = '0';
+            } else if (diff < -50) {
+                dontKnowInd.style.opacity = Math.min((-diff - 50) / 100, 1);
+                knowInd.style.opacity = '0';
+            } else {
+                knowInd.style.opacity = '0';
+                dontKnowInd.style.opacity = '0';
             }
         }
-        
-        function flipCard(card, event) {
-            if (event && event.type === "click" && card.dataset.dragging === "true") return;
-            if (card.style.transform.includes('rotateY(180deg)')) card.style.transform = 'rotateY(0deg)';
-            else { card.style.transform = 'rotateY(180deg)'; try { tg.HapticFeedback.impactOccurred("light"); } catch(e){} }
+
+        function handleSwipeEnd() {
+            const diff = swipeCurrentX - swipeStartX;
+            const card = document.getElementById('swipeCard');
+
+            if (Math.abs(diff) > 100) {
+                // Swipe completed
+                const direction = diff > 0 ? 'right' : 'left';
+
+                if (direction === 'right') {
+                    correctCount++;
+                    card.style.transform = 'translateX(500px) rotate(30deg)';
+                } else {
+                    wrongCount++;
+                    card.style.transform = 'translateX(-500px) rotate(-30deg)';
+                }
+                card.style.opacity = '0';
+
+                try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
+
+                setTimeout(() => {
+                    currentIndex++;
+                    renderSwipeCard();
+                }, 300);
+            } else {
+                // Return to center
+                card.style.transform = 'translateX(0) rotate(0deg)';
+                document.querySelectorAll('.indicator').forEach(ind => ind.style.opacity = '0');
+            }
         }
-        
-        function setupCardPhysics(card) {
-            let startX = 0, currentX = 0, isDragging = false;
-            const onStart = (e) => { isDragging = true; card.dataset.dragging = "false"; startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; card.style.transition = 'none'; };
-            const onMove = (e) => { 
-                if (!isDragging) return; 
-                currentX = (e.type.includes('mouse') ? e.pageX : e.touches[0].pageX) - startX; 
-                if (Math.abs(currentX) > 20) card.dataset.dragging = "true";
-                const isFlipped = card.style.transform.includes('rotateY'); 
-                card.style.transform = `translate(${currentX}px, ${Math.abs(currentX)*0.1}px) rotate(${currentX*0.1}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; 
-            };
-            const onEnd = () => {
-                isDragging = false; card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                if (currentX > 100) swipeCard('right'); else if (currentX < -100) swipeCard('left');
-                else { const isFlipped = card.style.transform.includes('rotateY'); card.style.transform = `translate(0px, 0px) rotate(0deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; }
-            };
-            card.addEventListener('mousedown', onStart); document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
-            card.addEventListener('touchstart', onStart, {passive: true}); document.addEventListener('touchmove', onMove, {passive: true}); document.addEventListener('touchend', onEnd);
+
+        // ==================== QUIZ MODE ====================
+        function startQuizMode() {
+            currentMode = 'quiz';
+            currentIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+
+            const allKana = [...HIRAGANA, ...KATAKANA];
+            quizItems = shuffleArray(allKana).slice(0, 5);
+
+            document.getElementById('quizMode').classList.add('active');
+            renderQuizQuestion();
         }
-        function swipeCard(direction) {
-            if (!activeCard) return;
-            const flyX = direction === 'right' ? window.innerWidth : -window.innerWidth;
-            activeCard.style.transition = 'transform 0.4s ease-out';
-            activeCard.style.transform = `translate(${flyX}px, 100px) rotate(${direction==='right'?30:-30}deg)`;
-            if (direction === 'right') { score++; try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){} } else try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){}
-            activeCard = null; setTimeout(() => { currentIndex++; if (currentIndex >= appData.items.length) showResults(); else renderCards(); }, 300);
+
+        function renderQuizQuestion() {
+            if (currentIndex >= quizItems.length) {
+                showResults();
+                return;
+            }
+
+            const item = quizItems[currentIndex];
+            document.getElementById('quizChar').textContent = item.char;
+            document.getElementById('quizCount').textContent = `${currentIndex + 1} / ${quizItems.length}`;
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('wrongCount').textContent = wrongCount;
+
+            // Generate options
+            const allReadings = [...new Set([...HIRAGANA, ...KATAKANA].map(k => k.reading))];
+            const wrongOptions = shuffleArray(allReadings.filter(r => r !== item.reading)).slice(0, 3);
+            const options = shuffleArray([item.reading, ...wrongOptions]);
+
+            const optionsHtml = options.map(opt => `
+                <button class="quiz-option" onclick="checkAnswer('${opt}', '${item.reading}')">${opt}</button>
+            `).join('');
+
+            document.getElementById('quizOptions').innerHTML = optionsHtml;
         }
+
+        function checkAnswer(selected, correct) {
+            const buttons = document.querySelectorAll('.quiz-option');
+            buttons.forEach(btn => {
+                btn.classList.add('disabled');
+                if (btn.textContent === correct) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent === selected && selected !== correct) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            if (selected === correct) {
+                correctCount++;
+                try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+            } else {
+                wrongCount++;
+                try { tg.HapticFeedback.notificationOccurred('error'); } catch(e) {}
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                renderQuizQuestion();
+            }, 1000);
+        }
+
+        // ==================== GRAMMAR MODE ====================
+        function startGrammarMode() {
+            currentMode = 'grammar';
+            currentIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+
+            quizItems = shuffleArray([...GRAMMAR_N5]).slice(0, 5);
+
+            document.getElementById('grammarMode').classList.add('active');
+            renderGrammarQuestion();
+        }
+
+        function renderGrammarQuestion() {
+            if (currentIndex >= quizItems.length) {
+                showResults();
+                return;
+            }
+
+            const item = quizItems[currentIndex];
+            document.getElementById('grammarSentence').innerHTML = item.sentence.replace('___', '<span class="grammar-blank"></span>');
+            document.getElementById('grammarTranslation').textContent = item.translation;
+            document.getElementById('grammarCount').textContent = `${currentIndex + 1} / ${quizItems.length}`;
+
+            const optionsHtml = item.options.map(opt => `
+                <button class="grammar-option" onclick="checkGrammar('${opt}', '${item.answer}')">${opt}</button>
+            `).join('');
+
+            document.getElementById('grammarOptions').innerHTML = optionsHtml;
+        }
+
+        function checkGrammar(selected, correct) {
+            const buttons = document.querySelectorAll('.grammar-option');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn.textContent === correct) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent === selected && selected !== correct) {
+                    btn.classList.add('wrong');
+                }
+            });
+
+            // Fill in the blank
+            document.querySelector('.grammar-blank').textContent = correct;
+
+            if (selected === correct) {
+                correctCount++;
+                try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+            } else {
+                wrongCount++;
+                try { tg.HapticFeedback.notificationOccurred('error'); } catch(e) {}
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                renderGrammarQuestion();
+            }, 1200);
+        }
+
+        // ==================== RESULTS ====================
+        function showResults() {
+            // Hide all modes
+            document.querySelectorAll('.alphabet-container, .swipe-container, .quiz-container, .grammar-container')
+                .forEach(el => el.classList.remove('active'));
+
+            document.getElementById('resultsMode').classList.add('active');
+
+            const total = quizItems.length;
+            const score = correctCount;
+            const percent = Math.round((score / total) * 100);
+
+            let icon, title, subtitle;
+
+            if (percent === 100) {
+                icon = '🏆';
+                title = 'Идеально!';
+                subtitle = 'Ты настоящий мастер!';
+            } else if (percent >= 80) {
+                icon = '🎉';
+                title = 'Отлично!';
+                subtitle = 'Так держать!';
+            } else if (percent >= 60) {
+                icon = '👍';
+                title = 'Хорошо!';
+                subtitle = 'Есть куда расти!';
+            } else {
+                icon = '💪';
+                title = 'Попробуй ещё!';
+                subtitle = 'Практика — путь к успеху!';
+            }
+
+            document.getElementById('resultsIcon').textContent = icon;
+            document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('resultsScore').textContent = `${score} / ${total}`;
+            document.getElementById('resultsSubtitle').textContent = subtitle;
+
+            try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+        }
+
+        function sendResults() {
+            const prefix = currentMode === 'grammar' ? 'grammar_result_' : 
+                          currentMode === 'swipe' ? 'swipe_result_' : 'quiz_result_';
+            tg.sendData(prefix + correctCount);
+        }
+
+        // ==================== HELPERS ====================
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // Start app
+        init();
     </script>
 </body>
 </html>
-
