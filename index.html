@@ -101,6 +101,8 @@
         @keyframes slideUp { 0% {transform: translateY(30px); opacity: 0;} 100% {transform: translateY(0); opacity: 1;} }
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
         @keyframes pulseHint { 0%, 100% {opacity: 1;} 50% {opacity: 0.5;} }
+        @keyframes fadeIn { 0% {opacity: 0; transform: scale(0.9);} 100% {opacity: 1; transform: scale(1);} }
+        @keyframes fadeOut { 0% {opacity: 1; transform: scale(1);} 100% {opacity: 0; transform: scale(0.9);} }
     </style>
 </head>
 <body>
@@ -164,7 +166,7 @@
             <div style="font-size: 100px;">🎉</div>
             <h2 style="font-size: 36px; margin: 10px 0;" id="result-title">Завершено!</h2>
             <p style="font-size: 20px; color: rgba(255,255,255,0.9);" id="result-desc"></p>
-            <div id="result-buttons" style="display: flex; gap: 15px; margin-top: 30px; width: 100%; max-width: 350px; justify-content: center;">
+            <div id="result-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; width: 100%; max-width: 350px; align-items: center;">
                 <button class="claim-btn" id="claim-btn" onclick="claimReward()">Забрать награду</button>
             </div>
         </div>
@@ -562,29 +564,51 @@
         
         // === ИСПРАВЛЕННЫЙ ЭКРАН РЕЗУЛЬТАТОВ ===
         function showResults() {
+            // Плавно скрываем элементы теста
+            const quizMode = document.getElementById('quiz-mode');
+            const progressBar = document.querySelector('.progress-container');
+            const questionCard = document.querySelector('.question-card');
+            const optionsGrid = document.querySelector('.options-grid');
+            
+            // Добавляем анимацию исчезновения
+            if (progressBar) progressBar.style.animation = 'fadeOut 0.5s ease-out forwards';
+            if (questionCard) questionCard.style.animation = 'fadeOut 0.5s ease-out forwards';
+            if (optionsGrid) optionsGrid.style.animation = 'fadeOut 0.5s ease-out forwards';
+            
+            // Запускаем конфетти
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
             
-            document.getElementById('result-screen').classList.remove('hidden');
-            
-            let rTitle = document.getElementById('result-title');
-            let rDesc = document.getElementById('result-desc');
-            let buttonContainer = document.getElementById('result-buttons');
-            
-            if (appData.mode === 'alphatest') {
-                rTitle.innerText = "Тест завершен!";
-                rDesc.innerHTML = `Вы набрали: <b style="color:#fcd34d">${score * 10} очков</b>!<br><br><span style="font-size:16px">Верных ответов: ${score} из ${appData.items.length}</span>`;
+            // Показываем результаты через 0.6с после анимации
+            setTimeout(() => {
+                document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
+                document.getElementById('result-screen').classList.remove('hidden');
                 
-                // Очищаем и создаем кнопки заново
-                buttonContainer.innerHTML = `
-                    <button class="claim-btn" onclick="retryTest()" style="flex: 1;">🔄 Повторить</button>
-                    <button class="claim-btn" onclick="backToAlphabet()" style="flex: 1; background: linear-gradient(135deg, #64748b, #475569);">⬅️ К азбуке</button>
-                `;
-            } else {
-                rTitle.innerText = "Завершено!";
-                rDesc.innerText = `Верных ответов: ${score} из ${appData.items.length}`;
-                buttonContainer.innerHTML = `<button class="claim-btn" onclick="claimReward()">Забрать награду</button>`;
-            }
+                let rTitle = document.getElementById('result-title');
+                let rDesc = document.getElementById('result-desc');
+                let buttonContainer = document.getElementById('result-buttons');
+                
+                if (appData.mode === 'alphatest') {
+                    rTitle.innerText = "Тест завершен!";
+                    rDesc.innerHTML = `Вы набрали: <b style="color:#fcd34d">${score * 10} очков</b>!<br><br><span style="font-size:16px">Верных ответов: ${score} из ${appData.items.length}</span>`;
+                    
+                    // Три кнопки: Повторить, Вернуться, К азбуке
+                    buttonContainer.innerHTML = `
+                        <button class="claim-btn" onclick="retryTest()" style="flex: 1; margin-bottom: 10px;">🔄 Повторить</button>
+                        <button class="claim-btn" onclick="backToMenu()" style="flex: 1; margin-bottom: 10px; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">⬅️ Вернуться</button>
+                        <button class="claim-btn" onclick="backToAlphabet()" style="flex: 1; background: linear-gradient(135deg, #64748b, #475569);">🔤 К азбуке</button>
+                    `;
+                } else {
+                    rTitle.innerText = "Завершено!";
+                    rDesc.innerText = `Верных ответов: ${score} из ${appData.items.length}`;
+                    buttonContainer.innerHTML = `
+                        <button class="claim-btn" onclick="claimReward()" style="flex: 1;">Забрать награду</button>
+                        <button class="claim-btn" onclick="backToMenu()" style="flex: 1; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">⬅️ Вернуться</button>
+                    `;
+                }
+                
+                // Анимация появления результатов
+                document.getElementById('result-screen').style.animation = 'fadeIn 0.5s ease-out';
+            }, 600);
         }
         
         function retryTest() {
@@ -592,7 +616,17 @@
             currentIndex = 0;
             score = 0;
             document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.remove('hidden');
             initQuizMode();
+        }
+        
+        function backToMenu() {
+            console.log("Возврат в меню");
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.add('hidden');
+            // Показываем главное меню азбуки
+            initAlphabet();
+            switchSubTab('groups');
         }
         
         function backToAlphabet() {
