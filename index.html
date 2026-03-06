@@ -1640,6 +1640,35 @@
                 <div class="profile-stat-label">Карточек</div>
             </div>
         </div>
+
+        <!-- Детальная статистика -->
+        <div class="profile-section">
+            <div class="profile-section-title">📊 Прогресс по разделам</div>
+            <div id="progressDetails" style="margin-bottom: 20px;">
+                <!-- будет заполнено динамически -->
+            </div>
+
+            <div class="profile-section-title">🎯 Дополнительно</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileBestStreak">0</div>
+                    <div class="stat-label">Лучшая серия</div>
+                </div>
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileAccuracy">0%</div>
+                    <div class="stat-label">Точность</div>
+                </div>
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileBlitz">0</div>
+                    <div class="stat-label">Лучший блиц</div>
+                </div>
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileVoice">0</div>
+                    <div class="stat-label">Голосовых</div>
+                </div>
+            </div>
+        </div>
+
         <div class="profile-section">
             <div class="profile-section-title">🏆 Достижения</div>
             <div class="achievements-grid" id="achievementsGrid"></div>
@@ -1821,8 +1850,8 @@
         tg.ready();
 
         // ==================== КОНФИГУРАЦИЯ СЕРВЕРА ====================
-        // ЗАМЕНИТЕ НА ВАШ АДРЕС NGROK!
-        const API_BASE = 'https://abcd1234.ngrok.io'; 
+        // ЗАМЕНИТЕ НА ВАШ АДРЕС NGROK (например, https://endless-max-jowly.ngrok-free.dev)
+        const API_BASE = 'https://endless-max-jowly.ngrok-free.dev'; 
 
         // ==================== STATE ====================
         let user = {
@@ -1943,6 +1972,62 @@
                 console.error(e);
                 document.getElementById('leaderboardList').innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Ошибка загрузки</div>';
             }
+        }
+
+        // ==================== ЗАГРУЗКА ДЕТАЛЬНОЙ СТАТИСТИКИ ====================
+        async function fetchUserStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/user/stats`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Telegram-Init-Data': tg.initData
+                    }
+                });
+                if (!response.ok) throw new Error('Failed to fetch stats');
+                const data = await response.json();
+                if (data.success) {
+                    renderProfileStats(data.stats);
+                }
+            } catch (e) {
+                console.warn('Could not fetch detailed stats', e);
+            }
+        }
+
+        function renderProfileStats(stats) {
+            // Обновляем дополнительные поля
+            document.getElementById('profileBestStreak').textContent = stats.best_streak || 0;
+            document.getElementById('profileAccuracy').textContent = Math.round((stats.accuracy || 0) * 100) + '%';
+            document.getElementById('profileBlitz').textContent = stats.best_blitz || 0;
+            document.getElementById('profileVoice').textContent = stats.voice_msgs || 0;
+
+            // Прогресс по разделам
+            const byType = stats.by_type || {};
+            const sections = [
+                { id: 'hiragana', name: 'Хирагана', total: 46 },
+                { id: 'katakana', name: 'Катакана', total: 46 },
+                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 },
+                { id: 'words_n5', name: 'Слова N5', total: 40 },
+                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 },
+                { id: 'words_n4', name: 'Слова N4', total: 16 }
+            ];
+
+            let progressHtml = '';
+            sections.forEach(sec => {
+                const learned = byType[sec.id] || 0;
+                const percent = Math.min(100, Math.round(learned / sec.total * 100));
+                progressHtml += `
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
+                            <span>${sec.name}</span>
+                            <span>${learned}/${sec.total} (${percent}%)</span>
+                        </div>
+                        <div style="height: 6px; background: var(--bg-secondary); border-radius: 3px;">
+                            <div style="height: 100%; width: ${percent}%; background: var(--primary); border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('progressDetails').innerHTML = progressHtml;
         }
 
         // ==================== ЗАГРУЗКА ИЗ STORAGE ====================
@@ -2579,6 +2664,11 @@
             document.getElementById('profileCards').textContent = user.cardsLearned;
             document.getElementById('profileBadge').textContent = rank.badge;
             document.getElementById('profileRankName').textContent = rank.name;
+
+            // Загружаем детальную статистику с сервера
+            fetchUserStats();
+
+            // Достижения
             const grid = document.getElementById('achievementsGrid');
             grid.innerHTML = ACHIEVEMENTS.map(a => {
                 const unlocked = a.check(user);
