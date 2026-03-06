@@ -2313,36 +2313,45 @@
             haptic('medium');
         }
 
-        function showGif() {
-            if (!modalData) return;
-            const char = modalData.char || modalData.word;
-            const container = document.getElementById('modalGif');
-            container.innerHTML = '<span style="color:#999">Загрузка...</span>';
-            container.classList.add('show');
-            const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
-            const urls = [
-                `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
-                `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`
-            ];
-            let loaded = false;
-            function tryLoad(i) {
-                if (i >= urls.length || loaded) {
-                    if (!loaded) container.innerHTML = '<span style="color:#f87171">Недоступно</span>';
-                    return;
-                }
-                const img = new Image();
-                img.onload = () => {
-                    if (!loaded) {
-                        loaded = true;
-                        container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px">`;
-                    }
-                };
-                img.onerror = () => tryLoad(i + 1);
-                img.src = urls[i];
-            }
-            tryLoad(0);
-            haptic('light');
+function showGif() {
+    if (!modalData) return;
+    const char = modalData.char || modalData.word;
+    const container = document.getElementById('modalGif');
+    container.innerHTML = '<span style="color:#999">Загрузка...</span>';
+    container.classList.add('show');
+    
+    const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
+    const urls = [
+        // Основные источники
+        `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
+        `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`,
+        // Резервные
+        `https://raw.githubusercontent.com/parsimonhi/animCJK/master/kanji/${hex}.gif`,
+        `https://raw.githubusercontent.com/alkuzad/kanji-images/master/kanji/${hex}.gif`,
+        // Для каны (хирагана/катакана)
+        `https://raw.githubusercontent.com/abeyuya/stroke-order/master/public/characters/${char}.gif`,
+        `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex}.gif`
+    ];
+    
+    let loaded = false;
+    function tryLoad(i) {
+        if (i >= urls.length || loaded) {
+            if (!loaded) container.innerHTML = '<span style="color:#f87171">Недоступно</span>';
+            return;
         }
+        const img = new Image();
+        img.onload = () => {
+            if (!loaded) {
+                loaded = true;
+                container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px">`;
+            }
+        };
+        img.onerror = () => tryLoad(i + 1);
+        img.src = urls[i];
+    }
+    tryLoad(0);
+    haptic('light');
+}
 
         document.getElementById('modal').addEventListener('click', e => {
             if (e.target.id === 'modal') closeModal();
@@ -2728,3 +2737,4 @@
     </script>
 </body>
 </html>
+
