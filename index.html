@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>YomuBot - Изучение японского</title>
+    <title>YomuBot - Японский язык</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="data.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #667eea;
@@ -21,7 +22,6 @@
             --text: var(--tg-theme-text-color, #1a1a2e);
             --text-hint: var(--tg-theme-hint-color, #999999);
             --card-radius: 20px;
-            --transition: 0.3s ease;
         }
 
         * {
@@ -37,23 +37,25 @@
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
+            padding-bottom: 80px;
         }
 
         .japanese {
             font-family: 'Noto Sans JP', sans-serif;
         }
 
-        /* ========== NAVIGATION ========== */
+        /* ========== BOTTOM NAV ========== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: var(--bg);
-            border-top: 1px solid rgba(0,0,0,0.1);
+            border-top: 1px solid rgba(0,0,0,0.08);
             display: flex;
             justify-content: space-around;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
             z-index: 100;
         }
 
@@ -61,13 +63,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 8px 16px;
+            padding: 6px 14px;
             border: none;
             background: none;
             color: var(--text-hint);
-            font-size: 11px;
+            font-size: 10px;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .nav-item.active {
@@ -75,14 +77,13 @@
         }
 
         .nav-item .icon {
-            font-size: 24px;
-            margin-bottom: 4px;
+            font-size: 22px;
+            margin-bottom: 3px;
         }
 
         /* ========== SCREENS ========== */
         .screen {
             display: none;
-            padding-bottom: 80px;
             min-height: 100vh;
         }
 
@@ -93,53 +94,32 @@
         /* ========== HOME SCREEN ========== */
         .home-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 24px 20px 30px;
-            border-radius: 0 0 30px 30px;
+            padding: 24px 20px 28px;
+            border-radius: 0 0 28px 28px;
             color: white;
             margin-bottom: 20px;
         }
 
-        .user-info {
+        .user-row {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             margin-bottom: 20px;
         }
 
-        .avatar-container {
-            position: relative;
-            width: 70px;
-            height: 70px;
-        }
-
         .avatar {
-            width: 60px;
-            height: 60px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: rgba(255,255,255,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            font-size: 26px;
         }
 
-        .avatar-frame {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .user-details h1 {
-            font-size: 22px;
+        .user-info h1 {
+            font-size: 20px;
             font-weight: 700;
             margin-bottom: 4px;
         }
@@ -148,47 +128,47 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
+            font-size: 13px;
             opacity: 0.9;
         }
 
         .stats-row {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .stat-card {
+        .stat-box {
             flex: 1;
             background: rgba(255,255,255,0.15);
-            border-radius: 16px;
-            padding: 14px;
+            border-radius: 14px;
+            padding: 12px;
             text-align: center;
-            backdrop-filter: blur(10px);
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
         }
 
         .stat-label {
-            font-size: 12px;
-            opacity: 0.8;
+            font-size: 11px;
+            opacity: 0.85;
         }
 
-        /* ========== MENU CARDS ========== */
-        .menu-section {
+        /* ========== SECTIONS ========== */
+        .section {
             padding: 0 16px;
             margin-bottom: 24px;
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             margin-bottom: 12px;
             padding-left: 4px;
         }
 
+        /* ========== MENU GRID ========== */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -197,11 +177,11 @@
 
         .menu-card {
             background: var(--bg-secondary);
-            border-radius: var(--card-radius);
-            padding: 20px 16px;
+            border-radius: 18px;
+            padding: 18px 14px;
             text-align: center;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
             border: 2px solid transparent;
         }
 
@@ -210,50 +190,45 @@
             border-color: var(--primary);
         }
 
-        .menu-card .icon {
-            font-size: 36px;
-            margin-bottom: 10px;
+        .menu-card .card-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
-        .menu-card .title {
-            font-size: 15px;
+        .menu-card .card-title {
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
-        .menu-card .subtitle {
-            font-size: 12px;
+        .menu-card .card-subtitle {
+            font-size: 11px;
             color: var(--text-hint);
         }
 
-        .menu-card.featured {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
+        .menu-card.wide {
             grid-column: span 2;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
         }
 
-        .menu-card.featured .subtitle {
+        .menu-card.wide .card-subtitle {
             color: rgba(255,255,255,0.8);
         }
 
         /* ========== DAILY QUESTS ========== */
-        .quests-section {
-            padding: 0 16px;
-            margin-bottom: 24px;
-        }
-
-        .quest-card {
+        .quest-item {
             background: var(--bg-secondary);
-            border-radius: 16px;
-            padding: 16px;
+            border-radius: 14px;
+            padding: 14px;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .quest-icon {
-            font-size: 28px;
+            font-size: 26px;
         }
 
         .quest-info {
@@ -261,61 +236,61 @@
         }
 
         .quest-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             margin-bottom: 6px;
         }
 
-        .quest-progress {
+        .quest-bar {
             height: 6px;
             background: rgba(0,0,0,0.1);
             border-radius: 3px;
             overflow: hidden;
         }
 
-        .quest-progress-fill {
+        .quest-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             border-radius: 3px;
-            transition: width 0.5s ease;
+            transition: width 0.3s;
         }
 
         .quest-reward {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: var(--warning);
         }
 
-        .quest-card.completed {
+        .quest-item.done {
             opacity: 0.6;
         }
 
-        .quest-card.completed .quest-reward {
+        .quest-item.done .quest-reward {
             color: var(--success);
         }
 
         /* ========== ALPHABET SCREEN ========== */
         .alphabet-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 20px 16px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             text-align: center;
         }
 
         .alphabet-header h2 {
             font-size: 22px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
-        .alphabet-tabs {
+        .tabs {
             display: flex;
             background: rgba(255,255,255,0.2);
             border-radius: 12px;
             padding: 4px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
-        .alphabet-tab {
+        .tab-btn {
             flex: 1;
             padding: 10px;
             border: none;
@@ -327,7 +302,7 @@
             cursor: pointer;
         }
 
-        .alphabet-tab.active {
+        .tab-btn.active {
             background: white;
             color: var(--primary);
         }
@@ -341,11 +316,11 @@
 
         .view-btn {
             flex: 1;
-            padding: 8px 12px;
+            padding: 8px;
             border: none;
             background: transparent;
             color: rgba(255,255,255,0.7);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
@@ -360,6 +335,32 @@
             padding: 16px;
         }
 
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .test-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+
+        .test-btn.primary {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .test-btn.secondary {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        /* ========== KANA GRID ========== */
         .kana-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -375,7 +376,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.15s;
         }
 
         .kana-cell:active {
@@ -385,12 +386,12 @@
         }
 
         .kana-cell .char {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 500;
         }
 
         .kana-cell .reading {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-hint);
             margin-top: 2px;
         }
@@ -399,9 +400,9 @@
             color: rgba(255,255,255,0.8);
         }
 
-        /* Row View */
+        /* ========== ROW VIEW ========== */
         .kana-row {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .row-header {
@@ -412,17 +413,17 @@
         }
 
         .row-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
         }
 
         .row-test-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            border-radius: 20px;
-            font-size: 13px;
+            border-radius: 16px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
         }
@@ -431,7 +432,7 @@
             display: flex;
             gap: 8px;
             overflow-x: auto;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             scrollbar-width: none;
         }
 
@@ -440,10 +441,10 @@
         }
 
         .row-card {
-            min-width: 65px;
-            height: 80px;
+            min-width: 60px;
+            height: 75px;
             background: var(--bg-secondary);
-            border-radius: 14px;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -458,41 +459,42 @@
         }
 
         .row-card .char {
-            font-size: 30px;
+            font-size: 26px;
         }
 
         .row-card .reading {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-hint);
-            margin-top: 2px;
+        }
+
+        .row-card:active .reading {
+            color: rgba(255,255,255,0.8);
         }
 
         /* ========== STUDY SCREEN ========== */
         .study-header {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
             padding: 20px 16px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
         }
 
         .study-header h2 {
             font-size: 22px;
-            margin-bottom: 8px;
         }
 
-        .study-categories {
+        .study-content {
             padding: 16px;
         }
 
         .category-card {
             background: var(--bg-secondary);
-            border-radius: var(--card-radius);
-            padding: 20px;
+            border-radius: 18px;
+            padding: 16px;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             cursor: pointer;
-            transition: var(--transition);
         }
 
         .category-card:active {
@@ -500,7 +502,7 @@
         }
 
         .category-icon {
-            font-size: 40px;
+            font-size: 36px;
         }
 
         .category-info {
@@ -508,83 +510,65 @@
         }
 
         .category-title {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 600;
             margin-bottom: 4px;
         }
 
         .category-desc {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-hint);
             margin-bottom: 8px;
         }
 
-        .category-progress {
-            height: 6px;
+        .category-bar {
+            height: 5px;
             background: rgba(0,0,0,0.1);
             border-radius: 3px;
             overflow: hidden;
         }
 
-        .category-progress-fill {
+        .category-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--success), #22c55e);
+            background: var(--success);
             border-radius: 3px;
         }
 
         .category-arrow {
-            font-size: 20px;
+            font-size: 18px;
             color: var(--text-hint);
         }
 
         /* ========== PROFILE SCREEN ========== */
         .profile-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 30px 20px;
             text-align: center;
             color: white;
         }
 
-        .profile-avatar-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 16px;
-        }
-
         .profile-avatar {
-            width: 85px;
-            height: 85px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             background: rgba(255,255,255,0.2);
+            margin: 0 auto 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .profile-frame {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            font-size: 38px;
         }
 
         .profile-name {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             margin-bottom: 8px;
         }
 
-        .profile-rank {
+        .profile-rank-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: rgba(255,255,255,0.2);
             padding: 8px 16px;
             border-radius: 20px;
@@ -597,10 +581,9 @@
             padding: 20px;
             background: var(--bg);
             margin: -20px 16px 0;
-            border-radius: var(--card-radius);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             position: relative;
-            z-index: 1;
         }
 
         .profile-stat {
@@ -608,13 +591,13 @@
         }
 
         .profile-stat-value {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: var(--primary);
         }
 
         .profile-stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-hint);
         }
 
@@ -623,40 +606,40 @@
         }
 
         .profile-section-title {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
-        .achievement-grid {
+        .achievements-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
 
-        .achievement-item {
+        .achievement {
             text-align: center;
         }
 
         .achievement-icon {
-            width: 60px;
-            height: 60px;
+            width: 54px;
+            height: 54px;
             background: var(--bg-secondary);
-            border-radius: 16px;
+            border-radius: 14px;
+            margin: 0 auto 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            margin: 0 auto 8px;
+            font-size: 26px;
         }
 
-        .achievement-item.locked .achievement-icon {
+        .achievement.locked .achievement-icon {
             filter: grayscale(1);
             opacity: 0.4;
         }
 
         .achievement-name {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-hint);
         }
 
@@ -671,13 +654,13 @@
             font-weight: 700;
         }
 
-        .settings-section {
+        .settings-content {
             padding: 16px;
         }
 
         .settings-group {
             background: var(--bg-secondary);
-            border-radius: var(--card-radius);
+            border-radius: 18px;
             overflow: hidden;
             margin-bottom: 16px;
         }
@@ -686,7 +669,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px;
+            padding: 14px 16px;
             border-bottom: 1px solid rgba(0,0,0,0.05);
             cursor: pointer;
         }
@@ -695,14 +678,14 @@
             border-bottom: none;
         }
 
-        .settings-item-left {
+        .settings-left {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .settings-icon {
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .settings-label {
@@ -714,19 +697,14 @@
             color: var(--text-hint);
         }
 
-        .settings-arrow {
-            color: var(--text-hint);
-        }
-
-        /* Toggle Switch */
         .toggle {
-            width: 50px;
+            width: 48px;
             height: 28px;
             background: rgba(0,0,0,0.1);
             border-radius: 14px;
             position: relative;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.2s;
         }
 
         .toggle.active {
@@ -736,22 +714,22 @@
         .toggle::after {
             content: '';
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             background: white;
             border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: var(--transition);
+            top: 3px;
+            left: 3px;
+            transition: all 0.2s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .toggle.active::after {
-            left: 24px;
+            left: 23px;
         }
 
         /* ========== MODAL ========== */
-        .modal-overlay {
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -761,71 +739,74 @@
             display: none;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 200;
             padding: 20px;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(4px);
         }
 
-        .modal-overlay.show {
+        .modal.show {
             display: flex;
         }
 
-        .modal-content {
+        .modal-box {
             background: var(--bg);
             border-radius: 24px;
-            padding: 28px 24px;
+            padding: 28px 22px;
             text-align: center;
-            max-width: 340px;
+            max-width: 320px;
             width: 100%;
-            animation: modalIn 0.3s ease;
+            animation: modalIn 0.25s ease;
         }
 
         @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .modal-char {
             font-size: 80px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .modal-reading {
             font-size: 32px;
             color: var(--primary);
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+        }
+
+        .modal-meaning {
+            font-size: 18px;
+            color: var(--text);
+            margin-bottom: 6px;
         }
 
         .modal-hint {
-            font-size: 15px;
+            font-size: 14px;
             color: var(--text-hint);
             margin-bottom: 20px;
         }
 
         .modal-gif {
-            margin: 16px 0;
+            margin: 14px 0;
             display: none;
+            min-height: 80px;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-gif.show {
-            display: block;
+            display: flex;
         }
 
         .modal-gif img {
-            max-width: 160px;
+            max-width: 150px;
             border-radius: 12px;
         }
 
         .modal-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
         }
 
         .modal-btn {
@@ -835,7 +816,6 @@
             border-radius: 14px;
             font-size: 22px;
             cursor: pointer;
-            transition: var(--transition);
         }
 
         .modal-btn:active {
@@ -847,22 +827,207 @@
             color: white;
         }
 
-        .modal-btn.gif {
+        .modal-btn.stroke {
             background: linear-gradient(135deg, var(--accent), #f5576c);
             color: white;
         }
 
         .modal-btn.close {
             background: var(--bg-secondary);
-            flex: 0.6;
+            flex: 0.5;
+        }
+
+        /* ========== SWIPE SCREEN ========== */
+        .swipe-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: none;
+            flex-direction: column;
+            z-index: 150;
+            padding: 20px;
+        }
+
+        .swipe-screen.show {
+            display: flex;
+        }
+
+        .swipe-header {
+            text-align: center;
+            padding-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .swipe-header h2 {
+            font-size: 22px;
+            color: white;
+            margin-bottom: 14px;
+        }
+
+        .swipe-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: rgba(255,255,255,0.8);
+            font-size: 15px;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .swipe-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .swipe-card {
+            width: 280px;
+            height: 380px;
+            background: linear-gradient(145deg, #ffffff, #f8f9ff);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .swipe-card .card-char {
+            font-size: 120px;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+        }
+
+        .swipe-card .card-hint {
+            font-size: 16px;
+            color: #999;
+        }
+
+        .swipe-card .card-answer {
+            font-size: 36px;
+            color: var(--primary);
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .swipe-card.revealed .card-answer {
+            opacity: 1;
+        }
+
+        .swipe-card.revealed .card-hint {
+            display: none;
+        }
+
+        .swipe-indicators {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .indicator {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .indicator.know {
+            background: var(--success);
+            color: white;
+        }
+
+        .indicator.learn {
+            background: var(--error);
+            color: white;
+        }
+
+        .swipe-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .swipe-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .swipe-btn:active {
+            transform: scale(0.95);
+        }
+
+        .swipe-btn.no {
+            background: var(--error);
+            color: white;
+        }
+
+        .swipe-btn.reveal {
+            background: var(--warning);
+            color: white;
+        }
+
+        .swipe-btn.yes {
+            background: var(--success);
+            color: white;
+        }
+
+        .swipe-hint-text {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            padding-bottom: 20px;
         }
 
         /* ========== QUIZ SCREEN ========== */
         .quiz-screen {
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: none;
+            flex-direction: column;
+            z-index: 150;
             padding: 20px;
-            padding-bottom: 40px;
+        }
+
+        .quiz-screen.show {
+            display: flex;
         }
 
         .quiz-header {
@@ -874,14 +1039,14 @@
         .quiz-title {
             font-size: 20px;
             color: white;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .quiz-score {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            font-size: 18px;
+            gap: 28px;
+            font-size: 17px;
             font-weight: 600;
         }
 
@@ -894,34 +1059,34 @@
         }
 
         .quiz-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 28px;
-            padding: 50px 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 26px;
+            padding: 45px 30px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
         .quiz-char {
-            font-size: 100px;
+            font-size: 90px;
             color: white;
         }
 
         .quiz-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 12px;
         }
 
         .quiz-option {
-            padding: 20px;
+            padding: 18px;
             background: rgba(255,255,255,0.95);
             border: 3px solid transparent;
-            border-radius: 18px;
-            font-size: 22px;
+            border-radius: 16px;
+            font-size: 20px;
             font-weight: 600;
             color: #1a1a2e;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.15s;
         }
 
         .quiz-option:active {
@@ -938,38 +1103,51 @@
             color: white;
         }
 
+        .quiz-option.disabled {
+            pointer-events: none;
+        }
+
         /* ========== RESULTS SCREEN ========== */
         .results-screen {
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            z-index: 150;
             padding: 20px;
             text-align: center;
         }
 
+        .results-screen.show {
+            display: flex;
+        }
+
         .results-icon {
-            font-size: 100px;
-            margin-bottom: 24px;
-            animation: bounce 0.6s ease;
+            font-size: 90px;
+            margin-bottom: 20px;
+            animation: bounce 0.5s ease;
         }
 
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.15); }
         }
 
         .results-title {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 700;
             color: white;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .results-score {
-            font-size: 56px;
+            font-size: 52px;
             font-weight: 800;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
@@ -978,34 +1156,179 @@
         }
 
         .results-xp {
-            font-size: 24px;
+            font-size: 22px;
             color: var(--warning);
             font-weight: 600;
             margin-bottom: 8px;
         }
 
         .results-subtitle {
-            font-size: 18px;
+            font-size: 16px;
             color: rgba(255,255,255,0.7);
-            margin-bottom: 40px;
+            margin-bottom: 36px;
         }
 
         .results-btn {
             width: 100%;
-            max-width: 280px;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
+            max-width: 260px;
+            padding: 16px;
             border: none;
-            border-radius: 30px;
-            font-size: 18px;
+            border-radius: 28px;
+            font-size: 17px;
             font-weight: 600;
             cursor: pointer;
             margin-bottom: 12px;
         }
 
+        .results-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
         .results-btn.secondary {
             background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* ========== WHEEL SCREEN ========== */
+        .wheel-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 150;
+            padding: 20px;
+        }
+
+        .wheel-screen.show {
+            display: flex;
+        }
+
+        .wheel-title {
+            font-size: 26px;
+            color: white;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #f093fb, #f5576c, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .wheel-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 30px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 40px rgba(102,126,234,0.3);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 30px solid #ffd200;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            z-index: 10;
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #2d2d44, #1a1a2e);
+            border-radius: 50%;
+            border: 3px solid #ffd200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 5;
+        }
+
+        .wheel-spin-btn {
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(240,147,251,0.4);
+        }
+
+        .wheel-spin-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .wheel-result {
+            margin-top: 24px;
+            padding: 18px 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 18px;
+            display: none;
+            text-align: center;
+        }
+
+        .wheel-result.show {
+            display: block;
+            animation: modalIn 0.4s ease;
+        }
+
+        .wheel-result-xp {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ffd200, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .wheel-result-text {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .wheel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
         }
 
         /* ========== LOADING ========== */
@@ -1020,13 +1343,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
+            z-index: 300;
         }
 
         .loading-logo {
             font-size: 60px;
-            margin-bottom: 20px;
-            animation: pulse 1.5s infinite;
+            margin-bottom: 16px;
+            animation: pulse 1.2s infinite;
         }
 
         @keyframes pulse {
@@ -1041,22 +1364,26 @@
         }
 
         .loading-spinner {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border: 3px solid rgba(255,255,255,0.2);
             border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-top: 20px;
+            animation: spin 0.8s linear infinite;
+            margin-top: 18px;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
+        <!-- Loading -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
         <div class="loading-text">YomuBot</div>
@@ -1066,97 +1393,90 @@
     <!-- Home Screen -->
     <div class="screen active" id="homeScreen">
         <div class="home-header">
-            <div class="user-info">
-                <div class="avatar-container">
-                    <div class="avatar" id="userAvatar">👤</div>
-                    <div class="avatar-frame" id="userFrame"></div>
-                </div>
-                <div class="user-details">
+            <div class="user-row">
+                <div class="avatar" id="userAvatar">👤</div>
+                <div class="user-info">
                     <h1 id="userName">Загрузка...</h1>
                     <div class="user-rank">
-                        <span id="userRankBadge">🥚</span>
+                        <span id="userBadge">🥚</span>
                         <span id="userRankName">Новичок</span>
                     </div>
                 </div>
             </div>
             <div class="stats-row">
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="stat-value" id="userXp">0</div>
                     <div class="stat-label">XP</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="stat-value" id="userStreak">0</div>
                     <div class="stat-label">🔥 Серия</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-box">
                     <div class="stat-value" id="userCards">0</div>
                     <div class="stat-label">Карточек</div>
                 </div>
             </div>
         </div>
 
-        <!-- Daily Quests -->
-        <div class="quests-section">
+        <div class="section">
             <div class="section-title">📋 Ежедневные задания</div>
-            <div id="questsList">
-                <!-- Quests will be rendered here -->
-            </div>
+            <div id="questsList"></div>
         </div>
 
-        <!-- Menu -->
-        <div class="menu-section">
+        <div class="section">
             <div class="section-title">📚 Обучение</div>
             <div class="menu-grid">
-                <div class="menu-card featured" onclick="navigateTo('alphabet')">
-                    <div class="icon">🎌</div>
-                    <div class="title">Японская Азбука</div>
-                    <div class="subtitle">Хирагана и Катакана</div>
+                <div class="menu-card wide" onclick="goTo('alphabet')">
+                    <div class="card-icon">🎌</div>
+                    <div class="card-title">Японская Азбука</div>
+                    <div class="card-subtitle">Хирагана и Катакана</div>
                 </div>
-                <div class="menu-card" onclick="navigateTo('study', 'kanji_n5')">
-                    <div class="icon">🈁</div>
-                    <div class="title">Кандзи N5</div>
-                    <div class="subtitle">103 иероглифа</div>
+                <div class="menu-card" onclick="goTo('study', 'kanji_n5')">
+                    <div class="card-icon">🈁</div>
+                    <div class="card-title">Кандзи N5</div>
+                    <div class="card-subtitle">103 иероглифа</div>
                 </div>
-                <div class="menu-card" onclick="navigateTo('study', 'words_n5')">
-                    <div class="icon">📝</div>
-                    <div class="title">Слова N5</div>
-                    <div class="subtitle">800 слов</div>
+                <div class="menu-card" onclick="goTo('study', 'words_n5')">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Слова N5</div>
+                    <div class="card-subtitle">Базовая лексика</div>
                 </div>
-                <div class="menu-card" onclick="navigateTo('study', 'kanji_n4')">
-                    <div class="icon">🈁</div>
-                    <div class="title">Кандзи N4</div>
-                    <div class="subtitle">181 иероглиф</div>
+                <div class="menu-card" onclick="goTo('study', 'kanji_n4')">
+                    <div class="card-icon">🈁</div>
+                    <div class="card-title">Кандзи N4</div>
+                    <div class="card-subtitle">181 иероглиф</div>
                 </div>
-                <div class="menu-card" onclick="navigateTo('study', 'words_n4')">
-                    <div class="icon">📝</div>
-                    <div class="title">Слова N4</div>
-                    <div class="subtitle">1500 слов</div>
+                <div class="menu-card" onclick="goTo('study', 'kanji_n3')">
+                    <div class="card-icon">🈁</div>
+                    <div class="card-title">Кандзи N3</div>
+                    <div class="card-subtitle">370 иероглифов</div>
                 </div>
             </div>
         </div>
 
-        <div class="menu-section">
+        <div class="section">
             <div class="section-title">🎮 Практика</div>
             <div class="menu-grid">
                 <div class="menu-card" onclick="startQuiz('mixed')">
-                    <div class="icon">🎯</div>
-                    <div class="title">Быстрый тест</div>
-                    <div class="subtitle">5 вопросов</div>
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">Быстрый тест</div>
+                    <div class="card-subtitle">5 вопросов</div>
                 </div>
                 <div class="menu-card" onclick="startSwipe()">
-                    <div class="icon">🃏</div>
-                    <div class="title">Карточки</div>
-                    <div class="subtitle">Свайп-режим</div>
-                </div>
-                <div class="menu-card" onclick="startBlitz()">
-                    <div class="icon">⚡</div>
-                    <div class="title">Блиц</div>
-                    <div class="subtitle">60 секунд</div>
+                    <div class="card-icon">🃏</div>
+                    <div class="card-title">Карточки</div>
+                    <div class="card-subtitle">Свайп-режим</div>
                 </div>
                 <div class="menu-card" onclick="openWheel()">
-                    <div class="icon">🎡</div>
-                    <div class="title">Рулетка</div>
-                    <div class="subtitle">Бонус XP</div>
+                    <div class="card-icon">🎡</div>
+                    <div class="card-title">Рулетка</div>
+                    <div class="card-subtitle">Ежедневный бонус</div>
+                </div>
+                <div class="menu-card" onclick="startQuiz('full')">
+                    <div class="card-icon">📋</div>
+                    <div class="card-title">Полный тест</div>
+                    <div class="card-subtitle">15 вопросов</div>
                 </div>
             </div>
         </div>
@@ -1166,9 +1486,9 @@
     <div class="screen" id="alphabetScreen">
         <div class="alphabet-header">
             <h2>🎌 Японская Азбука</h2>
-            <div class="alphabet-tabs">
-                <button class="alphabet-tab active" data-tab="hiragana">Хирагана</button>
-                <button class="alphabet-tab" data-tab="katakana">Катакана</button>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="setAlphabetTab('hiragana')">Хирагана</button>
+                <button class="tab-btn" onclick="setAlphabetTab('katakana')">Катакана</button>
             </div>
             <div class="view-toggle">
                 <button class="view-btn active" onclick="setAlphabetView('grid')">📋 Сетка</button>
@@ -1176,8 +1496,12 @@
             </div>
         </div>
         <div class="alphabet-content">
+            <div class="test-buttons">
+                <button class="test-btn primary" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
+                <button class="test-btn secondary" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
+            </div>
             <div id="alphabetGrid" class="kana-grid"></div>
-            <div id="alphabetRows" style="display:none;"></div>
+            <div id="alphabetRows" class="hidden"></div>
         </div>
     </div>
 
@@ -1186,21 +1510,16 @@
         <div class="study-header">
             <h2 id="studyTitle">📚 Изучение</h2>
         </div>
-        <div class="study-categories" id="studyCategories">
-            <!-- Categories will be rendered here -->
-        </div>
+        <div class="study-content" id="studyContent"></div>
     </div>
 
     <!-- Profile Screen -->
     <div class="screen" id="profileScreen">
         <div class="profile-header">
-            <div class="profile-avatar-container">
-                <div class="profile-avatar" id="profileAvatar">👤</div>
-                <div class="profile-frame" id="profileFrame"></div>
-            </div>
+            <div class="profile-avatar" id="profileAvatar">👤</div>
             <div class="profile-name" id="profileName">Пользователь</div>
-            <div class="profile-rank">
-                <span id="profileRankBadge">🥚</span>
+            <div class="profile-rank-badge">
+                <span id="profileBadge">🥚</span>
                 <span id="profileRankName">Новичок</span>
             </div>
         </div>
@@ -1220,9 +1539,7 @@
         </div>
         <div class="profile-section">
             <div class="profile-section-title">🏆 Достижения</div>
-            <div class="achievement-grid" id="achievementsGrid">
-                <!-- Achievements will be rendered here -->
-            </div>
+            <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
     </div>
 
@@ -1231,66 +1548,92 @@
         <div class="settings-header">
             <h2>⚙️ Настройки</h2>
         </div>
-        <div class="settings-section">
+        <div class="settings-content">
             <div class="settings-group">
-                <div class="settings-item" onclick="toggleReminders()">
-                    <div class="settings-item-left">
-                        <span class="settings-icon">🔔</span>
-                        <span class="settings-label">Напоминания</span>
-                    </div>
-                    <div class="toggle" id="remindersToggle"></div>
-                </div>
-                <div class="settings-item" onclick="openReminderTime()">
-                    <div class="settings-item-left">
-                        <span class="settings-icon">⏰</span>
-                        <span class="settings-label">Время напоминания</span>
-                    </div>
-                    <div>
-                        <span class="settings-value" id="reminderTime">19:00</span>
-                        <span class="settings-arrow">›</span>
-                    </div>
-                </div>
-            </div>
-            <div class="settings-group">
-                <div class="settings-item" onclick="openThemes()">
-                    <div class="settings-item-left">
-                        <span class="settings-icon">🎨</span>
-                        <span class="settings-label">Тема</span>
-                    </div>
-                    <div>
-                        <span class="settings-value" id="currentTheme">Сакура</span>
-                        <span class="settings-arrow">›</span>
-                    </div>
-                </div>
-                <div class="settings-item" onclick="toggleSound()">
-                    <div class="settings-item-left">
+                <div class="settings-item" onclick="toggleSetting('sound')">
+                    <div class="settings-left">
                         <span class="settings-icon">🔊</span>
                         <span class="settings-label">Звуки</span>
                     </div>
                     <div class="toggle active" id="soundToggle"></div>
                 </div>
+                <div class="settings-item" onclick="toggleSetting('vibration')">
+                    <div class="settings-left">
+                        <span class="settings-icon">📳</span>
+                        <span class="settings-label">Вибрация</span>
+                    </div>
+                    <div class="toggle active" id="vibrationToggle"></div>
+                </div>
             </div>
             <div class="settings-group">
-                <div class="settings-item" onclick="exportProgress()">
-                    <div class="settings-item-left">
+                <div class="settings-item" onclick="exportData()">
+                    <div class="settings-left">
                         <span class="settings-icon">📤</span>
                         <span class="settings-label">Экспорт прогресса</span>
                     </div>
-                    <span class="settings-arrow">›</span>
+                    <span class="settings-value">›</span>
                 </div>
                 <div class="settings-item" onclick="showAbout()">
-                    <div class="settings-item-left">
+                    <div class="settings-left">
                         <span class="settings-icon">ℹ️</span>
                         <span class="settings-label">О приложении</span>
                     </div>
-                    <span class="settings-arrow">›</span>
+                    <span class="settings-value">v2.0 ›</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Quiz Screen (overlay) -->
-    <div class="quiz-screen" id="quizScreen" style="display:none;">
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-box">
+            <div class="modal-char japanese" id="modalChar">あ</div>
+            <div class="modal-reading" id="modalReading">a</div>
+            <div class="modal-meaning" id="modalMeaning"></div>
+            <div class="modal-hint" id="modalHint">Подсказка</div>
+            <div class="modal-gif" id="modalGif">
+                <img id="gifImage" src="" alt="">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn sound" onclick="playSound()">🔊</button>
+                <button class="modal-btn stroke" onclick="showGif()">✍️</button>
+                <button class="modal-btn close" onclick="closeModal()">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swipe Screen -->
+    <div class="swipe-screen" id="swipeScreen">
+        <div class="swipe-header">
+            <h2>🃏 Карточки</h2>
+            <div class="swipe-progress">
+                <span id="swipeCount">1 / 10</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="swipeProgress"></div>
+                </div>
+            </div>
+        </div>
+        <div class="swipe-area">
+            <div class="swipe-card" id="swipeCard">
+                <div class="swipe-indicators">
+                    <div class="indicator learn">👎 Учить</div>
+                    <div class="indicator know">👍 Знаю</div>
+                </div>
+                <div class="card-char japanese" id="swipeChar">あ</div>
+                <div class="card-hint" id="swipeHint">Нажми 👁 чтобы увидеть</div>
+                <div class="card-answer" id="swipeAnswer">a</div>
+            </div>
+        </div>
+        <div class="swipe-buttons">
+            <button class="swipe-btn no" onclick="swipeNo()">👎</button>
+            <button class="swipe-btn reveal" onclick="swipeReveal()">👁</button>
+            <button class="swipe-btn yes" onclick="swipeYes()">👍</button>
+        </div>
+        <div class="swipe-hint-text">👎 Не знаю | 👁 Показать | 👍 Знаю</div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div class="quiz-screen" id="quizScreen">
         <div class="quiz-header">
             <div class="quiz-title" id="quizTitle">🎯 Тест</div>
             <div class="quiz-score">
@@ -1304,239 +1647,62 @@
         <div class="quiz-options" id="quizOptions"></div>
     </div>
 
-    <!-- Results Screen (overlay) -->
-    <div class="results-screen" id="resultsScreen" style="display:none;">
+    <!-- Results Screen -->
+    <div class="results-screen" id="resultsScreen">
         <div class="results-icon" id="resultsIcon">🎉</div>
         <div class="results-title" id="resultsTitle">Отлично!</div>
         <div class="results-score" id="resultsScore">5 / 5</div>
         <div class="results-xp" id="resultsXp">+50 XP</div>
         <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
-        <button class="results-btn" onclick="finishQuiz()">✨ Получить XP</button>
+        <button class="results-btn primary" onclick="finishQuiz()">✨ Получить XP</button>
         <button class="results-btn secondary" onclick="retryQuiz()">🔄 Ещё раз</button>
     </div>
 
-    <!-- Modal -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal-content">
-            <div class="modal-char japanese" id="modalChar">あ</div>
-            <div class="modal-reading" id="modalReading">a</div>
-            <div class="modal-hint" id="modalHint">Подсказка</div>
-            <div class="modal-gif" id="modalGif">
-                <img id="gifImage" src="" alt="Stroke order">
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn sound" onclick="playSound()">🔊</button>
-                <button class="modal-btn gif" onclick="showGif()">✍️</button>
-                <button class="modal-btn close" onclick="closeModal()">✕</button>
-            </div>
+    <!-- Wheel Screen -->
+    <div class="wheel-screen" id="wheelScreen">
+        <button class="wheel-close" onclick="closeWheel()">✕</button>
+        <div class="wheel-title">🎡 КОЛЕСО ФОРТУНЫ</div>
+        <div class="wheel-subtitle">Крути раз в день!</div>
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <svg class="wheel" id="wheel" viewBox="0 0 100 100"></svg>
+            <div class="wheel-center">🎯</div>
+        </div>
+        <button class="wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()">🎲 КРУТИТЬ!</button>
+        <div class="wheel-result" id="wheelResult">
+            <div class="wheel-result-xp" id="wheelResultXp">+100 XP</div>
+            <div class="wheel-result-text">Награда начислена!</div>
         </div>
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="navigateTo('home')">
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" onclick="goTo('home')">
             <span class="icon">🏠</span>
             <span>Главная</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('alphabet')">
+        <button class="nav-item" onclick="goTo('alphabet')">
             <span class="icon">🔤</span>
             <span>Азбука</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('study')">
+        <button class="nav-item" onclick="goTo('study')">
             <span class="icon">📚</span>
             <span>Учить</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('profile')">
+        <button class="nav-item" onclick="goTo('profile')">
             <span class="icon">👤</span>
             <span>Профиль</span>
         </button>
-        <button class="nav-item" onclick="navigateTo('settings')">
+        <button class="nav-item" onclick="goTo('settings')">
             <span class="icon">⚙️</span>
             <span>Ещё</span>
         </button>
     </nav>
-
-    <script>
-        // ==================== TELEGRAM INIT ====================
+       <script>
+        // ==================== TELEGRAM ====================
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
-
-        // ==================== DATA ====================
-        const HIRAGANA_ROWS = [
-            { name: 'Гласные', id: 'vowels', chars: [
-                {char: 'あ', reading: 'a', hint: 'Буква А с завитком'},
-                {char: 'い', reading: 'i', hint: 'Две палочки'},
-                {char: 'う', reading: 'u', hint: 'Похоже на У'},
-                {char: 'え', reading: 'e', hint: 'Треугольник'},
-                {char: 'お', reading: 'o', hint: 'Человечек'}
-            ]},
-            { name: 'Строка K', id: 'k', chars: [
-                {char: 'か', reading: 'ka', hint: 'Лезвие катаны'},
-                {char: 'き', reading: 'ki', hint: 'Ключ'},
-                {char: 'く', reading: 'ku', hint: 'Клюв птицы'},
-                {char: 'け', reading: 'ke', hint: 'Кегля'},
-                {char: 'こ', reading: 'ko', hint: 'Два коромысла'}
-            ]},
-            { name: 'Строка S', id: 's', chars: [
-                {char: 'さ', reading: 'sa', hint: 'Самурай'},
-                {char: 'し', reading: 'shi', hint: 'Рыболовный крючок'},
-                {char: 'す', reading: 'su', hint: 'Сушки на верёвке'},
-                {char: 'せ', reading: 'se', hint: 'Сено'},
-                {char: 'そ', reading: 'so', hint: 'Соломинка'}
-            ]},
-            { name: 'Строка T', id: 't', chars: [
-                {char: 'た', reading: 'ta', hint: 'Танец'},
-                {char: 'ち', reading: 'chi', hint: 'Цифра 5'},
-                {char: 'つ', reading: 'tsu', hint: 'Улыбка цунами'},
-                {char: 'て', reading: 'te', hint: 'Телевизор'},
-                {char: 'と', reading: 'to', hint: 'Торнадо'}
-            ]},
-            { name: 'Строка N', id: 'n', chars: [
-                {char: 'な', reading: 'na', hint: 'Узел на верёвке'},
-                {char: 'に', reading: 'ni', hint: 'Нитка'},
-                {char: 'ぬ', reading: 'nu', hint: 'Лапша нудл'},
-                {char: 'ね', reading: 'ne', hint: 'Кошка нэко'},
-                {char: 'の', reading: 'no', hint: 'Знак номера'}
-            ]},
-            { name: 'Строка H', id: 'h', chars: [
-                {char: 'は', reading: 'ha', hint: 'Смеётся ХА'},
-                {char: 'ひ', reading: 'hi', hint: 'Хихикает'},
-                {char: 'ふ', reading: 'fu', hint: 'Гора Фудзи'},
-                {char: 'へ', reading: 'he', hint: 'Волна'},
-                {char: 'ほ', reading: 'ho', hint: 'Холодильник'}
-            ]},
-            { name: 'Строка M', id: 'm', chars: [
-                {char: 'ま', reading: 'ma', hint: 'Мама'},
-                {char: 'み', reading: 'mi', hint: 'Цифра 21'},
-                {char: 'む', reading: 'mu', hint: 'Корова МУ'},
-                {char: 'め', reading: 'me', hint: 'Глаз мэ'},
-                {char: 'も', reading: 'mo', hint: 'Рыба в море'}
-            ]},
-            { name: 'Строка Y', id: 'y', chars: [
-                {char: 'や', reading: 'ya', hint: 'Яхта'},
-                {char: 'ゆ', reading: 'yu', hint: 'Юла'},
-                {char: 'よ', reading: 'yo', hint: 'Йо-йо'}
-            ]},
-            { name: 'Строка R', id: 'r', chars: [
-                {char: 'ら', reading: 'ra', hint: 'Рамен'},
-                {char: 'り', reading: 'ri', hint: 'Лента ribbon'},
-                {char: 'る', reading: 'ru', hint: 'Рулон'},
-                {char: 'れ', reading: 're', hint: 'Река'},
-                {char: 'ろ', reading: 'ro', hint: 'Рот открыт'}
-            ]},
-            { name: 'Строка W + N', id: 'w', chars: [
-                {char: 'わ', reading: 'wa', hint: 'Ваза'},
-                {char: 'を', reading: 'wo', hint: 'Ворота'},
-                {char: 'ん', reading: 'n', hint: 'Звук Н'}
-            ]}
-        ];
-
-        const KATAKANA_ROWS = [
-            { name: 'Гласные', id: 'vowels', chars: [
-                {char: 'ア', reading: 'a', hint: 'Похоже на А'},
-                {char: 'イ', reading: 'i', hint: 'Две палочки'},
-                {char: 'ウ', reading: 'u', hint: 'У с короной'},
-                {char: 'エ', reading: 'e', hint: 'Этажерка'},
-                {char: 'オ', reading: 'o', hint: 'О бежит'}
-            ]},
-            { name: 'Строка K', id: 'k', chars: [
-                {char: 'カ', reading: 'ka', hint: 'Острый угол'},
-                {char: 'キ', reading: 'ki', hint: 'Ключ'},
-                {char: 'ク', reading: 'ku', hint: 'Куб'},
-                {char: 'ケ', reading: 'ke', hint: 'Кетчуп'},
-                {char: 'コ', reading: 'ko', hint: 'Коробка'}
-            ]},
-            { name: 'Строка S', id: 's', chars: [
-                {char: 'サ', reading: 'sa', hint: 'Сабля'},
-                {char: 'シ', reading: 'shi', hint: 'Улыбка'},
-                {char: 'ス', reading: 'su', hint: 'Сундук'},
-                {char: 'セ', reading: 'se', hint: 'Сэндвич'},
-                {char: 'ソ', reading: 'so', hint: 'Сок'}
-            ]},
-            { name: 'Строка T', id: 't', chars: [
-                {char: 'タ', reading: 'ta', hint: 'Таблица'},
-                {char: 'チ', reading: 'chi', hint: 'Число'},
-                {char: 'ツ', reading: 'tsu', hint: 'Цунами'},
-                {char: 'テ', reading: 'te', hint: 'Телевизор'},
-                {char: 'ト', reading: 'to', hint: 'Торт'}
-            ]},
-            { name: 'Строка N', id: 'n', chars: [
-                {char: 'ナ', reading: 'na', hint: 'Нож'},
-                {char: 'ニ', reading: 'ni', hint: 'Два'},
-                {char: 'ヌ', reading: 'nu', hint: 'Нудл'},
-                {char: 'ネ', reading: 'ne', hint: 'Нэт'},
-                {char: 'ノ', reading: 'no', hint: 'Нос'}
-            ]},
-            { name: 'Строка H', id: 'h', chars: [
-                {char: 'ハ', reading: 'ha', hint: 'Хата'},
-                {char: 'ヒ', reading: 'hi', hint: 'Хихи'},
-                {char: 'フ', reading: 'fu', hint: 'Фудзи'},
-                {char: 'ヘ', reading: 'he', hint: 'Хэй'},
-                {char: 'ホ', reading: 'ho', hint: 'Хор'}
-            ]},
-            { name: 'Строка M', id: 'm', chars: [
-                {char: 'マ', reading: 'ma', hint: 'Мама'},
-                {char: 'ミ', reading: 'mi', hint: 'Три'},
-                {char: 'ム', reading: 'mu', hint: 'Му'},
-                {char: 'メ', reading: 'me', hint: 'Мэч'},
-                {char: 'モ', reading: 'mo', hint: 'Море'}
-            ]},
-            { name: 'Строка Y', id: 'y', chars: [
-                {char: 'ヤ', reading: 'ya', hint: 'Яхта'},
-                {char: 'ユ', reading: 'yu', hint: 'Юла'},
-                {char: 'ヨ', reading: 'yo', hint: 'Йо-йо'}
-            ]},
-            { name: 'Строка R', id: 'r', chars: [
-                {char: 'ラ', reading: 'ra', hint: 'Радио'},
-                {char: 'リ', reading: 'ri', hint: 'Рис'},
-                {char: 'ル', reading: 'ru', hint: 'Рука'},
-                {char: 'レ', reading: 're', hint: 'Река'},
-                {char: 'ロ', reading: 'ro', hint: 'Рот'}
-            ]},
-            { name: 'Строка W + N', id: 'w', chars: [
-                {char: 'ワ', reading: 'wa', hint: 'Ваза'},
-                {char: 'ヲ', reading: 'wo', hint: 'Вок'},
-                {char: 'ン', reading: 'n', hint: 'Смайлик'}
-            ]}
-        ];
-
-        const RANKS = [
-            {min: 0, name: 'Новичок', badge: '🥚', frame: 1},
-            {min: 100, name: 'Ученик', badge: '🐣', frame: 2},
-            {min: 500, name: 'Искатель', badge: '🔍', frame: 3},
-            {min: 1000, name: 'Странник', badge: '🚶', frame: 4},
-            {min: 1500, name: 'Кохай', badge: '🎒', frame: 5},
-            {min: 2500, name: 'Сэмпай', badge: '🎓', frame: 6},
-            {min: 4800, name: 'Мечник', badge: '⚔️', frame: 7},
-            {min: 8000, name: 'Самурай', badge: '🥷', frame: 8},
-            {min: 12000, name: 'Ронин', badge: '🏯', frame: 9},
-            {min: 18000, name: 'Мастер', badge: '👨‍🏫', frame: 10},
-            {min: 25000, name: 'Сенсей', badge: '🧙', frame: 11},
-            {min: 35000, name: 'Шихан', badge: '📜', frame: 12},
-            {min: 50000, name: 'Даймё', badge: '👑', frame: 13},
-            {min: 70000, name: 'Сёгун', badge: '🏰', frame: 14},
-            {min: 100000, name: 'Император', badge: '👘', frame: 15},
-            {min: 150000, name: 'Легенда', badge: '🐉', frame: 16},
-            {min: 250000, name: 'Ками', badge: '⛩️', frame: 17}
-        ];
-
-        const ACHIEVEMENTS = [
-            {id: 'first_card', name: 'Первый шаг', icon: '👶', desc: 'Изучить первую карточку'},
-            {id: 'streak_3', name: 'Огонёк', icon: '🔥', desc: '3 дня подряд'},
-            {id: 'streak_7', name: 'Пламя', icon: '🔥', desc: '7 дней подряд'},
-            {id: 'streak_30', name: 'Вулкан', icon: '🌋', desc: '30 дней подряд'},
-            {id: 'hiragana', name: 'Хирагана', icon: 'あ', desc: 'Выучить хирагану'},
-            {id: 'katakana', name: 'Катакана', icon: 'ア', desc: 'Выучить катакану'},
-            {id: 'n5_kanji', name: 'N5 Кандзи', icon: '🈁', desc: 'Все кандзи N5'},
-            {id: 'perfect', name: 'Идеально', icon: '💯', desc: 'Тест без ошибок'}
-        ];
-
-        const DAILY_QUESTS = [
-            {id: 'learn_10', name: 'Выучить 10 карточек', target: 10, xp: 30, icon: '📚'},
-            {id: 'perfect_test', name: 'Тест без ошибок', target: 1, xp: 50, icon: '💯'},
-            {id: 'streak', name: 'Зайти в приложение', target: 1, xp: 10, icon: '✅'}
-        ];
 
         // ==================== STATE ====================
         let user = {
@@ -1545,28 +1711,62 @@
             streak: 0,
             cardsLearned: 0,
             achievements: [],
-            settings: {
-                reminders: true,
-                reminderTime: '19:00',
-                sound: true
-            }
+            settings: { sound: true, vibration: true },
+            lastDaily: null
         };
 
         let currentScreen = 'home';
-        let currentAlphabetTab = 'hiragana';
-        let currentAlphabetView = 'grid';
-        let currentModal = null;
-        let quizState = {
+        let alphabetTab = 'hiragana';
+        let alphabetView = 'grid';
+        let modalData = null;
+
+        let quiz = {
             items: [],
-            current: 0,
+            index: 0,
             correct: 0,
             wrong: 0,
-            source: 'quiz'
+            type: 'mixed'
         };
+
+        let swipe = {
+            items: [],
+            index: 0,
+            correct: 0,
+            wrong: 0
+        };
+
+        // ==================== ACHIEVEMENTS ====================
+        const ACHIEVEMENTS = [
+            {id: 'first', name: 'Первый шаг', icon: '👶', check: u => u.cardsLearned >= 1},
+            {id: 'streak3', name: 'Огонёк', icon: '🔥', check: u => u.streak >= 3},
+            {id: 'streak7', name: 'Пламя', icon: '🔥', check: u => u.streak >= 7},
+            {id: 'cards50', name: 'Полиглот', icon: '📚', check: u => u.cardsLearned >= 50},
+            {id: 'cards100', name: 'Мастер', icon: '🎓', check: u => u.cardsLearned >= 100},
+            {id: 'xp1000', name: 'Тысячник', icon: '⭐', check: u => u.xp >= 1000},
+            {id: 'xp5000', name: 'Звезда', icon: '🌟', check: u => u.xp >= 5000},
+            {id: 'perfect', name: 'Идеально', icon: '💯', check: u => u.perfectTests >= 1}
+        ];
+
+        const DAILY_QUESTS = [
+            {id: 'cards10', name: 'Изучить 10 карточек', target: 10, xp: 30, icon: '📚'},
+            {id: 'test', name: 'Пройти тест', target: 1, xp: 20, icon: '✅'},
+            {id: 'login', name: 'Зайти в приложение', target: 1, xp: 10, icon: '👋'}
+        ];
+
+        const WHEEL_PRIZES = [
+            {value: 10, color: '#e74c3c'},
+            {value: 25, color: '#9b59b6'},
+            {value: 50, color: '#3498db'},
+            {value: 100, color: '#2ecc71'},
+            {value: 15, color: '#e67e22'},
+            {value: 75, color: '#1abc9c'},
+            {value: 30, color: '#f39c12'},
+            {value: 150, color: '#e91e63'}
+        ];
 
         // ==================== INIT ====================
         function init() {
-            // Get user data from Telegram
+            // Load user from Telegram
             if (tg.initDataUnsafe?.user) {
                 user.name = tg.initDataUnsafe.user.first_name || 'Пользователь';
             }
@@ -1574,56 +1774,64 @@
             // Load from localStorage
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
-                user = {...user, ...JSON.parse(saved)};
+                const data = JSON.parse(saved);
+                user = {...user, ...data};
             }
+
+            // Update daily quest
+            const today = new Date().toDateString();
+            if (!user.questsDate || user.questsDate !== today) {
+                user.questsDate = today;
+                user.quests = {};
+            }
+            
+            // Mark login quest
+            if (!user.quests) user.quests = {};
+            user.quests.login = 1;
+            saveUser();
 
             // Hide loading
             setTimeout(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('loadingScreen').classList.add('hidden');
                 updateUI();
-            }, 1000);
-
-            // Setup alphabet tabs
-            document.querySelectorAll('.alphabet-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.alphabet-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    currentAlphabetTab = tab.dataset.tab;
-                    renderAlphabet();
-                });
-            });
+                createWheel();
+            }, 800);
         }
 
         // ==================== NAVIGATION ====================
-        function navigateTo(screen, params = null) {
+        function goTo(screen, param = null) {
+            // Hide all screens
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            
+            // Update nav
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
+            if (navBtn) navBtn.classList.add('active');
 
+            // Show screen
             document.getElementById(screen + 'Screen').classList.add('active');
-            document.querySelector(`.nav-item[onclick="navigateTo('${screen}')"]`)?.classList.add('active');
-
             currentScreen = screen;
 
+            // Render content
             if (screen === 'alphabet') renderAlphabet();
+            if (screen === 'study') renderStudy(param);
             if (screen === 'profile') renderProfile();
-            if (screen === 'study') renderStudy(params);
 
-            try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
+            haptic('light');
         }
 
         // ==================== UI UPDATE ====================
         function updateUI() {
             const rank = getRank(user.xp);
 
-            // Home screen
+            // Home
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
             document.getElementById('userStreak').textContent = user.streak;
             document.getElementById('userCards').textContent = user.cardsLearned;
-            document.getElementById('userRankBadge').textContent = rank.badge;
+            document.getElementById('userBadge').textContent = rank.badge;
             document.getElementById('userRankName').textContent = rank.name;
 
-            // Render quests
             renderQuests();
         }
 
@@ -1637,65 +1845,72 @@
 
         function renderQuests() {
             const container = document.getElementById('questsList');
-            const questProgress = JSON.parse(localStorage.getItem('quest_progress') || '{}');
-            const today = new Date().toDateString();
+            const quests = user.quests || {};
 
-            if (questProgress.date !== today) {
-                localStorage.setItem('quest_progress', JSON.stringify({date: today, quests: {}}));
-            }
-
-            const progress = questProgress.quests || {};
-
-            container.innerHTML = DAILY_QUESTS.map(quest => {
-                const current = progress[quest.id] || 0;
-                const completed = current >= quest.target;
-                const pct = Math.min(current / quest.target * 100, 100);
+            container.innerHTML = DAILY_QUESTS.map(q => {
+                const progress = quests[q.id] || 0;
+                const done = progress >= q.target;
+                const pct = Math.min(progress / q.target * 100, 100);
 
                 return `
-                    <div class="quest-card ${completed ? 'completed' : ''}">
-                        <div class="quest-icon">${quest.icon}</div>
+                    <div class="quest-item ${done ? 'done' : ''}">
+                        <div class="quest-icon">${q.icon}</div>
                         <div class="quest-info">
-                            <div class="quest-title">${quest.name}</div>
-                            <div class="quest-progress">
-                                <div class="quest-progress-fill" style="width: ${pct}%"></div>
+                            <div class="quest-title">${q.name}</div>
+                            <div class="quest-bar">
+                                <div class="quest-bar-fill" style="width:${pct}%"></div>
                             </div>
                         </div>
-                        <div class="quest-reward">${completed ? '✓' : '+' + quest.xp}</div>
+                        <div class="quest-reward">${done ? '✓' : '+' + q.xp}</div>
                     </div>
                 `;
             }).join('');
         }
 
         // ==================== ALPHABET ====================
+        function setAlphabetTab(tab) {
+            alphabetTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tab-btn[onclick="setAlphabetTab('${tab}')"]`).classList.add('active');
+            renderAlphabet();
+        }
+
+        function setAlphabetView(view) {
+            alphabetView = view;
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.view-btn[onclick="setAlphabetView('${view}')"]`).classList.add('active');
+            renderAlphabet();
+        }
+
         function renderAlphabet() {
-            const rows = currentAlphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
 
-            if (currentAlphabetView === 'grid') {
-                document.getElementById('alphabetGrid').style.display = 'grid';
-                document.getElementById('alphabetRows').style.display = 'none';
+            if (alphabetView === 'grid') {
+                document.getElementById('alphabetGrid').classList.remove('hidden');
+                document.getElementById('alphabetRows').classList.add('hidden');
 
-                document.getElementById('alphabetGrid').innerHTML = allChars.map((char, i) => `
-                    <div class="kana-cell" onclick="openCharModal(${i}, '${currentAlphabetTab}')">
-                        <div class="char japanese">${char.char}</div>
-                        <div class="reading">${char.reading}</div>
+                document.getElementById('alphabetGrid').innerHTML = allChars.map((c, i) => `
+                    <div class="kana-cell" onclick="openKanaModal(${i})">
+                        <div class="char japanese">${c.char}</div>
+                        <div class="reading">${c.reading}</div>
                     </div>
                 `).join('');
             } else {
-                document.getElementById('alphabetGrid').style.display = 'none';
-                document.getElementById('alphabetRows').style.display = 'block';
+                document.getElementById('alphabetGrid').classList.add('hidden');
+                document.getElementById('alphabetRows').classList.remove('hidden');
 
                 document.getElementById('alphabetRows').innerHTML = rows.map((row, ri) => `
                     <div class="kana-row">
                         <div class="row-header">
                             <span class="row-title">${row.name}</span>
-                            <button class="row-test-btn" onclick="startRowTest(${ri})">📝 Тест</button>
+                            <button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button>
                         </div>
                         <div class="row-cards">
-                            ${row.chars.map((char, ci) => `
-                                <div class="row-card" onclick="openCharModalFromRow(${ri}, ${ci})">
-                                    <div class="char japanese">${char.char}</div>
-                                    <div class="reading">${char.reading}</div>
+                            ${row.chars.map((c, ci) => `
+                                <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
+                                    <div class="char japanese">${c.char}</div>
+                                    <div class="reading">${c.reading}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -1704,60 +1919,104 @@
             }
         }
 
-        function setAlphabetView(view) {
-            currentAlphabetView = view;
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.view-btn[onclick="setAlphabetView('${view}')"]`).classList.add('active');
-            renderAlphabet();
+        function openKanaModal(index) {
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            const allChars = rows.flatMap(r => r.chars);
+            openModal(allChars[index]);
+        }
+
+        function openKanaModalFromRow(rowIndex, charIndex) {
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            openModal(rows[rowIndex].chars[charIndex]);
+        }
+
+        // ==================== STUDY ====================
+        function renderStudy(category = null) {
+            const categories = [
+                {id: 'kanji_n5', name: 'Кандзи N5', icon: '🈁', desc: '103 базовых иероглифа', data: KANJI_N5},
+                {id: 'kanji_n4', name: 'Кандзи N4', icon: '🈁', desc: '181 иероглиф', data: KANJI_N4},
+                {id: 'kanji_n3', name: 'Кандзи N3', icon: '🈁', desc: '370 иероглифов', data: KANJI_N3},
+                {id: 'words_n5', name: 'Слова N5', icon: '📝', desc: 'Базовая лексика', data: WORDS_N5}
+            ];
+
+            const container = document.getElementById('studyContent');
+            
+            container.innerHTML = categories.map(cat => {
+                const progress = Math.floor(Math.random() * 60); // TODO: real progress
+                return `
+                    <div class="category-card" onclick="openCategory('${cat.id}')">
+                        <div class="category-icon">${cat.icon}</div>
+                        <div class="category-info">
+                            <div class="category-title">${cat.name}</div>
+                            <div class="category-desc">${cat.desc}</div>
+                            <div class="category-bar">
+                                <div class="category-bar-fill" style="width:${progress}%"></div>
+                            </div>
+                        </div>
+                        <div class="category-arrow">›</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openCategory(id) {
+            let data = [];
+            let title = '';
+
+            if (id === 'kanji_n5') { data = KANJI_N5; title = 'Кандзи N5'; }
+            else if (id === 'kanji_n4') { data = KANJI_N4; title = 'Кандзи N4'; }
+            else if (id === 'kanji_n3') { data = KANJI_N3; title = 'Кандзи N3'; }
+            else if (id === 'words_n5') { data = WORDS_N5; title = 'Слова N5'; }
+
+            if (data.length === 0) return;
+
+            // Show first item
+            openModal(data[0], 'kanji');
         }
 
         // ==================== MODAL ====================
-        function openCharModal(index, tab) {
-            const rows = tab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            const allChars = rows.flatMap(r => r.chars);
-            currentModal = allChars[index];
-            showModal();
-        }
-
-        function openCharModalFromRow(rowIndex, charIndex) {
-            const rows = currentAlphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            currentModal = rows[rowIndex].chars[charIndex];
-            showModal();
-        }
-
-        function showModal() {
-            document.getElementById('modalChar').textContent = currentModal.char;
-            document.getElementById('modalReading').textContent = currentModal.reading;
-            document.getElementById('modalHint').textContent = currentModal.hint;
+        function openModal(item, type = 'kana') {
+            modalData = item;
+            
+            document.getElementById('modalChar').textContent = item.char || item.word || '';
+            document.getElementById('modalReading').textContent = item.reading || '';
+            document.getElementById('modalMeaning').textContent = item.meaning || '';
+            document.getElementById('modalMeaning').style.display = item.meaning ? 'block' : 'none';
+            document.getElementById('modalHint').textContent = item.hint || '';
             document.getElementById('modalGif').classList.remove('show');
+            
             document.getElementById('modal').classList.add('show');
-            try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
+            haptic('light');
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
-            currentModal = null;
+            modalData = null;
         }
 
         function playSound() {
-            if (!currentModal) return;
+            if (!modalData) return;
+            const text = modalData.char || modalData.word;
+            
             if ('speechSynthesis' in window) {
                 speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(currentModal.char);
+                const u = new SpeechSynthesisUtterance(text);
                 u.lang = 'ja-JP';
                 u.rate = 0.7;
                 speechSynthesis.speak(u);
             }
-            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
+            haptic('medium');
         }
 
         function showGif() {
-            if (!currentModal) return;
+            if (!modalData) return;
+            const char = modalData.char || modalData.word;
             const container = document.getElementById('modalGif');
-            container.innerHTML = '<div style="color:#999;font-size:13px;">Загрузка...</div>';
+            
+            container.innerHTML = '<span style="color:#999">Загрузка...</span>';
             container.classList.add('show');
 
-            const hex = currentModal.char.charCodeAt(0).toString(16).padStart(5, '0');
+            const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
             const urls = [
                 `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
                 `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`
@@ -1766,20 +2025,21 @@
             let loaded = false;
             function tryLoad(i) {
                 if (i >= urls.length || loaded) {
-                    if (!loaded) container.innerHTML = '<div style="color:#f87171;">GIF недоступен</div>';
+                    if (!loaded) container.innerHTML = '<span style="color:#f87171">Недоступно</span>';
                     return;
                 }
                 const img = new Image();
                 img.onload = () => {
                     if (!loaded) {
                         loaded = true;
-                        container.innerHTML = `<img src="${urls[i]}" style="max-width:150px;border-radius:10px;">`;
+                        container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px">`;
                     }
                 };
                 img.onerror = () => tryLoad(i + 1);
                 img.src = urls[i];
             }
             tryLoad(0);
+            haptic('light');
         }
 
         document.getElementById('modal').addEventListener('click', e => {
@@ -1788,161 +2048,367 @@
 
         // ==================== QUIZ ====================
         function startQuiz(type) {
-            const allChars = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
-            quizState = {
-                items: shuffle(allChars).slice(0, 5),
-                current: 0,
+            const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
+            const count = type === 'full' ? 15 : 5;
+            
+            quiz = {
+                items: shuffle(allKana).slice(0, count),
+                index: 0,
                 correct: 0,
                 wrong: 0,
-                source: type
+                type: type
             };
+
+            document.getElementById('quizTitle').textContent = '🎯 Тест';
             showQuizScreen();
             renderQuizQuestion();
         }
 
-        function startRowTest(rowIndex) {
-            const rows = currentAlphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            quizState = {
-                items: shuffle([...rows[rowIndex].chars]),
-                current: 0,
+        function startAlphabetQuiz(count) {
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            const allChars = rows.flatMap(r => r.chars);
+            
+            quiz = {
+                items: shuffle(allChars).slice(0, count),
+                index: 0,
                 correct: 0,
                 wrong: 0,
-                source: 'row'
+                type: 'alphabet'
             };
+
+            const name = alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана';
+            document.getElementById('quizTitle').textContent = `🎯 ${name}`;
+            showQuizScreen();
+            renderQuizQuestion();
+        }
+
+        function startRowQuiz(rowIndex) {
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            const row = rows[rowIndex];
+            
+            quiz = {
+                items: shuffle([...row.chars]),
+                index: 0,
+                correct: 0,
+                wrong: 0,
+                type: 'row'
+            };
+
+            document.getElementById('quizTitle').textContent = `🎯 ${row.name}`;
             showQuizScreen();
             renderQuizQuestion();
         }
 
         function showQuizScreen() {
-            document.getElementById('quizScreen').style.display = 'block';
-            document.querySelector('.bottom-nav').style.display = 'none';
+            document.getElementById('quizScreen').classList.add('show');
+            document.getElementById('bottomNav').classList.add('hidden');
         }
 
         function hideQuizScreen() {
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultsScreen').style.display = 'none';
-            document.querySelector('.bottom-nav').style.display = 'flex';
+            document.getElementById('quizScreen').classList.remove('show');
+            document.getElementById('resultsScreen').classList.remove('show');
+            document.getElementById('bottomNav').classList.remove('hidden');
         }
 
         function renderQuizQuestion() {
-            if (quizState.current >= quizState.items.length) {
+            if (quiz.index >= quiz.items.length) {
                 showResults();
                 return;
             }
 
-            const item = quizState.items[quizState.current];
+            const item = quiz.items[quiz.index];
             document.getElementById('quizChar').textContent = item.char;
-            document.getElementById('quizCorrect').textContent = quizState.correct;
-            document.getElementById('quizWrong').textContent = quizState.wrong;
+            document.getElementById('quizCorrect').textContent = quiz.correct;
+            document.getElementById('quizWrong').textContent = quiz.wrong;
 
-            const allReadings = [...new Set([...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading)))];
+            // Generate options
+            const allReadings = [...new Set(
+                [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading))
+            )];
             const wrong = shuffle(allReadings.filter(r => r !== item.reading)).slice(0, 3);
             const options = shuffle([item.reading, ...wrong]);
 
             document.getElementById('quizOptions').innerHTML = options.map(opt => `
-                <button class="quiz-option" onclick="checkAnswer('${opt}', '${item.reading}')">${opt}</button>
+                <button class="quiz-option" onclick="checkQuizAnswer('${opt}', '${item.reading}')">${opt}</button>
             `).join('');
         }
 
-        function checkAnswer(selected, correct) {
+        function checkQuizAnswer(selected, correct) {
             document.querySelectorAll('.quiz-option').forEach(btn => {
-                btn.style.pointerEvents = 'none';
+                btn.classList.add('disabled');
                 if (btn.textContent === correct) btn.classList.add('correct');
                 else if (btn.textContent === selected) btn.classList.add('wrong');
             });
 
             if (selected === correct) {
-                quizState.correct++;
-                try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+                quiz.correct++;
+                haptic('success');
             } else {
-                quizState.wrong++;
-                try { tg.HapticFeedback.notificationOccurred('error'); } catch(e) {}
+                quiz.wrong++;
+                haptic('error');
             }
 
             setTimeout(() => {
-                quizState.current++;
+                quiz.index++;
                 renderQuizQuestion();
-            }, 800);
+            }, 700);
         }
 
         function showResults() {
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultsScreen').style.display = 'flex';
+            document.getElementById('quizScreen').classList.remove('show');
+            document.getElementById('resultsScreen').classList.add('show');
 
-            const total = quizState.items.length;
-            const score = quizState.correct;
+            const total = quiz.items.length;
+            const score = quiz.correct;
             const pct = Math.round(score / total * 100);
-            const xpEarned = score * 10;
+            const xp = score * 10;
 
             let icon, title, subtitle;
-            if (pct === 100) { icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты настоящий мастер!'; }
+            if (pct === 100) { icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; user.perfectTests = (user.perfectTests || 0) + 1; }
             else if (pct >= 80) { icon = '🎉'; title = 'Отлично!'; subtitle = 'Так держать!'; }
             else if (pct >= 60) { icon = '👍'; title = 'Хорошо!'; subtitle = 'Есть куда расти!'; }
-            else { icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ к успеху!'; }
+            else { icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ!'; }
 
             document.getElementById('resultsIcon').textContent = icon;
             document.getElementById('resultsTitle').textContent = title;
             document.getElementById('resultsScore').textContent = `${score} / ${total}`;
-            document.getElementById('resultsXp').textContent = xpEarned > 0 ? `+${xpEarned} XP` : '';
+            document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = subtitle;
 
-            // Add XP
-            if (xpEarned > 0) {
-                user.xp += xpEarned;
+            // Add XP and update quests
+            if (xp > 0) {
+                user.xp += xp;
                 user.cardsLearned += score;
+                user.quests = user.quests || {};
+                user.quests.cards10 = (user.quests.cards10 || 0) + score;
+                user.quests.test = 1;
                 saveUser();
                 updateUI();
             }
 
-            try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+            haptic('success');
         }
 
         function finishQuiz() {
-            // Send data to bot
-            const dataToSend = `quiz_result_${quizState.correct}`;
+            // Send to bot
             try {
-                tg.sendData(dataToSend);
-            } catch(e) {
-                console.log('Could not send data to bot');
-            }
-            
+                tg.sendData(`quiz_result_${quiz.correct}`);
+            } catch(e) {}
+
             setTimeout(() => {
                 hideQuizScreen();
-                navigateTo('home');
+                goTo('home');
             }, 100);
         }
 
         function retryQuiz() {
             hideQuizScreen();
-            if (quizState.source === 'row') {
-                navigateTo('alphabet');
+            if (quiz.type === 'alphabet' || quiz.type === 'row') {
+                goTo('alphabet');
             } else {
-                startQuiz(quizState.source);
+                startQuiz(quiz.type);
             }
         }
 
-        // ==================== SWIPE MODE ====================
+        // ==================== SWIPE ====================
         function startSwipe() {
-            const allChars = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
-            quizState = {
-                items: shuffle(allChars).slice(0, 10),
-                current: 0,
+            const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
+            
+            swipe = {
+                items: shuffle(allKana).slice(0, 10),
+                index: 0,
                 correct: 0,
-                wrong: 0,
-                source: 'swipe'
+                wrong: 0
             };
-            // TODO: Implement swipe UI
-            alert('Свайп-режим в разработке! Пока используйте тест.');
+
+            document.getElementById('swipeScreen').classList.add('show');
+            document.getElementById('bottomNav').classList.add('hidden');
+            renderSwipeCard();
         }
 
-        function startBlitz() {
-            // TODO: Implement blitz mode
-            alert('Блиц-режим в разработке!');
+        function renderSwipeCard() {
+            if (swipe.index >= swipe.items.length) {
+                showSwipeResults();
+                return;
+            }
+
+            const item = swipe.items[swipe.index];
+            const card = document.getElementById('swipeCard');
+
+            document.getElementById('swipeChar').textContent = item.char;
+            document.getElementById('swipeAnswer').textContent = item.reading;
+            document.getElementById('swipeHint').style.display = 'block';
+            document.getElementById('swipeAnswer').style.opacity = '0';
+            card.classList.remove('revealed');
+            card.style.transform = '';
+            card.style.opacity = '1';
+
+            document.getElementById('swipeCount').textContent = `${swipe.index + 1} / ${swipe.items.length}`;
+            document.getElementById('swipeProgress').style.width = `${swipe.index / swipe.items.length * 100}%`;
+
+            document.querySelectorAll('.indicator').forEach(i => i.style.opacity = '0');
+        }
+
+        function swipeReveal() {
+            const card = document.getElementById('swipeCard');
+            card.classList.add('revealed');
+            document.getElementById('swipeAnswer').style.opacity = '1';
+            document.getElementById('swipeHint').style.display = 'none';
+            haptic('light');
+        }
+
+        function swipeYes() {
+            const card = document.getElementById('swipeCard');
+            document.querySelector('.indicator.know').style.opacity = '1';
+            card.style.transform = 'translateX(300px) rotate(15deg)';
+            card.style.opacity = '0';
+            swipe.correct++;
+            haptic('medium');
+            
+            setTimeout(() => {
+                swipe.index++;
+                renderSwipeCard();
+            }, 250);
+        }
+
+        function swipeNo() {
+            const card = document.getElementById('swipeCard');
+            document.querySelector('.indicator.learn').style.opacity = '1';
+            card.style.transform = 'translateX(-300px) rotate(-15deg)';
+            card.style.opacity = '0';
+            swipe.wrong++;
+            haptic('medium');
+            
+            setTimeout(() => {
+                swipe.index++;
+                renderSwipeCard();
+            }, 250);
+        }
+
+        function showSwipeResults() {
+            document.getElementById('swipeScreen').classList.remove('show');
+            
+            const xp = swipe.correct * 10;
+            quiz.correct = swipe.correct;
+            quiz.items = swipe.items;
+            quiz.type = 'swipe';
+
+            // Add XP
+            if (xp > 0) {
+                user.xp += xp;
+                user.cardsLearned += swipe.correct;
+                user.quests = user.quests || {};
+                user.quests.cards10 = (user.quests.cards10 || 0) + swipe.correct;
+                saveUser();
+                updateUI();
+            }
+
+            document.getElementById('resultsScreen').classList.add('show');
+            document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
+            document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
+            document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
+            document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
+            document.getElementById('resultsSubtitle').textContent = `Знал: ${swipe.correct}, Учить: ${swipe.wrong}`;
+
+            haptic('success');
+        }
+
+        // ==================== WHEEL ====================
+        function createWheel() {
+            const svg = document.getElementById('wheel');
+            const total = WHEEL_PRIZES.length;
+            const angle = 360 / total;
+            let html = '';
+
+            WHEEL_PRIZES.forEach((prize, i) => {
+                const startAngle = i * angle - 90;
+                const endAngle = startAngle + angle;
+                const startRad = startAngle * Math.PI / 180;
+                const endRad = endAngle * Math.PI / 180;
+
+                const x1 = 50 + 50 * Math.cos(startRad);
+                const y1 = 50 + 50 * Math.sin(startRad);
+                const x2 = 50 + 50 * Math.cos(endRad);
+                const y2 = 50 + 50 * Math.sin(endRad);
+
+                html += `<path d="M 50 50 L ${x1} ${y1} A 50 50 0 0 1 ${x2} ${y2} Z" fill="${prize.color}"/>`;
+
+                // Text
+                const textAngle = startAngle + angle / 2;
+                const textRad = textAngle * Math.PI / 180;
+                const tx = 50 + 32 * Math.cos(textRad);
+                const ty = 50 + 32 * Math.sin(textRad);
+
+                html += `<text x="${tx}" y="${ty}" fill="white" font-size="7" font-weight="bold" 
+                         text-anchor="middle" dominant-baseline="middle" 
+                         transform="rotate(${textAngle + 90}, ${tx}, ${ty})">${prize.value}</text>`;
+            });
+
+            svg.innerHTML = html;
         }
 
         function openWheel() {
-            // TODO: Implement wheel
-            alert('Рулетка в разработке!');
+            document.getElementById('wheelScreen').classList.add('show');
+            document.getElementById('bottomNav').classList.add('hidden');
+            document.getElementById('wheelResult').classList.remove('show');
+            
+            // Check if already spun today
+            const today = new Date().toDateString();
+            if (user.lastDaily === today) {
+                document.getElementById('wheelSpinBtn').disabled = true;
+                document.getElementById('wheelSpinBtn').textContent = 'Завтра!';
+            } else {
+                document.getElementById('wheelSpinBtn').disabled = false;
+                document.getElementById('wheelSpinBtn').textContent = '🎲 КРУТИТЬ!';
+            }
+        }
+
+        function closeWheel() {
+            document.getElementById('wheelScreen').classList.remove('show');
+            document.getElementById('bottomNav').classList.remove('hidden');
+        }
+
+        let wheelRotation = 0;
+
+        function spinWheel() {
+            const today = new Date().toDateString();
+            if (user.lastDaily === today) return;
+
+            const btn = document.getElementById('wheelSpinBtn');
+            btn.disabled = true;
+            btn.textContent = '🎰 Крутится...';
+
+            // Random prize
+            const prizeIndex = Math.floor(Math.random() * WHEEL_PRIZES.length);
+            const prize = WHEEL_PRIZES[prizeIndex];
+
+            // Calculate rotation
+            const segmentAngle = 360 / WHEEL_PRIZES.length;
+            const targetAngle = 360 - (prizeIndex * segmentAngle + segmentAngle / 2);
+            const spins = 5 + Math.random() * 3;
+            wheelRotation += spins * 360 + targetAngle - (wheelRotation % 360);
+
+            document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
+            haptic('medium');
+
+            setTimeout(() => {
+                // Award prize
+                user.xp += prize.value;
+                user.lastDaily = today;
+                saveUser();
+                updateUI();
+
+                document.getElementById('wheelResultXp').textContent = `+${prize.value} XP`;
+                document.getElementById('wheelResult').classList.add('show');
+                btn.textContent = '✅ Готово!';
+
+                haptic('success');
+
+                // Send to bot
+                try {
+                    tg.sendData(`wheel_reward_${prize.value}`);
+                } catch(e) {}
+            }, 4500);
         }
 
         // ==================== PROFILE ====================
@@ -1953,81 +2419,31 @@
             document.getElementById('profileXp').textContent = user.xp;
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
-            document.getElementById('profileRankBadge').textContent = rank.badge;
+            document.getElementById('profileBadge').textContent = rank.badge;
             document.getElementById('profileRankName').textContent = rank.name;
 
             // Achievements
             const grid = document.getElementById('achievementsGrid');
-            grid.innerHTML = ACHIEVEMENTS.map(ach => {
-                const unlocked = user.achievements.includes(ach.id);
+            grid.innerHTML = ACHIEVEMENTS.map(a => {
+                const unlocked = a.check(user);
                 return `
-                    <div class="achievement-item ${unlocked ? '' : 'locked'}">
-                        <div class="achievement-icon">${ach.icon}</div>
-                        <div class="achievement-name">${ach.name}</div>
+                    <div class="achievement ${unlocked ? '' : 'locked'}">
+                        <div class="achievement-icon">${a.icon}</div>
+                        <div class="achievement-name">${a.name}</div>
                     </div>
                 `;
             }).join('');
         }
 
-        // ==================== STUDY ====================
-        function renderStudy(category = null) {
-            const categories = [
-                {id: 'kanji_n5', name: 'Кандзи N5', icon: '🈁', desc: '103 базовых иероглифа', progress: 45},
-                {id: 'words_n5', name: 'Слова N5', icon: '📝', desc: '800 необходимых слов', progress: 30},
-                {id: 'kanji_n4', name: 'Кандзи N4', icon: '🈁', desc: '181 иероглиф', progress: 10},
-                {id: 'words_n4', name: 'Слова N4', icon: '📝', desc: '1500 слов', progress: 5},
-                {id: 'kanji_n3', name: 'Кандзи N3', icon: '🈁', desc: '370 иероглифов', progress: 0},
-                {id: 'grammar_n5', name: 'Грамматика N5', icon: '📖', desc: 'Базовые конструкции', progress: 20},
-            ];
-
-            document.getElementById('studyCategories').innerHTML = categories.map(cat => `
-                <div class="category-card" onclick="openCategory('${cat.id}')">
-                    <div class="category-icon">${cat.icon}</div>
-                    <div class="category-info">
-                        <div class="category-title">${cat.name}</div>
-                        <div class="category-desc">${cat.desc}</div>
-                        <div class="category-progress">
-                            <div class="category-progress-fill" style="width: ${cat.progress}%"></div>
-                        </div>
-                    </div>
-                    <div class="category-arrow">›</div>
-                </div>
-            `).join('');
-        }
-
-        function openCategory(id) {
-            alert(`Раздел "${id}" в разработке!`);
-        }
-
         // ==================== SETTINGS ====================
-        function toggleReminders() {
-            user.settings.reminders = !user.settings.reminders;
-            const toggle = document.getElementById('remindersToggle');
-            toggle.classList.toggle('active', user.settings.reminders);
+        function toggleSetting(key) {
+            user.settings[key] = !user.settings[key];
+            document.getElementById(key + 'Toggle').classList.toggle('active', user.settings[key]);
             saveUser();
+            haptic('light');
         }
 
-        function toggleSound() {
-            user.settings.sound = !user.settings.sound;
-            const toggle = document.getElementById('soundToggle');
-            toggle.classList.toggle('active', user.settings.sound);
-            saveUser();
-        }
-
-        function openReminderTime() {
-            const times = ['09:00', '12:00', '15:00', '18:00', '21:00'];
-            const current = times.indexOf(user.settings.reminderTime);
-            const next = times[(current + 1) % times.length];
-            user.settings.reminderTime = next;
-            document.getElementById('reminderTime').textContent = next;
-            saveUser();
-        }
-
-        function openThemes() {
-            alert('Темы в разработке!');
-        }
-
-        function exportProgress() {
+        function exportData() {
             const data = JSON.stringify(user, null, 2);
             const blob = new Blob([data], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
@@ -2038,25 +2454,34 @@
         }
 
         function showAbout() {
-            alert('YomuBot v2.0\n\nПриложение для изучения японского языка.\n\nРазработано с ❤️');
+            alert('YomuBot v2.0\n\nПриложение для изучения японского языка.\n\n🎌 Сделано с любовью!');
         }
 
-        // ==================== STORAGE ====================
+        // ==================== HELPERS ====================
         function saveUser() {
             localStorage.setItem('yomubot_user', JSON.stringify(user));
         }
 
-        // ==================== HELPERS ====================
-        function shuffle(array) {
-            const arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
+                [a[i], a[j]] = [a[j], a[i]];
             }
-            return arr;
+            return a;
         }
 
-        // ==================== INIT ====================
+        function haptic(type) {
+            if (!user.settings.vibration) return;
+            try {
+                if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+                else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
+                else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
+                else tg.HapticFeedback.impactOccurred('light');
+            } catch(e) {}
+        }
+
+        // ==================== START ====================
         init();
     </script>
 </body>
