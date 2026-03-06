@@ -54,9 +54,9 @@
 
         /* === КВИЗ И ГРАММАТИКА === */
         #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); z-index: 1;}
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.4s ease-out; }
-        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 30px; text-align: center; box-sizing: border-box; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
+        .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.6); border-radius: 15px; height: 16px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3); z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #22c55e, #10b981, #059669); width: 0%; transition: width 0.4s ease-out; box-shadow: inset 0 2px 4px rgba(255,255,255,0.3); }
+        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 50px; text-align: center; box-sizing: border-box; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
         .symbol { font-size: 60px; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.3);}
         .speaker-btn { background: rgba(255,255,255,0.2); border-radius: 50%; width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; margin-left: 15px; transition: 0.2s;}
         .speaker-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4);}
@@ -106,7 +106,13 @@
 <body>
     <div id="parallax-bg"></div>
     <div class="overlay"></div>
-    <div class="header" id="header-title">Загрузка...</div>
+    <div class="header" id="header-title">
+        <span>Загрузка...</span>
+        <div style="position: absolute; right: 20px; top: 0; font-size: 12px; display: flex; gap: 5px;">
+            <button onclick="testAudio()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 8px; border-radius: 5px; cursor: pointer;">🔊Тест</button>
+            <button onclick="testGif()" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 8px; border-radius: 5px; cursor: pointer;">🎬Тест</button>
+        </div>
+    </div>
 
     <!-- АЗБУКА С ВКЛАДКАМИ -->
     <div id="alphabet-mode" class="hidden">
@@ -207,34 +213,65 @@
         let currentModalChar = "", currentModalRomaji = "";
 
         // === ИДЕАЛЬНАЯ ОЗВУЧКА ===
-        // Работает через Google Translate Audio (срабатывает даже если телефон на беззвучном)
+        // Работает через несколько источников TTS
         function playAudio(text) {
             if (!text) return;
             console.log("Попытка воспроизвести звук для:", text);
             
+            // Источник 1: Google Translate TTS
             try {
-                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
-                console.log("URL аудио:", url);
+                const url1 = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
+                console.log("URL аудио (Google):", url1);
                 
-                const a = new Audio(url);
+                const a = new Audio(url1);
                 a.play().then(() => {
-                    console.log("Аудио успешно воспроизведено");
+                    console.log("Аудио успешно воспроизведено (Google)");
                 }).catch(e => {
-                    console.warn("Google TTS не сработал, используем Speech Synthesis:", e);
-                    // Резервный вариант на случай блокировки аудио
-                    let u = new SpeechSynthesisUtterance(text);
-                    u.lang = 'ja-JP';
-                    u.rate = 0.9;
-                    u.pitch = 1.0;
-                    window.speechSynthesis.speak(u);
+                    console.warn("Google TTS не сработал, пробуем источник 2:", e);
+                    tryAlternativeTTS(text);
                 });
             } catch(err) {
-                console.error("Ошибка воспроизведения аудио:", err);
+                console.error("Ошибка источника 1:", err);
+                tryAlternativeTTS(text);
+            }
+        }
+        
+        function tryAlternativeTTS(text) {
+            // Источник 2: Альтернативный Google TTS
+            try {
+                const url2 = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q=${encodeURIComponent(text)}`;
+                console.log("URL аудио (Alt):", url2);
+                
+                const a = new Audio(url2);
+                a.play().then(() => {
+                    console.log("Аудио успешно воспроизведено (Alt)");
+                }).catch(e => {
+                    console.warn("Alt TTS не сработал, используем Speech Synthesis:", e);
+                    trySpeechSynthesis(text);
+                });
+            } catch(err) {
+                console.error("Ошибка источника 2:", err);
+                trySpeechSynthesis(text);
+            }
+        }
+        
+        function trySpeechSynthesis(text) {
+            // Fallback: Web Speech API
+            try {
+                console.log("Используем Speech Synthesis для:", text);
                 let u = new SpeechSynthesisUtterance(text);
                 u.lang = 'ja-JP';
                 u.rate = 0.9;
                 u.pitch = 1.0;
+                u.volume = 1.0;
+                
+                u.onstart = () => console.log("Speech Synthesis начат");
+                u.onend = () => console.log("Speech Synthesis завершен");
+                u.onerror = (e) => console.error("Speech Synthesis ошибка:", e);
+                
                 window.speechSynthesis.speak(u);
+            } catch(err) {
+                console.error("Speech Synthesis тоже не сработал:", err);
             }
         }
 
@@ -406,7 +443,23 @@
         
         function playModalAudio() { 
             try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
+            console.log("Нажата кнопка звука для:", currentModalChar);
             playAudio(currentModalChar); 
+        }
+
+        // Тестовая функция для проверки звука
+        function testAudio() {
+            console.log("Тест звука");
+            playAudio('あ');
+        }
+
+        // Тестовая функция для проверки GIF
+        function testGif() {
+            console.log("Тест GIF");
+            currentModalChar = 'あ';
+            currentModalRomaji = 'a';
+            currentAlphaType = 'hira';
+            toggleGif();
         }
 
         // === ИДЕАЛЬНАЯ ЗАГРУЗКА GIF ===
@@ -527,6 +580,8 @@
                 buttonContainer.style.gap = '15px';
                 buttonContainer.style.marginTop = '20px';
                 buttonContainer.style.justifyContent = 'center';
+                buttonContainer.style.width = '100%';
+                buttonContainer.style.maxWidth = '350px';
                 
                 // Кнопка "Повторить тест"
                 const retryBtn = document.createElement('button');
@@ -535,6 +590,7 @@
                 retryBtn.style.marginTop = '0';
                 retryBtn.style.flex = '1';
                 retryBtn.onclick = () => {
+                    console.log("Повтор теста");
                     currentIndex = 0;
                     score = 0;
                     document.getElementById('result-screen').classList.add('hidden');
@@ -549,7 +605,9 @@
                 backBtn.style.flex = '1';
                 backBtn.style.background = 'linear-gradient(135deg, #64748b, #475569)';
                 backBtn.onclick = () => {
+                    console.log("Возврат к азбуке");
                     document.getElementById('result-screen').classList.add('hidden');
+                    document.getElementById('quiz-mode').classList.add('hidden');
                     initAlphabet();
                     switchSubTab('tests');
                 };
@@ -557,8 +615,9 @@
                 buttonContainer.appendChild(retryBtn);
                 buttonContainer.appendChild(backBtn);
                 
-                // Заменяем одну кнопку на контейнер с двумя
-                btn.parentNode.replaceChild(buttonContainer, btn);
+                // Очищаем и добавляем новые кнопки
+                btn.parentNode.innerHTML = '';
+                btn.parentNode.appendChild(buttonContainer);
             } else {
                 rTitle.innerText = "Завершено!";
                 rDesc.innerText = `Верных ответов: ${score} из ${appData.items.length}`;
