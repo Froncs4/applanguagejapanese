@@ -53,10 +53,10 @@
         .btn-gif:active { background: #e2e8f0; }
 
         /* === КВИЗ И ГРАММАТИКА === */
-        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 10px; box-sizing: border-box;}
-        .progress-container { position: absolute; top: 40px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.6); border-radius: 15px; height: 16px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3); z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.6); border-radius: 15px; height: 16px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3); z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .progress-bar { height: 100%; background: linear-gradient(90deg, #22c55e, #10b981, #059669); width: 0%; transition: width 0.4s ease-out; box-shadow: inset 0 2px 4px rgba(255,255,255,0.3); }
-        .question-card { width: 90%; max-width: 360px; padding: 30px 20px; margin-top: 10px; text-align: center; box-sizing: border-box; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
+        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 50px; text-align: center; box-sizing: border-box; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; z-index: 2; }
         .symbol { font-size: 60px; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.3);}
         .speaker-btn { background: rgba(255,255,255,0.2); border-radius: 50%; width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; margin-left: 15px; transition: 0.2s;}
         .speaker-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4);}
@@ -87,8 +87,8 @@
         .card-hint { font-size: 18px; color: #e2e8f0; text-align: center; }
 
         /* ФИНАЛ */
-        #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; text-align: center; padding-top: 20px; box-sizing: border-box;}
-        .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 20px; font-weight: bold; border: none; padding: 15px 30px; border-radius: 25px; width: 100%; max-width: 300px; margin-top: 20px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
+        #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; text-align: center; padding-top: 60px; box-sizing: border-box;}
+        .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 18px; font-weight: bold; border: none; padding: 12px 25px; border-radius: 25px; width: 100%; max-width: 280px; margin-top: 15px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
         
         #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: -1; }
@@ -163,7 +163,7 @@
             <div style="font-size: 100px;">🎉</div>
             <h2 style="font-size: 36px; margin: 10px 0;" id="result-title">Завершено!</h2>
             <p style="font-size: 20px; color: rgba(255,255,255,0.9);" id="result-desc"></p>
-            <div id="result-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 30px; width: 100%; max-width: 350px; align-items: center;">
+            <div id="result-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-top: 20px; width: 100%; max-width: 350px; align-items: center;">
                 <button class="claim-btn" id="claim-btn" onclick="claimReward()">Забрать награду</button>
             </div>
         </div>
