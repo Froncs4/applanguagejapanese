@@ -596,6 +596,20 @@
             cursor: pointer;
         }
 
+        .profile-edit-name {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+        }
+
         .profile-stats {
             display: flex;
             justify-content: space-around;
@@ -718,6 +732,7 @@
             font-size: 18px;
             color: white;
             background-color: var(--primary);
+            position: relative;
         }
 
         .leaderboard-info {
@@ -1619,6 +1634,7 @@
     <div class="screen" id="profileScreen">
         <div class="profile-header">
             <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
+            <button class="profile-edit-name" onclick="promptChangeName()">✏️</button>
             <div class="profile-avatar" id="profileAvatar">👤</div>
             <div class="profile-name" id="profileName">Пользователь</div>
             <div class="profile-rank-badge">
@@ -2048,30 +2064,45 @@
         }
 
         // ==================== АВАТАРКА ====================
-        function loadAvatar(url, elementId) {
-            const img = new Image();
-            img.onload = () => {
-                document.getElementById(elementId).style.backgroundImage = `url(${url})`;
-                document.getElementById(elementId).textContent = '';
-            };
-            img.onerror = () => {
-                // если не загрузилось, показываем инициалы
-                const initial = user.name.charAt(0).toUpperCase();
-                document.getElementById(elementId).style.backgroundImage = '';
-                document.getElementById(elementId).textContent = initial;
-            };
-            img.src = url;
+        function setAvatar() {
+            const name = user.name;
+            const initial = name.charAt(0).toUpperCase();
+            // Используем DiceBear для генерации аватарки по имени
+            const avatarUrl = `https://avatars.dicebear.com/api/initials/${encodeURIComponent(initial)}.svg?background=%23667eea&fontSize=40`;
+            document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
+            document.getElementById('userAvatar').textContent = '';
+            document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
+            document.getElementById('profileAvatar').textContent = '';
         }
 
-        function setAvatar() {
-            if (user.id) {
-                const url = `https://t.me/i/userpic/320/${user.id}.jpg`;
-                loadAvatar(url, 'userAvatar');
-                loadAvatar(url, 'profileAvatar');
-            } else {
-                const initial = user.name.charAt(0).toUpperCase();
-                document.getElementById('userAvatar').textContent = initial;
-                document.getElementById('profileAvatar').textContent = initial;
+        // ==================== СМЕНА ИМЕНИ ====================
+        async function promptChangeName() {
+            const newName = prompt('Введите новое имя (макс. 15 символов):', user.name);
+            if (newName && newName.trim()) {
+                const trimmed = newName.trim().slice(0, 15);
+                try {
+                    const response = await fetch(`${API_BASE}/api/setname`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-Telegram-Init-Data': tg.initData 
+                        },
+                        body: JSON.stringify({ name: trimmed })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        user.name = trimmed;
+                        saveUser();
+                        updateUI();
+                        setAvatar();
+                        alert('Имя изменено!');
+                    } else {
+                        alert('Ошибка при смене имени');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('Ошибка соединения с сервером');
+                }
             }
         }
 
@@ -2166,11 +2197,11 @@
                 const rank = index + 1;
                 const name = p.name || 'Ученик';
                 const initial = name.charAt(0).toUpperCase();
-                const avatarUrl = `https://t.me/i/userpic/320/${p.id}.jpg`;
+                const avatarUrl = `https://avatars.dicebear.com/api/initials/${encodeURIComponent(initial)}.svg?background=%23667eea&fontSize=40`;
                 html += `
                     <div class="leaderboard-item">
                         <div class="leaderboard-rank">#${rank}</div>
-                        <div class="leaderboard-avatar" style="background-image: url(${avatarUrl}); background-size: cover;" onerror="this.style.backgroundImage=''; this.textContent='${initial}'">${initial}</div>
+                        <div class="leaderboard-avatar" style="background-image: url(${avatarUrl}); background-size: cover;"></div>
                         <div class="leaderboard-info">
                             <div class="leaderboard-name">${name}</div>
                             <div class="leaderboard-details">
@@ -2300,81 +2331,81 @@
             modalData = null;
         }
 
-async function playSound() {
-    if (!modalData) return;
-    const text = modalData.char || modalData.word;
-    
-    // Сначала пробуем Web Speech API
-    if ('speechSynthesis' in window && user.settings.sound) {
-        try {
-            speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'ja-JP';
-            u.rate = 0.7;
-            speechSynthesis.speak(u);
-            haptic('medium');
-            return;
-        } catch (e) {
-            console.warn('Web Speech failed, trying server TTS', e);
-        }
-    }
-    
-    // Если не получилось, запрашиваем с сервера
-    try {
-        const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
-            headers: { 'X-Telegram-Init-Data': tg.initData }
-        });
-        if (!response.ok) throw new Error('TTS failed');
-        const audioBlob = await response.blob();
-        const url = URL.createObjectURL(audioBlob);
-        const audio = new Audio(url);
-        audio.play();
-        haptic('medium');
-    } catch (e) {
-        console.error('TTS error:', e);
-        alert('Не удалось воспроизвести звук');
-    }
-}
-
-function showGif() {
-    if (!modalData) return;
-    const char = modalData.char || modalData.word;
-    const container = document.getElementById('modalGif');
-    container.innerHTML = '<span style="color:#999">Загрузка...</span>';
-    container.classList.add('show');
-    
-    const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
-    const urls = [
-        // Основные источники
-        `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
-        `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`,
-        // Резервные
-        `https://raw.githubusercontent.com/parsimonhi/animCJK/master/kanji/${hex}.gif`,
-        `https://raw.githubusercontent.com/alkuzad/kanji-images/master/kanji/${hex}.gif`,
-        // Для каны (хирагана/катакана)
-        `https://raw.githubusercontent.com/abeyuya/stroke-order/master/public/characters/${char}.gif`,
-        `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex}.gif`
-    ];
-    
-    let loaded = false;
-    function tryLoad(i) {
-        if (i >= urls.length || loaded) {
-            if (!loaded) container.innerHTML = '<span style="color:#f87171">Недоступно</span>';
-            return;
-        }
-        const img = new Image();
-        img.onload = () => {
-            if (!loaded) {
-                loaded = true;
-                container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px">`;
+        async function playSound() {
+            if (!modalData) return;
+            const text = modalData.char || modalData.word;
+            
+            // Сначала пробуем Web Speech API
+            if ('speechSynthesis' in window && user.settings.sound) {
+                try {
+                    speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(text);
+                    u.lang = 'ja-JP';
+                    u.rate = 0.7;
+                    speechSynthesis.speak(u);
+                    haptic('medium');
+                    return;
+                } catch (e) {
+                    console.warn('Web Speech failed, trying server TTS', e);
+                }
             }
-        };
-        img.onerror = () => tryLoad(i + 1);
-        img.src = urls[i];
-    }
-    tryLoad(0);
-    haptic('light');
-}
+            
+            // Если не получилось, запрашиваем с сервера
+            try {
+                const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
+                    headers: { 'X-Telegram-Init-Data': tg.initData }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const audioBlob = await response.blob();
+                const url = URL.createObjectURL(audioBlob);
+                const audio = new Audio(url);
+                await audio.play();
+                haptic('medium');
+            } catch (e) {
+                console.error('TTS error:', e);
+                alert('Не удалось воспроизвести звук. Проверьте подключение к серверу.');
+            }
+        }
+
+        function showGif() {
+            if (!modalData) return;
+            const char = modalData.char || modalData.word;
+            const container = document.getElementById('modalGif');
+            container.innerHTML = '<span style="color:#999">Загрузка...</span>';
+            container.classList.add('show');
+            
+            const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
+            const urls = [
+                // Основные источники
+                `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
+                `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`,
+                // Резервные
+                `https://raw.githubusercontent.com/parsimonhi/animCJK/master/kanji/${hex}.gif`,
+                `https://raw.githubusercontent.com/alkuzad/kanji-images/master/kanji/${hex}.gif`,
+                // Для каны (хирагана/катакана)
+                `https://raw.githubusercontent.com/abeyuya/stroke-order/master/public/characters/${char}.gif`,
+                `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex}.gif`
+            ];
+            
+            let loaded = false;
+            function tryLoad(i) {
+                if (i >= urls.length || loaded) {
+                    if (!loaded) container.innerHTML = '<span style="color:#f87171">Недоступно</span>';
+                    return;
+                }
+                const img = new Image();
+                img.onload = () => {
+                    if (!loaded) {
+                        loaded = true;
+                        container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px">`;
+                    }
+                };
+                img.onerror = () => tryLoad(i + 1);
+                img.src = urls[i];
+            }
+            tryLoad(0);
+            haptic('light');
+        }
 
         document.getElementById('modal').addEventListener('click', e => {
             if (e.target.id === 'modal') closeModal();
@@ -2760,5 +2791,3 @@ function showGif() {
     </script>
 </body>
 </html>
-
-
