@@ -8,46 +8,55 @@
     <style>
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; overflow: hidden; }
         .hidden { display: none !important; }
-        .header { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; }
+        .header { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; }
         .glass-panel { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); border-radius: 30px; }
 
-        /* === РЕЖИМ 1: УМНАЯ АЗБУКА С ГРУППАми И МОДАЛКОЙ === */
-        #alphabet-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 60px; box-sizing: border-box;}
-        .tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-bottom: 10px; padding: 5px; }
-        .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.3s; color: #94a3b8; }
-        .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
+        /* === РЕЖИМ 1: УМНАЯ АЗБУКА (ИСПРАВЛЕНО) === */
+        #alphabet-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 50px; box-sizing: border-box;}
         
-        .alphabet-container { width: 100%; max-width: 350px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; }
+        .main-tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 10px; padding: 5px; }
+        .sub-tabs { display: flex; width: 100%; max-width: 350px; border-bottom: 2px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        
+        .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; }
+        /* Стили для главных вкладок (Хира/Ката) */
+        .main-tabs .tab-btn { border-radius: 10px; }
+        .main-tabs .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
+        /* Стили для подвкладок (Все / Группы) */
+        .sub-tabs .tab-btn { font-size: 14px; padding: 8px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .sub-tabs .tab-btn.active { color: white; border-bottom: 2px solid #10b981; }
+
+        .alphabet-container { width: 100%; max-width: 360px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; }
+        
         .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; }
-        .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #6366f1; padding-left: 10px;}
+        .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #10b981; padding-left: 10px;}
         .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
         
-        .kana-cell { background: rgba(255,255,255,0.9); color: #0f172a; border-radius: 15px; padding: 15px 5px; text-align: center; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s; position: relative; overflow: hidden; }
+        .kana-cell { background: rgba(255,255,255,0.9); color: #0f172a; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.2); transition: 0.2s; }
         .kana-cell:active { transform: scale(0.9); background: #e2e8f0; }
-        .kana-char { font-size: 28px; font-weight: 900; margin-bottom: 5px; }
-        .kana-romaji { font-size: 12px; color: #64748b; font-weight: bold; text-transform: uppercase; }
+        .kana-char { font-size: 26px; font-weight: 900; margin-bottom: 2px; }
+        .kana-romaji { font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase; }
 
-        /* Всплывающее окно (Модалка) для буквы */
-        #modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+        /* Всплывающее окно (Модалка) */
+        #modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
         #modal-overlay.active { opacity: 1; pointer-events: all; }
         .modal-card { background: white; width: 85%; max-width: 320px; border-radius: 30px; padding: 30px; text-align: center; color: #0f172a; transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;}
         #modal-overlay.active .modal-card { transform: scale(1); }
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; font-weight: bold; }
         
-        .modal-symbol { font-size: 100px; font-weight: 900; line-height: 1; margin: 20px 0;}
-        .modal-gif { width: 150px; height: 150px; margin: 0 auto 10px auto; display: none; border-radius: 15px; background: #f1f5f9;}
+        .modal-symbol { font-size: 90px; font-weight: 900; line-height: 1; margin: 20px 0;}
+        .modal-gif { width: 120px; height: 120px; margin: 10px auto 20px auto; display: none; border-radius: 15px; border: 2px solid #e2e8f0; object-fit: contain;}
         
         .modal-romaji { font-size: 24px; font-weight: bold; color: #4f46e5; margin-bottom: 5px; text-transform: uppercase;}
         .modal-hint { font-size: 16px; color: #64748b; margin-bottom: 30px;}
         
         .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .modal-btn { padding: 15px; border-radius: 15px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .modal-btn { padding: 12px; border-radius: 15px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-audio { background: #e0e7ff; color: #4f46e5; }
         .btn-audio:active { background: #c7d2fe; }
         .btn-gif { background: #f1f5f9; color: #334155; }
         .btn-gif:active { background: #e2e8f0; }
 
-        /* === ОСТАЛЬНЫЕ РЕЖИМЫ (РУЛЕТКА, СВАЙПЫ, КВИЗ) ОСТАЛИСЬ БЕЗ ИЗМЕНЕНИЙ === */
+        /* === ОСТАЛЬНЫЕ РЕЖИМЫ (РУЛЕТКА, СВАЙПЫ, КВИЗ) === */
         #wheel-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wheel-container { position: relative; width: 320px; height: 320px; margin-bottom: 40px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)); }
         .wheel-outer { position: absolute; top: -10px; left: -10px; width: calc(100% + 20px); height: calc(100% + 20px); border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706, #fcd34d); z-index: -1; box-shadow: 0 0 30px rgba(245,158,11,0.5); }
@@ -93,12 +102,19 @@
     <div class="overlay"></div>
     <div class="header" id="header-title">Загрузка...</div>
 
-    <!-- АЗБУКА -->
+    <!-- АЗБУКА С ВКЛАДКАМИ -->
     <div id="alphabet-mode" class="hidden">
-        <div class="tabs">
-            <div class="tab-btn active" id="tab-hira" onclick="switchTab('hira')">Хирагана</div>
-            <div class="tab-btn" id="tab-kata" onclick="switchTab('kata')">Катакана</div>
+        <!-- Главные табы -->
+        <div class="main-tabs">
+            <div class="tab-btn active" id="tab-hira" onclick="switchMainTab('hira')">Хирагана</div>
+            <div class="tab-btn" id="tab-kata" onclick="switchMainTab('kata')">Катакана</div>
         </div>
+        <!-- Под-табы -->
+        <div class="sub-tabs">
+            <div class="tab-btn active" id="sub-all" onclick="switchSubTab('all')">Все символы</div>
+            <div class="tab-btn" id="sub-groups" onclick="switchSubTab('groups')">По группам</div>
+        </div>
+        
         <div class="alphabet-container" id="alphabet-container">
             <!-- Сюда вставляются ряды с буквами -->
         </div>
@@ -110,6 +126,7 @@
             <div class="modal-close" onclick="closeModal()">✕</div>
             
             <div class="modal-symbol" id="mod-sym">あ</div>
+            <!-- GIF скрыта по умолчанию -->
             <img class="modal-gif" id="mod-gif" src="" alt="gif">
             
             <div class="modal-romaji" id="mod-rom">a</div>
@@ -162,19 +179,38 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
-        // --- ДАННЫЕ ДЛЯ АЗБУКИ (Сгруппированные по рядам!) ---
+        document.addEventListener('mousemove', (e) => {
+            const bg = document.getElementById('parallax-bg');
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            bg.style.transform = `translate(${-x}px, ${-y}px)`;
+        });
+
+        // --- ДАННЫЕ ДЛЯ АЗБУКИ (Полные 46 символов!) ---
         const hiraGroups = [
-            { t: "Гласные", i: [{k:'あ',r:'a', h:'А с завитком'}, {k:'い',r:'i', h:'Две палочки'}, {k:'う',r:'u', h:'Похоже на У'}, {k:'え',r:'e', h:'Треугольник'}, {k:'お',r:'o', h:'Человечек'}] },
-            { t: "Ряд К", i: [{k:'か',r:'ka', h:'Катана'}, {k:'き',r:'ki', h:'Кит'}, {k:'く',r:'ku', h:'Кувшин'}, {k:'け',r:'ke', h:'Буква К'}, {k:'こ',r:'ko', h:'Два колеса'}] },
-            { t: "Ряд С", i: [{k:'さ',r:'sa', h:'Сабля'}, {k:'し',r:'shi', h:'Шип'}, {k:'す',r:'su', h:'Суп'}, {k:'せ',r:'se', h:'Стрелка'}, {k:'そ',r:'so', h:'Сок'}] },
-            { t: "Ряд Т", i: [{k:'た',r:'ta', h:'Танец'}, {k:'ち',r:'chi', h:'Цифра 5'}, {k:'つ',r:'tsu', h:'Улыбка'}, {k:'て',r:'te', h:'Телевизор'}, {k:'と',r:'to', h:'Торнадо'}] },
-            { t: "Ряд Н", i: [{k:'な',r:'na', h:'Узел'}, {k:'に',r:'ni', h:'Нитка'}, {k:'ぬ',r:'nu', h:'Лапша'}, {k:'ね',r:'ne', h:'Кошка'}, {k:'の',r:'no', h:'Номер'}] }
+            { t: "Гласные", i: [{k:'あ',r:'a'}, {k:'い',r:'i'}, {k:'う',r:'u'}, {k:'え',r:'e'}, {k:'お',r:'o'}] },
+            { t: "Ряд К", i: [{k:'か',r:'ka'}, {k:'き',r:'ki'}, {k:'く',r:'ku'}, {k:'け',r:'ke'}, {k:'こ',r:'ko'}] },
+            { t: "Ряд С", i: [{k:'さ',r:'sa'}, {k:'し',r:'shi'}, {k:'す',r:'su'}, {k:'せ',r:'se'}, {k:'そ',r:'so'}] },
+            { t: "Ряд Т", i: [{k:'た',r:'ta'}, {k:'ち',r:'chi'}, {k:'つ',r:'tsu'}, {k:'て',r:'te'}, {k:'と',r:'to'}] },
+            { t: "Ряд Н", i: [{k:'な',r:'na'}, {k:'に',r:'ni'}, {k:'ぬ',r:'nu'}, {k:'ね',r:'ne'}, {k:'の',r:'no'}] },
+            { t: "Ряд Х", i: [{k:'は',r:'ha'}, {k:'ひ',r:'hi'}, {k:'ふ',r:'fu'}, {k:'へ',r:'he'}, {k:'ほ',r:'ho'}] },
+            { t: "Ряд М", i: [{k:'ま',r:'ma'}, {k:'み',r:'mi'}, {k:'む',r:'mu'}, {k:'め',r:'me'}, {k:'も',r:'mo'}] },
+            { t: "Ряд Й", i: [{k:'や',r:'ya'}, {k:'ゆ',r:'yu'}, {k:'よ',r:'yo'}] },
+            { t: "Ряд Р", i: [{k:'ら',r:'ra'}, {k:'り',r:'ri'}, {k:'る',r:'ru'}, {k:'れ',r:'re'}, {k:'ろ',r:'ro'}] },
+            { t: "Ряд В/Н", i: [{k:'わ',r:'wa'}, {k:'を',r:'wo'}, {k:'ん',r:'n'}] }
         ];
         
         const kataGroups = [
-            { t: "Гласные", i: [{k:'ア',r:'a', h:'Угол'}, {k:'イ',r:'i', h:'Две палочки'}, {k:'ウ',r:'u', h:'У с шапкой'}, {k:'エ',r:'e', h:'Этажерка'}, {k:'オ',r:'o', h:'О - бежит'}] },
-            { t: "Ряд К", i: [{k:'カ',r:'ka', h:'Острый угол'}, {k:'キ',r:'ki', h:'Кит'}, {k:'ク',r:'ku', h:'Куб'}, {k:'ケ',r:'ke', h:'Кетчуп'}, {k:'コ',r:'ko', h:'Коробка'}] },
-            { t: "Ряд С", i: [{k:'サ',r:'sa', h:'Сабля'}, {k:'シ',r:'shi', h:'Широкая улыбка'}, {k:'ス',r:'su', h:'Сундук'}, {k:'セ',r:'se', h:'Сэндвич'}, {k:'ソ',r:'so', h:'Сок'}] }
+            { t: "Гласные", i: [{k:'ア',r:'a'}, {k:'イ',r:'i'}, {k:'ウ',r:'u'}, {k:'エ',r:'e'}, {k:'オ',r:'o'}] },
+            { t: "Ряд К", i: [{k:'カ',r:'ka'}, {k:'キ',r:'ki'}, {k:'ク',r:'ku'}, {k:'ケ',r:'ke'}, {k:'コ',r:'ko'}] },
+            { t: "Ряд С", i: [{k:'サ',r:'sa'}, {k:'シ',r:'shi'}, {k:'ス',r:'su'}, {k:'セ',r:'se'}, {k:'ソ',r:'so'}] },
+            { t: "Ряд Т", i: [{k:'タ',r:'ta'}, {k:'チ',r:'chi'}, {k:'ツ',r:'tsu'}, {k:'テ',r:'te'}, {k:'ト',r:'to'}] },
+            { t: "Ряд Н", i: [{k:'ナ',r:'na'}, {k:'ニ',r:'ni'}, {k:'ヌ',r:'nu'}, {k:'ネ',r:'ne'}, {k:'ノ',r:'no'}] },
+            { t: "Ряд Х", i: [{k:'ハ',r:'ha'}, {k:'ヒ',r:'hi'}, {k:'フ',r:'fu'}, {k:'ヘ',r:'he'}, {k:'ホ',r:'ho'}] },
+            { t: "Ряд М", i: [{k:'マ',r:'ma'}, {k:'ミ',r:'mi'}, {k:'ム',r:'mu'}, {k:'メ',r:'me'}, {k:'モ',r:'mo'}] },
+            { t: "Ряд Й", i: [{k:'ヤ',r:'ya'}, {k:'ユ',r:'yu'}, {k:'ヨ',r:'yo'}] },
+            { t: "Ряд Р", i: [{k:'ラ',r:'ra'}, {k:'リ',r:'ri'}, {k:'ル',r:'ru'}, {k:'レ',r:'re'}, {k:'ロ',r:'ro'}] },
+            { t: "Ряд В/Н", i: [{k:'ワ',r:'wa'}, {k:'ヲ',r:'wo'}, {k:'ン',r:'n'}] }
         ];
 
         // --- ДАННЫЕ ИГР ---
@@ -184,7 +220,7 @@
 
         let appData = { mode: "quiz", items: [] };
         let currentIndex = 0, score = 0;
-        let currentModalChar = "";
+        let currentModalChar = "", currentModalRomaji = "";
 
         function generateQuestions(mode) {
             let items = [];
@@ -221,135 +257,134 @@
             if (mode === 'wheel') initWheel();
             else if (mode === 'alphabet') initAlphabet();
             else {
-                try {
-                    const rawData = new URLSearchParams(window.location.search).get('d');
-                    if (rawData) appData.items = JSON.parse(decodeURIComponent(rawData));
-                } catch(e) {}
-                
-                if (appData.items.length === 0) appData.items = generateQuestions(mode);
-                
+                appData.items = generateQuestions(mode);
                 if (mode === 'swipe') initSwipeMode();
                 else initQuizMode();
             }
         };
 
         // ==========================================
-        // РЕЖИМ 1: УМНАЯ АЗБУКА (Модалки и GIF)
+        // РЕЖИМ 1: УМНАЯ АЗБУКА (МОДАЛКА И GIF)
         // ==========================================
         let currentAlphaType = 'hira';
+        let currentViewMode = 'all';
 
         function initAlphabet() {
             document.getElementById('alphabet-mode').classList.remove('hidden');
             document.getElementById('header-title').innerText = "Японская Азбука";
-            renderKana('hira');
+            renderKana();
         }
 
-        function switchTab(type) {
+        function switchMainTab(type) {
             currentAlphaType = type;
             document.getElementById('tab-hira').classList.remove('active');
             document.getElementById('tab-kata').classList.remove('active');
             document.getElementById(`tab-${type}`).classList.add('active');
-            renderKana(type);
+            renderKana();
         }
 
-        function renderKana(type) {
+        function switchSubTab(viewMode) {
+            currentViewMode = viewMode;
+            document.getElementById('sub-all').classList.remove('active');
+            document.getElementById('sub-groups').classList.remove('active');
+            document.getElementById(`sub-${viewMode}`).classList.add('active');
+            renderKana();
+        }
+
+        function renderKana() {
             const container = document.getElementById('alphabet-container');
             container.innerHTML = "";
-            const groups = type === 'hira' ? hiraGroups : kataGroups;
+            const groups = currentAlphaType === 'hira' ? hiraGroups : kataGroups;
             
-            groups.forEach(group => {
-                const rowBlock = document.createElement('div');
-                rowBlock.className = 'row-group';
-                
-                const title = document.createElement('div');
-                title.className = 'row-title';
-                title.innerText = group.t;
-                rowBlock.appendChild(title);
-                
+            if (currentViewMode === 'all') {
                 const grid = document.createElement('div');
                 grid.className = 'kana-grid';
-                
-                group.i.forEach(item => {
-                    const cell = document.createElement('div');
-                    cell.className = 'kana-cell';
-                    cell.innerHTML = `<div class="kana-char">${item.k}</div><div class="kana-romaji">${item.r}</div>`;
-                    
-                    cell.onclick = () => {
-                        try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
-                        openModal(item.k, item.r, item.h);
-                    };
-                    grid.appendChild(cell);
+                groups.forEach(group => {
+                    group.i.forEach(item => {
+                        const cell = createKanaCell(item);
+                        grid.appendChild(cell);
+                    });
                 });
-                
-                rowBlock.appendChild(grid);
-                container.appendChild(rowBlock);
-            });
+                container.appendChild(grid);
+            } else {
+                groups.forEach(group => {
+                    const rowBlock = document.createElement('div');
+                    rowBlock.className = 'row-group';
+                    const title = document.createElement('div');
+                    title.className = 'row-title';
+                    title.innerText = group.t;
+                    rowBlock.appendChild(title);
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'kana-grid';
+                    group.i.forEach(item => { grid.appendChild(createKanaCell(item)); });
+                    
+                    rowBlock.appendChild(grid);
+                    container.appendChild(rowBlock);
+                });
+            }
+        }
+
+        function createKanaCell(item) {
+            const cell = document.createElement('div');
+            cell.className = 'kana-cell';
+            cell.innerHTML = `<div class="kana-char">${item.k}</div><div class="kana-romaji">${item.r}</div>`;
+            cell.onclick = () => {
+                try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
+                openModal(item.k, item.r, item.h);
+            };
+            return cell;
         }
 
         function openModal(char, romaji, hint) {
             currentModalChar = char;
+            currentModalRomaji = romaji;
             document.getElementById('mod-sym').innerText = char;
             document.getElementById('mod-rom').innerText = romaji;
-            document.getElementById('mod-hint').innerText = hint || "Нет подсказки";
+            document.getElementById('mod-hint').innerText = hint || "Запомните эту букву!";
             
-            // Прячем GIF при каждом новом открытии (до нажатия кнопки)
             document.getElementById('mod-sym').style.display = "block";
             document.getElementById('mod-gif').style.display = "none";
-            
             document.getElementById('modal-overlay').classList.add('active');
-            playAudio(char); // Авто-звук при открытии карточки!
+            playAudio(char); 
         }
 
-        function closeModal() {
-            document.getElementById('modal-overlay').classList.remove('active');
-        }
+        function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+        function playModalAudio() { playAudio(currentModalChar); try { tg.HapticFeedback.impactOccurred("light"); } catch(e){} }
 
-        function playModalAudio() {
-            try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
-            playAudio(currentModalChar);
-        }
-
-        function playAudio(text) {
-            let u = new SpeechSynthesisUtterance(text);
-            u.lang = 'ja-JP'; 
-            window.speechSynthesis.speak(u);
-        }
-
-        // Подгрузка GIF из Википедии (как в Python-боте)
         function toggleGif() {
             try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
             const sym = document.getElementById('mod-sym');
             const gif = document.getElementById('mod-gif');
-            const romaji = document.getElementById('mod-rom').innerText.toLowerCase();
             
             if (gif.style.display === "none") {
                 sym.style.display = "none";
                 gif.style.display = "block";
                 
-                // Формируем URL для GIF
                 let prefix = currentAlphaType === 'hira' ? 'Hiragana' : 'Katakana';
-                // Подменяем ши/чи/цу/фу для правильных ссылок вики
-                let r = romaji;
+                let r = currentModalRomaji.toLowerCase();
                 if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
-                
-                let gifUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
-                gif.src = gifUrl;
+                gif.src = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
             } else {
                 sym.style.display = "block";
                 gif.style.display = "none";
-                gif.src = "";
             }
         }
 
+        // --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ОЗВУЧКИ (ГАРАНТИРОВАННАЯ) ---
+        function playAudio(text) {
+            const googleTTSUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
+            new Audio(googleTTSUrl).play().catch(e => console.log(e));
+        }
+
         // ==========================================
-        // РЕЖИМ 2: РУЛЕТКА (МАТЕМАТИКА)
+        // РЕЖИМ 2: РУЛЕТКА
         // ==========================================
         const PRIZES = [100, 300, 500, 800, 1200];
         
         function initWheel() { 
             document.getElementById('wheel-mode').classList.remove('hidden'); 
             document.getElementById('header-title').innerText = "Испытай удачу!"; 
-            
             const wheel = document.getElementById('wheel');
             PRIZES.forEach((prize, index) => {
                 let el = document.createElement('div');
@@ -362,28 +397,18 @@
 
         function spin() {
             document.getElementById('spin-btn').style.display = "none";
-            
-            // ВЕРОЯТНОСТИ ИЗ ВАШИХ ТРЕБОВАНИЙ:
             let r = Math.random() * 100;
             let winningIndex = 0; 
-            
-            if (r < 1) winningIndex = 4;        // 1% - 1200
-            else if (r < 11) winningIndex = 3;  // 10% - 800
-            else if (r < 41) winningIndex = 2;  // 30% - 500
-            else if (r < 71) winningIndex = 1;  // 30% - 300
-            else winningIndex = 0;              // 29% - 100
-
+            if (r < 1) winningIndex = 4; else if (r < 11) winningIndex = 3; else if (r < 41) winningIndex = 2; else if (r < 71) winningIndex = 1; else winningIndex = 0;
             let targetCenterDeg = winningIndex * 72 + 36; 
             let finalRotation = 1800 + (360 - targetCenterDeg) + (Math.random() * 40 - 20);
-
             document.getElementById('wheel').style.transform = `rotate(${finalRotation}deg)`;
             try { tg.HapticFeedback.impactOccurred("heavy"); } catch(e){}
-            
             setTimeout(() => { tg.sendData("wheel_reward_" + PRIZES[winningIndex]); }, 5200);
         }
 
         // ==========================================
-        // КВИЗ И СВАЙПЫ (Классика)
+        // КВИЗ И СВАЙПЫ
         // ==========================================
         function speakText() {
             let textToSpeak = appData.items[currentIndex].q.replace("___", "");
@@ -398,6 +423,7 @@
 
         let isWaiting = false;
         function initQuizMode() { document.getElementById('quiz-mode').classList.remove('hidden'); document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : "Проверка знаний"; renderQuizCard(); }
+        
         function renderQuizCard() {
             isWaiting = false; if (currentIndex >= appData.items.length) { showResults(); return; }
             const item = appData.items[currentIndex];
@@ -459,7 +485,8 @@
         function swipeCard(direction) {
             if (!activeCard) return;
             const flyX = direction === 'right' ? window.innerWidth : -window.innerWidth;
-            activeCard.style.transition = 'transform 0.4s ease-out'; activeCard.style.transform = `translate(${flyX}px, 100px) rotate(${direction==='right'?30:-30}deg)`;
+            activeCard.style.transition = 'transform 0.4s ease-out';
+            activeCard.style.transform = `translate(${flyX}px, 100px) rotate(${direction==='right'?30:-30}deg)`;
             if (direction === 'right') { score++; try { tg.HapticFeedback.notificationOccurred("success"); } catch(e){} } else try { tg.HapticFeedback.notificationOccurred("error"); } catch(e){}
             activeCard = null; setTimeout(() => { currentIndex++; if (currentIndex >= appData.items.length) showResults(); else renderCards(); }, 300);
         }
