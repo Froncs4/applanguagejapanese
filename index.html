@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* ========== СТИЛИ (без изменений, как в предыдущей версии) ========== */
         :root {
             --primary: #667eea;
             --primary-dark: #5a67d8;
@@ -23,14 +24,12 @@
             --text-hint: var(--tg-theme-hint-color, #999999);
             --card-radius: 20px;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg);
@@ -39,12 +38,9 @@
             overflow-x: hidden;
             padding-bottom: 80px;
         }
-
         .japanese {
             font-family: 'Noto Sans JP', sans-serif;
         }
-
-        /* ========== BOTTOM NAV ========== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -58,7 +54,6 @@
             padding-bottom: calc(8px + env(safe-area-inset-bottom));
             z-index: 100;
         }
-
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -71,27 +66,20 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .nav-item.active {
             color: var(--primary);
         }
-
         .nav-item .icon {
             font-size: 22px;
             margin-bottom: 3px;
         }
-
-        /* ========== SCREENS ========== */
         .screen {
             display: none;
             min-height: 100vh;
         }
-
         .screen.active {
             display: block;
         }
-
-        /* ========== HOME SCREEN ========== */
         .home-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             padding: 24px 20px 28px;
@@ -99,14 +87,12 @@
             color: white;
             margin-bottom: 20px;
         }
-
         .user-row {
             display: flex;
             align-items: center;
             gap: 14px;
             margin-bottom: 20px;
         }
-
         .avatar {
             width: 56px;
             height: 56px;
@@ -120,13 +106,11 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-
         .user-info h1 {
             font-size: 20px;
             font-weight: 700;
             margin-bottom: 4px;
         }
-
         .user-rank {
             display: flex;
             align-items: center;
@@ -134,12 +118,10 @@
             font-size: 13px;
             opacity: 0.9;
         }
-
         .stats-row {
             display: flex;
             gap: 10px;
         }
-
         .stat-box {
             flex: 1;
             background: rgba(255,255,255,0.15);
@@ -147,37 +129,29 @@
             padding: 12px;
             text-align: center;
         }
-
         .stat-value {
             font-size: 22px;
             font-weight: 700;
         }
-
         .stat-label {
             font-size: 11px;
             opacity: 0.85;
         }
-
-        /* ========== SECTIONS ========== */
         .section {
             padding: 0 16px;
             margin-bottom: 24px;
         }
-
         .section-title {
             font-size: 17px;
             font-weight: 700;
             margin-bottom: 12px;
             padding-left: 4px;
         }
-
-        /* ========== MENU GRID ========== */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
-
         .menu-card {
             background: var(--bg-secondary);
             border-radius: 18px;
@@ -187,39 +161,31 @@
             transition: all 0.2s;
             border: 2px solid transparent;
         }
-
         .menu-card:active {
             transform: scale(0.97);
             border-color: var(--primary);
         }
-
         .menu-card .card-icon {
             font-size: 32px;
             margin-bottom: 8px;
         }
-
         .menu-card .card-title {
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 3px;
         }
-
         .menu-card .card-subtitle {
             font-size: 11px;
             color: var(--text-hint);
         }
-
         .menu-card.wide {
             grid-column: span 2;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
-
         .menu-card.wide .card-subtitle {
             color: rgba(255,255,255,0.8);
         }
-
-        /* ========== DAILY QUESTS ========== */
         .quest-item {
             background: var(--bg-secondary);
             border-radius: 14px;
@@ -229,62 +195,50 @@
             align-items: center;
             gap: 12px;
         }
-
         .quest-icon {
             font-size: 26px;
         }
-
         .quest-info {
             flex: 1;
         }
-
         .quest-title {
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 6px;
         }
-
         .quest-bar {
             height: 6px;
             background: rgba(0,0,0,0.1);
             border-radius: 3px;
             overflow: hidden;
         }
-
         .quest-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             border-radius: 3px;
             transition: width 0.3s;
         }
-
         .quest-reward {
             font-size: 13px;
             font-weight: 600;
             color: var(--warning);
         }
-
         .quest-item.done {
             opacity: 0.6;
         }
-
         .quest-item.done .quest-reward {
             color: var(--success);
         }
-
-        /* ========== ALPHABET SCREEN ========== */
         .alphabet-header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 20px 16px;
             color: white;
             text-align: center;
         }
-
         .alphabet-header h2 {
             font-size: 22px;
             margin-bottom: 14px;
         }
-
         .tabs {
             display: flex;
             background: rgba(255,255,255,0.2);
@@ -292,7 +246,6 @@
             padding: 4px;
             margin-bottom: 14px;
         }
-
         .tab-btn {
             flex: 1;
             padding: 10px;
@@ -304,19 +257,16 @@
             border-radius: 10px;
             cursor: pointer;
         }
-
         .tab-btn.active {
             background: white;
             color: var(--primary);
         }
-
         .view-toggle {
             display: flex;
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
             padding: 3px;
         }
-
         .view-btn {
             flex: 1;
             padding: 8px;
@@ -328,22 +278,18 @@
             border-radius: 8px;
             cursor: pointer;
         }
-
         .view-btn.active {
             background: white;
             color: var(--primary);
         }
-
         .alphabet-content {
             padding: 16px;
         }
-
         .test-buttons {
             display: flex;
             gap: 10px;
             margin-bottom: 16px;
         }
-
         .test-btn {
             flex: 1;
             padding: 12px;
@@ -354,22 +300,17 @@
             cursor: pointer;
             color: white;
         }
-
         .test-btn.primary {
             background: linear-gradient(135deg, #f093fb, #f5576c);
         }
-
         .test-btn.secondary {
             background: linear-gradient(135deg, #4facfe, #00f2fe);
         }
-
-        /* ========== KANA GRID ========== */
         .kana-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 8px;
         }
-
         .kana-cell {
             aspect-ratio: 1;
             background: var(--bg-secondary);
@@ -381,45 +322,36 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-
         .kana-cell:active {
             transform: scale(0.95);
             background: var(--primary);
             color: white;
         }
-
         .kana-cell .char {
             font-size: 24px;
             font-weight: 500;
         }
-
         .kana-cell .reading {
             font-size: 10px;
             color: var(--text-hint);
             margin-top: 2px;
         }
-
         .kana-cell:active .reading {
             color: rgba(255,255,255,0.8);
         }
-
-        /* ========== ROW VIEW ========== */
         .kana-row {
             margin-bottom: 18px;
         }
-
         .row-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-
         .row-title {
             font-size: 15px;
             font-weight: 700;
         }
-
         .row-test-btn {
             padding: 6px 14px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -430,7 +362,6 @@
             font-weight: 600;
             cursor: pointer;
         }
-
         .row-cards {
             display: flex;
             gap: 8px;
@@ -438,11 +369,9 @@
             padding-bottom: 6px;
             scrollbar-width: none;
         }
-
         .row-cards::-webkit-scrollbar {
             display: none;
         }
-
         .row-card {
             min-width: 60px;
             height: 75px;
@@ -455,40 +384,31 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-
         .row-card:active {
             background: var(--primary);
             color: white;
         }
-
         .row-card .char {
             font-size: 26px;
         }
-
         .row-card .reading {
             font-size: 11px;
             color: var(--text-hint);
         }
-
         .row-card:active .reading {
             color: rgba(255,255,255,0.8);
         }
-
-        /* ========== STUDY SCREEN ========== */
         .study-header {
             background: linear-gradient(135deg, #f093fb, #f5576c);
             padding: 20px 16px;
             color: white;
         }
-
         .study-header h2 {
             font-size: 22px;
         }
-
         .study-content {
             padding: 16px;
         }
-
         .category-card {
             background: var(--bg-secondary);
             border-radius: 18px;
@@ -499,50 +419,40 @@
             gap: 14px;
             cursor: pointer;
         }
-
         .category-card:active {
             transform: scale(0.98);
         }
-
         .category-icon {
             font-size: 36px;
         }
-
         .category-info {
             flex: 1;
         }
-
         .category-title {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 4px;
         }
-
         .category-desc {
             font-size: 12px;
             color: var(--text-hint);
             margin-bottom: 8px;
         }
-
         .category-bar {
             height: 5px;
             background: rgba(0,0,0,0.1);
             border-radius: 3px;
             overflow: hidden;
         }
-
         .category-bar-fill {
             height: 100%;
             background: var(--success);
             border-radius: 3px;
         }
-
         .category-arrow {
             font-size: 18px;
             color: var(--text-hint);
         }
-
-        /* ========== PROFILE SCREEN ========== */
         .profile-header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 30px 20px;
@@ -550,7 +460,6 @@
             color: white;
             position: relative;
         }
-
         .profile-avatar {
             width: 80px;
             height: 80px;
@@ -565,13 +474,11 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-
         .profile-name {
             font-size: 22px;
             font-weight: 700;
             margin-bottom: 8px;
         }
-
         .profile-rank-badge {
             display: inline-flex;
             align-items: center;
@@ -581,7 +488,6 @@
             border-radius: 20px;
             font-size: 14px;
         }
-
         .profile-settings-btn {
             position: absolute;
             top: 20px;
@@ -595,7 +501,6 @@
             color: white;
             cursor: pointer;
         }
-
         .profile-edit-name {
             position: absolute;
             top: 20px;
@@ -609,7 +514,6 @@
             color: white;
             cursor: pointer;
         }
-
         .profile-stats {
             display: flex;
             justify-content: space-around;
@@ -620,42 +524,34 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             position: relative;
         }
-
         .profile-stat {
             text-align: center;
         }
-
         .profile-stat-value {
             font-size: 26px;
             font-weight: 700;
             color: var(--primary);
         }
-
         .profile-stat-label {
             font-size: 11px;
             color: var(--text-hint);
         }
-
         .profile-section {
             padding: 20px 16px;
         }
-
         .profile-section-title {
             font-size: 17px;
             font-weight: 700;
             margin-bottom: 14px;
         }
-
         .achievements-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
-
         .achievement {
             text-align: center;
         }
-
         .achievement-icon {
             width: 54px;
             height: 54px;
@@ -667,39 +563,31 @@
             justify-content: center;
             font-size: 26px;
         }
-
         .achievement.locked .achievement-icon {
             filter: grayscale(1);
             opacity: 0.4;
         }
-
         .achievement-name {
             font-size: 10px;
             color: var(--text-hint);
         }
-
-        /* ========== LEADERBOARD SCREEN ========== */
         .leaderboard-header {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 20px 16px;
             color: white;
             text-align: center;
         }
-
         .leaderboard-header h2 {
             font-size: 24px;
             margin-bottom: 5px;
         }
-
         .leaderboard-header p {
             opacity: 0.9;
             font-size: 14px;
         }
-
         .leaderboard-list {
             padding: 16px;
         }
-
         .leaderboard-item {
             display: flex;
             align-items: center;
@@ -709,7 +597,6 @@
             margin-bottom: 10px;
             gap: 12px;
         }
-
         .leaderboard-rank {
             font-size: 18px;
             font-weight: 700;
@@ -717,7 +604,6 @@
             min-width: 30px;
             text-align: center;
         }
-
         .leaderboard-avatar {
             width: 40px;
             height: 40px;
@@ -734,54 +620,43 @@
             background-color: var(--primary);
             position: relative;
         }
-
         .leaderboard-info {
             flex: 1;
         }
-
         .leaderboard-name {
             font-weight: 600;
             font-size: 16px;
         }
-
         .leaderboard-details {
             display: flex;
             gap: 12px;
             font-size: 12px;
             color: var(--text-hint);
         }
-
         .leaderboard-xp {
             font-weight: 700;
             color: var(--warning);
         }
-
         .leaderboard-streak {
             color: var(--error);
         }
-
-        /* ========== SETTINGS SCREEN ========== */
         .settings-header {
             padding: 20px 16px;
             background: var(--bg-secondary);
         }
-
         .settings-header h2 {
             font-size: 22px;
             font-weight: 700;
         }
-
         .settings-content {
             padding: 16px;
         }
-
         .settings-group {
             background: var(--bg-secondary);
             border-radius: 18px;
             overflow: hidden;
             margin-bottom: 16px;
         }
-
         .settings-item {
             display: flex;
             align-items: center;
@@ -790,30 +665,24 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
             cursor: pointer;
         }
-
         .settings-item:last-child {
             border-bottom: none;
         }
-
         .settings-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .settings-icon {
             font-size: 20px;
         }
-
         .settings-label {
             font-size: 15px;
         }
-
         .settings-value {
             font-size: 14px;
             color: var(--text-hint);
         }
-
         .toggle {
             width: 48px;
             height: 28px;
@@ -823,11 +692,9 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .toggle.active {
             background: var(--primary);
         }
-
         .toggle::after {
             content: '';
             position: absolute;
@@ -840,12 +707,9 @@
             transition: all 0.2s;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-
         .toggle.active::after {
             left: 23px;
         }
-
-        /* ========== MODAL ========== */
         .modal {
             position: fixed;
             top: 0;
@@ -860,11 +724,9 @@
             padding: 20px;
             backdrop-filter: blur(4px);
         }
-
         .modal.show {
             display: flex;
         }
-
         .modal-box {
             background: var(--bg);
             border-radius: 24px;
@@ -874,36 +736,30 @@
             width: 100%;
             animation: modalIn 0.25s ease;
         }
-
         @keyframes modalIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
-
         .modal-char {
             font-size: 80px;
             margin-bottom: 10px;
         }
-
         .modal-reading {
             font-size: 32px;
             color: var(--primary);
             font-weight: 700;
             margin-bottom: 6px;
         }
-
         .modal-meaning {
             font-size: 18px;
             color: var(--text);
             margin-bottom: 6px;
         }
-
         .modal-hint {
             font-size: 14px;
             color: var(--text-hint);
             margin-bottom: 20px;
         }
-
         .modal-gif {
             margin: 14px 0;
             display: none;
@@ -911,21 +767,17 @@
             align-items: center;
             justify-content: center;
         }
-
         .modal-gif.show {
             display: flex;
         }
-
         .modal-gif img {
             max-width: 150px;
             border-radius: 12px;
         }
-
         .modal-buttons {
             display: flex;
             gap: 10px;
         }
-
         .modal-btn {
             flex: 1;
             padding: 14px;
@@ -934,27 +786,21 @@
             font-size: 22px;
             cursor: pointer;
         }
-
         .modal-btn:active {
             transform: scale(0.95);
         }
-
         .modal-btn.sound {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
-
         .modal-btn.stroke {
             background: linear-gradient(135deg, var(--accent), #f5576c);
             color: white;
         }
-
         .modal-btn.close {
             background: var(--bg-secondary);
             flex: 0.5;
         }
-
-        /* ========== SWIPE SCREEN ========== */
         .swipe-screen {
             position: fixed;
             top: 0;
@@ -967,23 +813,19 @@
             z-index: 150;
             padding: 20px;
         }
-
         .swipe-screen.show {
             display: flex;
         }
-
         .swipe-header {
             text-align: center;
             padding-top: 20px;
             margin-bottom: 20px;
         }
-
         .swipe-header h2 {
             font-size: 22px;
             color: white;
             margin-bottom: 14px;
         }
-
         .swipe-progress {
             display: flex;
             align-items: center;
@@ -992,7 +834,6 @@
             color: rgba(255,255,255,0.8);
             font-size: 15px;
         }
-
         .progress-bar {
             width: 120px;
             height: 6px;
@@ -1000,14 +841,12 @@
             border-radius: 3px;
             overflow: hidden;
         }
-
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             border-radius: 3px;
             transition: width 0.3s;
         }
-
         .swipe-area {
             flex: 1;
             display: flex;
@@ -1015,7 +854,6 @@
             justify-content: center;
             position: relative;
         }
-
         .swipe-card {
             width: 280px;
             height: 380px;
@@ -1029,18 +867,15 @@
             position: relative;
             transition: transform 0.3s, opacity 0.3s;
         }
-
         .swipe-card .card-char {
             font-size: 120px;
             color: #1a1a2e;
             margin-bottom: 16px;
         }
-
         .swipe-card .card-hint {
             font-size: 16px;
             color: #999;
         }
-
         .swipe-card .card-answer {
             font-size: 36px;
             color: var(--primary);
@@ -1048,15 +883,12 @@
             opacity: 0;
             transition: opacity 0.2s;
         }
-
         .swipe-card.revealed .card-answer {
             opacity: 1;
         }
-
         .swipe-card.revealed .card-hint {
             display: none;
         }
-
         .swipe-indicators {
             position: absolute;
             top: 16px;
@@ -1066,7 +898,6 @@
             justify-content: space-between;
             pointer-events: none;
         }
-
         .indicator {
             padding: 8px 16px;
             border-radius: 20px;
@@ -1075,24 +906,20 @@
             opacity: 0;
             transition: opacity 0.2s;
         }
-
         .indicator.know {
             background: var(--success);
             color: white;
         }
-
         .indicator.learn {
             background: var(--error);
             color: white;
         }
-
         .swipe-buttons {
             display: flex;
             justify-content: center;
             gap: 30px;
             padding: 20px;
         }
-
         .swipe-btn {
             width: 64px;
             height: 64px;
@@ -1102,34 +929,27 @@
             cursor: pointer;
             box-shadow: 0 6px 20px rgba(0,0,0,0.25);
         }
-
         .swipe-btn:active {
             transform: scale(0.95);
         }
-
         .swipe-btn.no {
             background: var(--error);
             color: white;
         }
-
         .swipe-btn.reveal {
             background: var(--warning);
             color: white;
         }
-
         .swipe-btn.yes {
             background: var(--success);
             color: white;
         }
-
         .swipe-hint-text {
             text-align: center;
             color: rgba(255,255,255,0.5);
             font-size: 12px;
             padding-bottom: 20px;
         }
-
-        /* ========== QUIZ SCREEN ========== */
         .quiz-screen {
             position: fixed;
             top: 0;
@@ -1142,23 +962,19 @@
             z-index: 150;
             padding: 20px;
         }
-
         .quiz-screen.show {
             display: flex;
         }
-
         .quiz-header {
             text-align: center;
             padding-top: 20px;
             margin-bottom: 24px;
         }
-
         .quiz-title {
             font-size: 20px;
             color: white;
             margin-bottom: 14px;
         }
-
         .quiz-score {
             display: flex;
             justify-content: center;
@@ -1166,15 +982,12 @@
             font-size: 17px;
             font-weight: 600;
         }
-
         .quiz-score .correct {
             color: var(--success);
         }
-
         .quiz-score .wrong {
             color: var(--error);
         }
-
         .quiz-card {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 26px;
@@ -1182,18 +995,15 @@
             text-align: center;
             margin-bottom: 28px;
         }
-
         .quiz-char {
             font-size: 90px;
             color: white;
         }
-
         .quiz-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
-
         .quiz-option {
             padding: 18px;
             background: rgba(255,255,255,0.95);
@@ -1205,26 +1015,20 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-
         .quiz-option:active {
             transform: scale(0.97);
         }
-
         .quiz-option.correct {
             background: var(--success);
             color: white;
         }
-
         .quiz-option.wrong {
             background: var(--error);
             color: white;
         }
-
         .quiz-option.disabled {
             pointer-events: none;
         }
-
-        /* ========== RESULTS SCREEN ========== */
         .results-screen {
             position: fixed;
             top: 0;
@@ -1240,29 +1044,24 @@
             padding: 20px;
             text-align: center;
         }
-
         .results-screen.show {
             display: flex;
         }
-
         .results-icon {
             font-size: 90px;
             margin-bottom: 20px;
             animation: bounce 0.5s ease;
         }
-
         @keyframes bounce {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.15); }
         }
-
         .results-title {
             font-size: 30px;
             font-weight: 700;
             color: white;
             margin-bottom: 10px;
         }
-
         .results-score {
             font-size: 52px;
             font-weight: 800;
@@ -1271,20 +1070,17 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }
-
         .results-xp {
             font-size: 22px;
             color: var(--warning);
             font-weight: 600;
             margin-bottom: 8px;
         }
-
         .results-subtitle {
             font-size: 16px;
             color: rgba(255,255,255,0.7);
             margin-bottom: 36px;
         }
-
         .results-btn {
             width: 100%;
             max-width: 260px;
@@ -1296,18 +1092,14 @@
             cursor: pointer;
             margin-bottom: 12px;
         }
-
         .results-btn.primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
-
         .results-btn.secondary {
             background: rgba(255,255,255,0.1);
             color: white;
         }
-
-        /* ========== WHEEL SCREEN ========== */
         .wheel-screen {
             position: fixed;
             top: 0;
@@ -1322,11 +1114,9 @@
             z-index: 150;
             padding: 20px;
         }
-
         .wheel-screen.show {
             display: flex;
         }
-
         .wheel-title {
             font-size: 26px;
             color: white;
@@ -1335,20 +1125,17 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .wheel-subtitle {
             color: rgba(255,255,255,0.6);
             font-size: 14px;
             margin-bottom: 30px;
         }
-
         .wheel-container {
             position: relative;
             width: 280px;
             height: 280px;
             margin-bottom: 30px;
         }
-
         .wheel {
             width: 100%;
             height: 100%;
@@ -1356,7 +1143,6 @@
             transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
             box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 40px rgba(102,126,234,0.3);
         }
-
         .wheel-pointer {
             position: absolute;
             top: -12px;
@@ -1370,7 +1156,6 @@
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
             z-index: 10;
         }
-
         .wheel-center {
             position: absolute;
             top: 50%;
@@ -1387,7 +1172,6 @@
             font-size: 22px;
             z-index: 5;
         }
-
         .wheel-spin-btn {
             padding: 16px 50px;
             background: linear-gradient(135deg, #f093fb, #f5576c);
@@ -1399,13 +1183,11 @@
             cursor: pointer;
             box-shadow: 0 8px 25px rgba(240,147,251,0.4);
         }
-
         .wheel-spin-btn:disabled {
             background: #555;
             cursor: not-allowed;
             box-shadow: none;
         }
-
         .wheel-result {
             margin-top: 24px;
             padding: 18px 30px;
@@ -1414,12 +1196,10 @@
             display: none;
             text-align: center;
         }
-
         .wheel-result.show {
             display: block;
             animation: modalIn 0.4s ease;
         }
-
         .wheel-result-xp {
             font-size: 42px;
             font-weight: 800;
@@ -1427,13 +1207,11 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .wheel-result-text {
             color: rgba(255,255,255,0.8);
             font-size: 14px;
             margin-top: 4px;
         }
-
         .wheel-close {
             position: absolute;
             top: 20px;
@@ -1447,8 +1225,6 @@
             font-size: 20px;
             cursor: pointer;
         }
-
-        /* ========== LOADING ========== */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -1462,24 +1238,20 @@
             justify-content: center;
             z-index: 300;
         }
-
         .loading-logo {
             font-size: 60px;
             margin-bottom: 16px;
             animation: pulse 1.2s infinite;
         }
-
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
-
         .loading-text {
             color: white;
             font-size: 18px;
             font-weight: 600;
         }
-
         .loading-spinner {
             width: 36px;
             height: 36px;
@@ -1489,18 +1261,16 @@
             animation: spin 0.8s linear infinite;
             margin-top: 18px;
         }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
         .hidden {
             display: none !important;
         }
     </style>
 </head>
 <body>
-        <!-- Loading -->
+    <!-- Loading -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
         <div class="loading-text">YomuBot</div>
@@ -1535,12 +1305,10 @@
                 </div>
             </div>
         </div>
-
         <div class="section">
             <div class="section-title">📋 Ежедневные задания</div>
             <div id="questsList"></div>
         </div>
-
         <div class="section">
             <div class="section-title">📚 Обучение</div>
             <div class="menu-grid">
@@ -1571,7 +1339,6 @@
                 </div>
             </div>
         </div>
-
         <div class="section">
             <div class="section-title">🎮 Практика</div>
             <div class="menu-grid">
@@ -1660,10 +1427,7 @@
         <!-- Детальная статистика -->
         <div class="profile-section">
             <div class="profile-section-title">📊 Прогресс по разделам</div>
-            <div id="progressDetails" style="margin-bottom: 20px;">
-                <!-- будет заполнено динамически -->
-            </div>
-
+            <div id="progressDetails" style="margin-bottom: 20px;"></div>
             <div class="profile-section-title">🎯 Дополнительно</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                 <div class="stat-box" style="background: var(--bg-secondary);">
@@ -1698,7 +1462,6 @@
             <p>Топ-20 по опыту</p>
         </div>
         <div class="leaderboard-list" id="leaderboardList">
-            <!-- будет заполнено динамически -->
             <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
@@ -1866,7 +1629,7 @@
         tg.ready();
 
         // ==================== КОНФИГУРАЦИЯ СЕРВЕРА ====================
-        // ЗАМЕНИТЕ НА ВАШ АДРЕС NGROK (например, https://endless-max-jowly.ngrok-free.dev)
+        // !!! ЗАМЕНИТЕ НА ВАШ АДРЕС NGROK (например, https://endless-max-jowly.ngrok-free.dev)
         const API_BASE = 'https://endless-max-jowly.ngrok-free.dev'; 
 
         // ==================== STATE ====================
@@ -1889,20 +1652,8 @@
         let alphabetView = 'grid';
         let modalData = null;
 
-        let quiz = {
-            items: [],
-            index: 0,
-            correct: 0,
-            wrong: 0,
-            type: 'mixed'
-        };
-
-        let swipe = {
-            items: [],
-            index: 0,
-            correct: 0,
-            wrong: 0
-        };
+        let quiz = { items: [], index: 0, correct: 0, wrong: 0, type: 'mixed' };
+        let swipe = { items: [], index: 0, correct: 0, wrong: 0 };
 
         // ==================== ДАННЫЕ ====================
         const ACHIEVEMENTS = [
@@ -1933,24 +1684,16 @@
             {value: 150, color: '#e91e63'}
         ];
 
-        // ==================== ФУНКЦИИ ОТПРАВКИ ====================
+        // ==================== ФУНКЦИИ ====================
         function sendResult(type, score) {
-            const data = {
-                type: type,
-                score: score,
-                initData: tg.initData
-            };
+            const data = { type, score, initData: tg.initData };
             tg.sendData(JSON.stringify(data));
         }
 
-        // ==================== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====================
         async function fetchUserFromServer() {
             try {
                 const response = await fetch(`${API_BASE}/api/user`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Telegram-Init-Data': tg.initData
-                    }
+                    headers: { 'X-Telegram-Init-Data': tg.initData }
                 });
                 if (!response.ok) throw new Error('Server error');
                 const data = await response.json();
@@ -1970,53 +1713,44 @@
         }
 
         async function fetchLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>';
             try {
                 const response = await fetch(`${API_BASE}/api/leaderboard`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Telegram-Init-Data': tg.initData
-                    }
+                    headers: { 'X-Telegram-Init-Data': tg.initData }
                 });
-                if (!response.ok) throw new Error('Failed to fetch leaderboard');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 if (data.success) {
                     renderLeaderboard(data.players);
                 } else {
-                    document.getElementById('leaderboardList').innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Нет данных</div>';
+                    container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Нет данных</div>';
                 }
             } catch (e) {
-                console.error(e);
-                document.getElementById('leaderboardList').innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Ошибка загрузки</div>';
+                console.error('Leaderboard error:', e);
+                container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Ошибка загрузки</div>';
             }
         }
 
-        // ==================== ЗАГРУЗКА ДЕТАЛЬНОЙ СТАТИСТИКИ ====================
         async function fetchUserStats() {
             try {
                 const response = await fetch(`${API_BASE}/api/user/stats`, {
-                    method: 'GET',
-                    headers: {
-                        'X-Telegram-Init-Data': tg.initData
-                    }
+                    headers: { 'X-Telegram-Init-Data': tg.initData }
                 });
                 if (!response.ok) throw new Error('Failed to fetch stats');
                 const data = await response.json();
-                if (data.success) {
-                    renderProfileStats(data.stats);
-                }
+                if (data.success) renderProfileStats(data.stats);
             } catch (e) {
                 console.warn('Could not fetch detailed stats', e);
             }
         }
 
         function renderProfileStats(stats) {
-            // Обновляем дополнительные поля
             document.getElementById('profileBestStreak').textContent = stats.best_streak || 0;
             document.getElementById('profileAccuracy').textContent = Math.round((stats.accuracy || 0) * 100) + '%';
             document.getElementById('profileBlitz').textContent = stats.best_blitz || 0;
             document.getElementById('profileVoice').textContent = stats.voice_msgs || 0;
 
-            // Прогресс по разделам
             const byType = stats.by_type || {};
             const sections = [
                 { id: 'hiragana', name: 'Хирагана', total: 46 },
@@ -2026,19 +1760,17 @@
                 { id: 'kanji_n4', name: 'Кандзи N4', total: 181 },
                 { id: 'words_n4', name: 'Слова N4', total: 16 }
             ];
-
             let progressHtml = '';
             sections.forEach(sec => {
                 const learned = byType[sec.id] || 0;
                 const percent = Math.min(100, Math.round(learned / sec.total * 100));
                 progressHtml += `
-                    <div style="margin-bottom: 12px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;">
-                            <span>${sec.name}</span>
-                            <span>${learned}/${sec.total} (${percent}%)</span>
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                            <span>${sec.name}</span><span>${learned}/${sec.total} (${percent}%)</span>
                         </div>
-                        <div style="height: 6px; background: var(--bg-secondary); border-radius: 3px;">
-                            <div style="height: 100%; width: ${percent}%; background: var(--primary); border-radius: 3px;"></div>
+                        <div style="height:6px; background:var(--bg-secondary); border-radius:3px;">
+                            <div style="height:100%; width:${percent}%; background:var(--primary); border-radius:3px;"></div>
                         </div>
                     </div>
                 `;
@@ -2046,7 +1778,6 @@
             document.getElementById('progressDetails').innerHTML = progressHtml;
         }
 
-        // ==================== ЗАГРУЗКА ИЗ STORAGE ====================
         function loadUserFromStorage() {
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
@@ -2063,19 +1794,16 @@
             localStorage.setItem('yomubot_user', JSON.stringify(user));
         }
 
-        // ==================== АВАТАРКА ====================
         function setAvatar() {
             const name = user.name;
             const initial = name.charAt(0).toUpperCase();
-            // Используем DiceBear для генерации аватарки по имени
-            const avatarUrl = `https://avatars.dicebear.com/api/initials/${encodeURIComponent(initial)}.svg?background=%23667eea&fontSize=40`;
+            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=128`;
             document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('userAvatar').textContent = '';
             document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('profileAvatar').textContent = '';
         }
 
-        // ==================== СМЕНА ИМЕНИ ====================
         async function promptChangeName() {
             const newName = prompt('Введите новое имя (макс. 15 символов):', user.name);
             if (newName && newName.trim()) {
@@ -2106,12 +1834,9 @@
             }
         }
 
-        // ==================== INIT ====================
         async function init() {
             const serverOk = await fetchUserFromServer();
-            if (!serverOk) {
-                loadUserFromStorage();
-            }
+            if (!serverOk) loadUserFromStorage();
 
             const today = new Date().toDateString();
             if (!user.questsDate || user.questsDate !== today) {
@@ -2130,7 +1855,6 @@
             }, 800);
         }
 
-        // ==================== NAVIGATION ====================
         function goTo(screen, param = null) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -2145,7 +1869,6 @@
             haptic('light');
         }
 
-        // ==================== UI UPDATE ====================
         function updateUI() {
             const rank = getRank(user.xp);
             document.getElementById('userName').textContent = user.name;
@@ -2158,16 +1881,15 @@
         }
 
         function getRank(xp) {
-            if (typeof RANKS === 'undefined') return {min: 0, name: 'Новичок', badge: '🥚', frame: 1};
+            if (typeof RANKS === 'undefined') return {min:0, name:'Новичок', badge:'🥚', frame:1};
             let rank = RANKS[0];
             for (const r of RANKS) if (xp >= r.min) rank = r;
             return rank;
         }
 
         function renderQuests() {
-            const container = document.getElementById('questsList');
             const quests = user.quests || {};
-            container.innerHTML = DAILY_QUESTS.map(q => {
+            document.getElementById('questsList').innerHTML = DAILY_QUESTS.map(q => {
                 const progress = quests[q.id] || 0;
                 const done = progress >= q.target;
                 const pct = Math.min(progress / q.target * 100, 100);
@@ -2176,9 +1898,7 @@
                         <div class="quest-icon">${q.icon}</div>
                         <div class="quest-info">
                             <div class="quest-title">${q.name}</div>
-                            <div class="quest-bar">
-                                <div class="quest-bar-fill" style="width:${pct}%"></div>
-                            </div>
+                            <div class="quest-bar"><div class="quest-bar-fill" style="width:${pct}%"></div></div>
                         </div>
                         <div class="quest-reward">${done ? '✓' : '+' + q.xp}</div>
                     </div>
@@ -2189,7 +1909,7 @@
         function renderLeaderboard(players) {
             const container = document.getElementById('leaderboardList');
             if (!players || players.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Рейтинг пока пуст</div>';
+                container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-hint);">Рейтинг пока пуст</div>';
                 return;
             }
             let html = '';
@@ -2197,7 +1917,7 @@
                 const rank = index + 1;
                 const name = p.name || 'Ученик';
                 const initial = name.charAt(0).toUpperCase();
-                const avatarUrl = `https://avatars.dicebear.com/api/initials/${encodeURIComponent(initial)}.svg?background=%23667eea&fontSize=40`;
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
                 html += `
                     <div class="leaderboard-item">
                         <div class="leaderboard-rank">#${rank}</div>
@@ -2213,21 +1933,6 @@
                 `;
             });
             container.innerHTML = html;
-        }
-
-        // ==================== ALPHABET ====================
-        function setAlphabetTab(tab) {
-            alphabetTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.tab-btn[onclick="setAlphabetTab('${tab}')"]`).classList.add('active');
-            renderAlphabet();
-        }
-
-        function setAlphabetView(view) {
-            alphabetView = view;
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.view-btn[onclick="setAlphabetView('${view}')"]`).classList.add('active');
-            renderAlphabet();
         }
 
         function renderAlphabet() {
@@ -2248,17 +1953,12 @@
                 document.getElementById('alphabetRows').classList.remove('hidden');
                 document.getElementById('alphabetRows').innerHTML = rows.map((row, ri) => `
                     <div class="kana-row">
-                        <div class="row-header">
-                            <span class="row-title">${row.name}</span>
-                            <button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button>
-                        </div>
-                        <div class="row-cards">
-                            ${row.chars.map((c, ci) => `
-                                <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
-                                    <div class="char japanese">${c.char}</div>
-                                    <div class="reading">${c.reading}</div>
-                                </div>
-                            `).join('')}
+                        <div class="row-header"><span class="row-title">${row.name}</span><button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button></div>
+                        <div class="row-cards">${row.chars.map((c, ci) => `
+                            <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
+                                <div class="char japanese">${c.char}</div>
+                                <div class="reading">${c.reading}</div>
+                            </div>`).join('')}
                         </div>
                     </div>
                 `).join('');
@@ -2267,26 +1967,22 @@
 
         function openKanaModal(index) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            const allChars = rows.flatMap(r => r.chars);
-            openModal(allChars[index]);
+            openModal(rows.flatMap(r => r.chars)[index]);
         }
-
         function openKanaModalFromRow(rowIndex, charIndex) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             openModal(rows[rowIndex].chars[charIndex]);
         }
 
-        // ==================== STUDY ====================
         function renderStudy(category = null) {
             if (typeof KANJI_N5 === 'undefined' || typeof KANJI_N4 === 'undefined' || typeof KANJI_N3 === 'undefined' || typeof WORDS_N5 === 'undefined') return;
             const categories = [
-                {id: 'kanji_n5', name: 'Кандзи N5', icon: '🈁', desc: '103 базовых иероглифа', data: KANJI_N5},
-                {id: 'kanji_n4', name: 'Кандзи N4', icon: '🈁', desc: '181 иероглиф', data: KANJI_N4},
-                {id: 'kanji_n3', name: 'Кандзи N3', icon: '🈁', desc: '370 иероглифов', data: KANJI_N3},
-                {id: 'words_n5', name: 'Слова N5', icon: '📝', desc: 'Базовая лексика', data: WORDS_N5}
+                {id: 'kanji_n5', name:'Кандзи N5', icon:'🈁', desc:'103 базовых иероглифа', data:KANJI_N5},
+                {id: 'kanji_n4', name:'Кандзи N4', icon:'🈁', desc:'181 иероглиф', data:KANJI_N4},
+                {id: 'kanji_n3', name:'Кандзи N3', icon:'🈁', desc:'370 иероглифов', data:KANJI_N3},
+                {id: 'words_n5', name:'Слова N5', icon:'📝', desc:'Базовая лексика', data:WORDS_N5}
             ];
-            const container = document.getElementById('studyContent');
-            container.innerHTML = categories.map(cat => {
+            document.getElementById('studyContent').innerHTML = categories.map(cat => {
                 const progress = Math.floor(Math.random() * 60);
                 return `
                     <div class="category-card" onclick="openCategory('${cat.id}')">
@@ -2294,9 +1990,7 @@
                         <div class="category-info">
                             <div class="category-title">${cat.name}</div>
                             <div class="category-desc">${cat.desc}</div>
-                            <div class="category-bar">
-                                <div class="category-bar-fill" style="width:${progress}%"></div>
-                            </div>
+                            <div class="category-bar"><div class="category-bar-fill" style="width:${progress}%"></div></div>
                         </div>
                         <div class="category-arrow">›</div>
                     </div>
@@ -2313,8 +2007,7 @@
             if (data.length) openModal(data[0], 'kanji');
         }
 
-        // ==================== MODAL ====================
-        function openModal(item, type = 'kana') {
+        function openModal(item) {
             modalData = item;
             document.getElementById('modalChar').textContent = item.char || item.word || '';
             document.getElementById('modalReading').textContent = item.reading || '';
@@ -2334,8 +2027,6 @@
         async function playSound() {
             if (!modalData) return;
             const text = modalData.char || modalData.word;
-            
-            // Сначала пробуем Web Speech API
             if ('speechSynthesis' in window && user.settings.sound) {
                 try {
                     speechSynthesis.cancel();
@@ -2345,12 +2036,8 @@
                     speechSynthesis.speak(u);
                     haptic('medium');
                     return;
-                } catch (e) {
-                    console.warn('Web Speech failed, trying server TTS', e);
-                }
+                } catch (e) { console.warn(e); }
             }
-            
-            // Если не получилось, запрашиваем с сервера
             try {
                 const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
                     headers: { 'X-Telegram-Init-Data': tg.initData }
@@ -2373,20 +2060,15 @@
             const container = document.getElementById('modalGif');
             container.innerHTML = '<span style="color:#999">Загрузка...</span>';
             container.classList.add('show');
-            
             const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
             const urls = [
-                // Основные источники
                 `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
                 `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`,
-                // Резервные
                 `https://raw.githubusercontent.com/parsimonhi/animCJK/master/kanji/${hex}.gif`,
                 `https://raw.githubusercontent.com/alkuzad/kanji-images/master/kanji/${hex}.gif`,
-                // Для каны (хирагана/катакана)
                 `https://raw.githubusercontent.com/abeyuya/stroke-order/master/public/characters/${char}.gif`,
                 `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex}.gif`
             ];
-            
             let loaded = false;
             function tryLoad(i) {
                 if (i >= urls.length || loaded) {
@@ -2411,18 +2093,11 @@
             if (e.target.id === 'modal') closeModal();
         });
 
-        // ==================== QUIZ ====================
         function startQuiz(type) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             const count = type === 'full' ? 15 : 5;
-            quiz = {
-                items: shuffle(allKana).slice(0, count),
-                index: 0,
-                correct: 0,
-                wrong: 0,
-                type: type
-            };
+            quiz = { items: shuffle(allKana).slice(0, count), index: 0, correct: 0, wrong: 0, type };
             document.getElementById('quizTitle').textContent = '🎯 Тест';
             showQuizScreen();
             renderQuizQuestion();
@@ -2432,15 +2107,8 @@
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
-            quiz = {
-                items: shuffle(allChars).slice(0, count),
-                index: 0,
-                correct: 0,
-                wrong: 0,
-                type: 'alphabet'
-            };
-            const name = alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана';
-            document.getElementById('quizTitle').textContent = `🎯 ${name}`;
+            quiz = { items: shuffle(allChars).slice(0, count), index: 0, correct: 0, wrong: 0, type: 'alphabet' };
+            document.getElementById('quizTitle').textContent = `🎯 ${alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана'}`;
             showQuizScreen();
             renderQuizQuestion();
         }
@@ -2449,13 +2117,7 @@
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const row = rows[rowIndex];
-            quiz = {
-                items: shuffle([...row.chars]),
-                index: 0,
-                correct: 0,
-                wrong: 0,
-                type: 'row'
-            };
+            quiz = { items: shuffle([...row.chars]), index: 0, correct: 0, wrong: 0, type: 'row' };
             document.getElementById('quizTitle').textContent = `🎯 ${row.name}`;
             showQuizScreen();
             renderQuizQuestion();
@@ -2473,10 +2135,7 @@
         }
 
         function renderQuizQuestion() {
-            if (quiz.index >= quiz.items.length) {
-                showResults();
-                return;
-            }
+            if (quiz.index >= quiz.items.length) { showResults(); return; }
             const item = quiz.items[quiz.index];
             document.getElementById('quizChar').textContent = item.char;
             document.getElementById('quizCorrect').textContent = quiz.correct;
@@ -2495,17 +2154,9 @@
                 if (btn.textContent === correct) btn.classList.add('correct');
                 else if (btn.textContent === selected) btn.classList.add('wrong');
             });
-            if (selected === correct) {
-                quiz.correct++;
-                haptic('success');
-            } else {
-                quiz.wrong++;
-                haptic('error');
-            }
-            setTimeout(() => {
-                quiz.index++;
-                renderQuizQuestion();
-            }, 700);
+            if (selected === correct) { quiz.correct++; haptic('success'); }
+            else { quiz.wrong++; haptic('error'); }
+            setTimeout(() => { quiz.index++; renderQuizQuestion(); }, 700);
         }
 
         function showResults() {
@@ -2539,10 +2190,7 @@
 
         function finishQuiz() {
             sendResult('quiz_result', quiz.correct);
-            setTimeout(() => {
-                hideQuizScreen();
-                goTo('home');
-            }, 100);
+            setTimeout(() => { hideQuizScreen(); goTo('home'); }, 100);
         }
 
         function retryQuiz() {
@@ -2551,26 +2199,17 @@
             else startQuiz(quiz.type);
         }
 
-        // ==================== SWIPE ====================
         function startSwipe() {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
-            swipe = {
-                items: shuffle(allKana).slice(0, 10),
-                index: 0,
-                correct: 0,
-                wrong: 0
-            };
+            swipe = { items: shuffle(allKana).slice(0,10), index:0, correct:0, wrong:0 };
             document.getElementById('swipeScreen').classList.add('show');
             document.getElementById('bottomNav').classList.add('hidden');
             renderSwipeCard();
         }
 
         function renderSwipeCard() {
-            if (swipe.index >= swipe.items.length) {
-                showSwipeResults();
-                return;
-            }
+            if (swipe.index >= swipe.items.length) { showSwipeResults(); return; }
             const item = swipe.items[swipe.index];
             const card = document.getElementById('swipeCard');
             document.getElementById('swipeChar').textContent = item.char;
@@ -2580,8 +2219,8 @@
             card.classList.remove('revealed');
             card.style.transform = '';
             card.style.opacity = '1';
-            document.getElementById('swipeCount').textContent = `${swipe.index + 1} / ${swipe.items.length}`;
-            document.getElementById('swipeProgress').style.width = `${swipe.index / swipe.items.length * 100}%`;
+            document.getElementById('swipeCount').textContent = `${swipe.index+1} / ${swipe.items.length}`;
+            document.getElementById('swipeProgress').style.width = `${swipe.index/swipe.items.length*100}%`;
             document.querySelectorAll('.indicator').forEach(i => i.style.opacity = '0');
         }
 
@@ -2600,10 +2239,7 @@
             card.style.opacity = '0';
             swipe.correct++;
             haptic('medium');
-            setTimeout(() => {
-                swipe.index++;
-                renderSwipeCard();
-            }, 250);
+            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
         }
 
         function swipeNo() {
@@ -2613,10 +2249,7 @@
             card.style.opacity = '0';
             swipe.wrong++;
             haptic('medium');
-            setTimeout(() => {
-                swipe.index++;
-                renderSwipeCard();
-            }, 250);
+            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
         }
 
         function showSwipeResults() {
@@ -2643,7 +2276,6 @@
             sendResult('swipe_result', swipe.correct);
         }
 
-        // ==================== WHEEL ====================
         function createWheel() {
             const svg = document.getElementById('wheel');
             const total = WHEEL_PRIZES.length;
@@ -2718,7 +2350,6 @@
             }, 4500);
         }
 
-        // ==================== PROFILE ====================
         function renderProfile() {
             const rank = getRank(user.xp);
             document.getElementById('profileName').textContent = user.name;
@@ -2727,24 +2358,14 @@
             document.getElementById('profileCards').textContent = user.cardsLearned;
             document.getElementById('profileBadge').textContent = rank.badge;
             document.getElementById('profileRankName').textContent = rank.name;
-
-            // Загружаем детальную статистику с сервера
             fetchUserStats();
-
-            // Достижения
             const grid = document.getElementById('achievementsGrid');
             grid.innerHTML = ACHIEVEMENTS.map(a => {
                 const unlocked = a.check(user);
-                return `
-                    <div class="achievement ${unlocked ? '' : 'locked'}">
-                        <div class="achievement-icon">${a.icon}</div>
-                        <div class="achievement-name">${a.name}</div>
-                    </div>
-                `;
+                return `<div class="achievement ${unlocked?'':'locked'}"><div class="achievement-icon">${a.icon}</div><div class="achievement-name">${a.name}</div></div>`;
             }).join('');
         }
 
-        // ==================== SETTINGS ====================
         function toggleSetting(key) {
             user.settings[key] = !user.settings[key];
             document.getElementById(key + 'Toggle').classList.toggle('active', user.settings[key]);
@@ -2754,7 +2375,7 @@
 
         function exportData() {
             const data = JSON.stringify(user, null, 2);
-            const blob = new Blob([data], {type: 'application/json'});
+            const blob = new Blob([data], {type:'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -2766,7 +2387,6 @@
             alert('YomuBot v2.0\n\nПриложение для изучения японского языка.\n\n🎌 Сделано с любовью!');
         }
 
-        // ==================== HELPERS ====================
         function shuffle(arr) {
             const a = [...arr];
             for (let i = a.length - 1; i > 0; i--) {
@@ -2786,9 +2406,7 @@
             } catch(e) {}
         }
 
-        // ==================== START ====================
         init();
     </script>
 </body>
 </html>
-
