@@ -548,6 +548,7 @@
             padding: 30px 20px;
             text-align: center;
             color: white;
+            position: relative;
         }
 
         .profile-avatar {
@@ -579,6 +580,20 @@
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 14px;
+        }
+
+        .profile-settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
         }
 
         .profile-stats {
@@ -647,6 +662,87 @@
         .achievement-name {
             font-size: 10px;
             color: var(--text-hint);
+        }
+
+        /* ========== LEADERBOARD SCREEN ========== */
+        .leaderboard-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px 16px;
+            color: white;
+            text-align: center;
+        }
+
+        .leaderboard-header h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .leaderboard-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .leaderboard-list {
+            padding: 16px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        .leaderboard-rank {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .leaderboard-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            background-color: var(--primary);
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .leaderboard-details {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+
+        .leaderboard-xp {
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .leaderboard-streak {
+            color: var(--error);
         }
 
         /* ========== SETTINGS SCREEN ========== */
@@ -1522,6 +1618,7 @@
     <!-- Profile Screen -->
     <div class="screen" id="profileScreen">
         <div class="profile-header">
+            <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
             <div class="profile-avatar" id="profileAvatar">👤</div>
             <div class="profile-name" id="profileName">Пользователь</div>
             <div class="profile-rank-badge">
@@ -1546,6 +1643,18 @@
         <div class="profile-section">
             <div class="profile-section-title">🏆 Достижения</div>
             <div class="achievements-grid" id="achievementsGrid"></div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Screen -->
+    <div class="screen" id="leaderboardScreen">
+        <div class="leaderboard-header">
+            <h2>🏆 Рейтинг игроков</h2>
+            <p>Топ-20 по опыту</p>
+        </div>
+        <div class="leaderboard-list" id="leaderboardList">
+            <!-- будет заполнено динамически -->
+            <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
 
@@ -1699,21 +1808,21 @@
             <span class="icon">👤</span>
             <span>Профиль</span>
         </button>
-        <button class="nav-item" onclick="goTo('settings')">
-            <span class="icon">⚙️</span>
-            <span>Ещё</span>
+        <button class="nav-item" onclick="goTo('leaderboard')">
+            <span class="icon">🏆</span>
+            <span>Рейтинг</span>
         </button>
     </nav>
-       <script>
+
+    <script>
         // ==================== TELEGRAM ====================
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
 
         // ==================== КОНФИГУРАЦИЯ СЕРВЕРА ====================
-        // Замените на реальный адрес вашего сервера (например, https://xxxx.ngrok.io)
-        // Если сервер недоступен, данные будут браться из localStorage
-        const API_BASE = 'https://ваш-сервер.com'; 
+        // ЗАМЕНИТЕ НА ВАШ АДРЕС NGROK!
+        const API_BASE = 'https://abcd1234.ngrok.io'; 
 
         // ==================== STATE ====================
         let user = {
@@ -1750,7 +1859,7 @@
             wrong: 0
         };
 
-        // ==================== ACHIEVEMENTS ====================
+        // ==================== ДАННЫЕ ====================
         const ACHIEVEMENTS = [
             {id: 'first', name: 'Первый шаг', icon: '👶', check: u => u.cardsLearned >= 1},
             {id: 'streak3', name: 'Огонёк', icon: '🔥', check: u => u.streak >= 3},
@@ -1779,7 +1888,7 @@
             {value: 150, color: '#e91e63'}
         ];
 
-        // ==================== ФУНКЦИЯ ОТПРАВКИ РЕЗУЛЬТАТА ====================
+        // ==================== ФУНКЦИИ ОТПРАВКИ ====================
         function sendResult(type, score) {
             const data = {
                 type: type,
@@ -1787,7 +1896,6 @@
                 initData: tg.initData
             };
             tg.sendData(JSON.stringify(data));
-            // Здесь можно было бы обновить данные с сервера, но пока оставим локально
         }
 
         // ==================== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====================
@@ -1807,7 +1915,6 @@
                     user.xp = data.user.xp;
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
-                    // Здесь можно добавить другие поля
                     saveUser();
                     return true;
                 }
@@ -1817,6 +1924,27 @@
             return false;
         }
 
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch(`${API_BASE}/api/leaderboard`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Telegram-Init-Data': tg.initData
+                    }
+                });
+                if (!response.ok) throw new Error('Failed to fetch leaderboard');
+                const data = await response.json();
+                if (data.success) {
+                    renderLeaderboard(data.players);
+                } else {
+                    document.getElementById('leaderboardList').innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Нет данных</div>';
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('leaderboardList').innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Ошибка загрузки</div>';
+            }
+        }
+
         // ==================== ЗАГРУЗКА ИЗ STORAGE ====================
         function loadUserFromStorage() {
             const saved = localStorage.getItem('yomubot_user');
@@ -1824,38 +1952,51 @@
                 const data = JSON.parse(saved);
                 user = {...user, ...data};
             }
-            // Устанавливаем имя из Telegram, если есть
             if (tg.initDataUnsafe?.user) {
                 user.name = tg.initDataUnsafe.user.first_name || 'Пользователь';
                 user.id = tg.initDataUnsafe.user.id;
             }
         }
 
-        // ==================== СОХРАНЕНИЕ В STORAGE ====================
         function saveUser() {
             localStorage.setItem('yomubot_user', JSON.stringify(user));
         }
 
         // ==================== АВАТАРКА ====================
-        function loadAvatar() {
-            const name = user.name;
-            const initial = name.charAt(0).toUpperCase();
-            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=128`;
-            document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
-            document.getElementById('userAvatar').textContent = '';
-            document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
-            document.getElementById('profileAvatar').textContent = '';
+        function loadAvatar(url, elementId) {
+            const img = new Image();
+            img.onload = () => {
+                document.getElementById(elementId).style.backgroundImage = `url(${url})`;
+                document.getElementById(elementId).textContent = '';
+            };
+            img.onerror = () => {
+                // если не загрузилось, показываем инициалы
+                const initial = user.name.charAt(0).toUpperCase();
+                document.getElementById(elementId).style.backgroundImage = '';
+                document.getElementById(elementId).textContent = initial;
+            };
+            img.src = url;
+        }
+
+        function setAvatar() {
+            if (user.id) {
+                const url = `https://t.me/i/userpic/320/${user.id}.jpg`;
+                loadAvatar(url, 'userAvatar');
+                loadAvatar(url, 'profileAvatar');
+            } else {
+                const initial = user.name.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = initial;
+                document.getElementById('profileAvatar').textContent = initial;
+            }
         }
 
         // ==================== INIT ====================
         async function init() {
-            // Сначала пытаемся загрузить с сервера
             const serverOk = await fetchUserFromServer();
             if (!serverOk) {
                 loadUserFromStorage();
             }
 
-            // Update daily quest
             const today = new Date().toDateString();
             if (!user.questsDate || user.questsDate !== today) {
                 user.questsDate = today;
@@ -1865,9 +2006,8 @@
             user.quests.login = 1;
             saveUser();
             updateUI();
-            loadAvatar();
+            setAvatar();
 
-            // Hide loading
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 createWheel();
@@ -1885,6 +2025,7 @@
             if (screen === 'alphabet') renderAlphabet();
             if (screen === 'study') renderStudy(param);
             if (screen === 'profile') renderProfile();
+            if (screen === 'leaderboard') fetchLeaderboard();
             haptic('light');
         }
 
@@ -1901,13 +2042,9 @@
         }
 
         function getRank(xp) {
-            if (typeof RANKS === 'undefined') {
-                return {min: 0, name: 'Новичок', badge: '🥚', frame: 1};
-            }
+            if (typeof RANKS === 'undefined') return {min: 0, name: 'Новичок', badge: '🥚', frame: 1};
             let rank = RANKS[0];
-            for (const r of RANKS) {
-                if (xp >= r.min) rank = r;
-            }
+            for (const r of RANKS) if (xp >= r.min) rank = r;
             return rank;
         }
 
@@ -1933,6 +2070,35 @@
             }).join('');
         }
 
+        function renderLeaderboard(players) {
+            const container = document.getElementById('leaderboardList');
+            if (!players || players.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Рейтинг пока пуст</div>';
+                return;
+            }
+            let html = '';
+            players.forEach((p, index) => {
+                const rank = index + 1;
+                const name = p.name || 'Ученик';
+                const initial = name.charAt(0).toUpperCase();
+                const avatarUrl = `https://t.me/i/userpic/320/${p.id}.jpg`;
+                html += `
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-rank">#${rank}</div>
+                        <div class="leaderboard-avatar" style="background-image: url(${avatarUrl}); background-size: cover;" onerror="this.style.backgroundImage=''; this.textContent='${initial}'">${initial}</div>
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">${name}</div>
+                            <div class="leaderboard-details">
+                                <span class="leaderboard-xp">${p.xp} XP</span>
+                                <span class="leaderboard-streak">🔥 ${p.streak}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
         // ==================== ALPHABET ====================
         function setAlphabetTab(tab) {
             alphabetTab = tab;
@@ -1949,10 +2115,7 @@
         }
 
         function renderAlphabet() {
-            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') {
-                console.error('Data not loaded');
-                return;
-            }
+            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
             if (alphabetView === 'grid') {
@@ -1999,10 +2162,7 @@
 
         // ==================== STUDY ====================
         function renderStudy(category = null) {
-            if (typeof KANJI_N5 === 'undefined' || typeof KANJI_N4 === 'undefined' || typeof KANJI_N3 === 'undefined' || typeof WORDS_N5 === 'undefined') {
-                console.error('Data not loaded');
-                return;
-            }
+            if (typeof KANJI_N5 === 'undefined' || typeof KANJI_N4 === 'undefined' || typeof KANJI_N3 === 'undefined' || typeof WORDS_N5 === 'undefined') return;
             const categories = [
                 {id: 'kanji_n5', name: 'Кандзи N5', icon: '🈁', desc: '103 базовых иероглифа', data: KANJI_N5},
                 {id: 'kanji_n4', name: 'Кандзи N4', icon: '🈁', desc: '181 иероглиф', data: KANJI_N4},
@@ -2011,7 +2171,7 @@
             ];
             const container = document.getElementById('studyContent');
             container.innerHTML = categories.map(cat => {
-                const progress = Math.floor(Math.random() * 60); // TODO: real progress
+                const progress = Math.floor(Math.random() * 60);
                 return `
                     <div class="category-card" onclick="openCategory('${cat.id}')">
                         <div class="category-icon">${cat.icon}</div>
@@ -2030,12 +2190,11 @@
 
         function openCategory(id) {
             let data = [];
-            if (id === 'kanji_n5') { data = KANJI_N5; }
-            else if (id === 'kanji_n4') { data = KANJI_N4; }
-            else if (id === 'kanji_n3') { data = KANJI_N3; }
-            else if (id === 'words_n5') { data = WORDS_N5; }
-            if (data.length === 0) return;
-            openModal(data[0], 'kanji');
+            if (id === 'kanji_n5') data = KANJI_N5;
+            else if (id === 'kanji_n4') data = KANJI_N4;
+            else if (id === 'kanji_n3') data = KANJI_N3;
+            else if (id === 'words_n5') data = WORDS_N5;
+            if (data.length) openModal(data[0], 'kanji');
         }
 
         // ==================== MODAL ====================
@@ -2174,9 +2333,7 @@
             document.getElementById('quizChar').textContent = item.char;
             document.getElementById('quizCorrect').textContent = quiz.correct;
             document.getElementById('quizWrong').textContent = quiz.wrong;
-            const allReadings = [...new Set(
-                [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading))
-            )];
+            const allReadings = [...new Set([...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading)))];
             const wrong = shuffle(allReadings.filter(r => r !== item.reading)).slice(0, 3);
             const options = shuffle([item.reading, ...wrong]);
             document.getElementById('quizOptions').innerHTML = options.map(opt => `
@@ -2242,11 +2399,8 @@
 
         function retryQuiz() {
             hideQuizScreen();
-            if (quiz.type === 'alphabet' || quiz.type === 'row') {
-                goTo('alphabet');
-            } else {
-                startQuiz(quiz.type);
-            }
+            if (quiz.type === 'alphabet' || quiz.type === 'row') goTo('alphabet');
+            else startQuiz(quiz.type);
         }
 
         // ==================== SWIPE ====================
