@@ -2300,18 +2300,41 @@
             modalData = null;
         }
 
-        function playSound() {
-            if (!modalData) return;
-            const text = modalData.char || modalData.word;
-            if ('speechSynthesis' in window) {
-                speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(text);
-                u.lang = 'ja-JP';
-                u.rate = 0.7;
-                speechSynthesis.speak(u);
-            }
+async function playSound() {
+    if (!modalData) return;
+    const text = modalData.char || modalData.word;
+    
+    // Сначала пробуем Web Speech API
+    if ('speechSynthesis' in window && user.settings.sound) {
+        try {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ja-JP';
+            u.rate = 0.7;
+            speechSynthesis.speak(u);
             haptic('medium');
+            return;
+        } catch (e) {
+            console.warn('Web Speech failed, trying server TTS', e);
         }
+    }
+    
+    // Если не получилось, запрашиваем с сервера
+    try {
+        const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
+            headers: { 'X-Telegram-Init-Data': tg.initData }
+        });
+        if (!response.ok) throw new Error('TTS failed');
+        const audioBlob = await response.blob();
+        const url = URL.createObjectURL(audioBlob);
+        const audio = new Audio(url);
+        audio.play();
+        haptic('medium');
+    } catch (e) {
+        console.error('TTS error:', e);
+        alert('Не удалось воспроизвести звук');
+    }
+}
 
 function showGif() {
     if (!modalData) return;
@@ -2737,4 +2760,5 @@ function showGif() {
     </script>
 </body>
 </html>
+
 
