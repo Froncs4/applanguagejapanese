@@ -11,26 +11,19 @@
         .header { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; }
         .glass-panel { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); border-radius: 30px; }
 
-        /* === РЕЖИМ 1: УМНАЯ АЗБУКА (ИСПРАВЛЕНО) === */
+        /* === АЗБУКА === */
         #alphabet-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 50px; box-sizing: border-box;}
-        
         .main-tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 10px; padding: 5px; }
         .sub-tabs { display: flex; width: 100%; max-width: 350px; border-bottom: 2px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        
         .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; }
-        /* Стили для главных вкладок (Хира/Ката) */
         .main-tabs .tab-btn { border-radius: 10px; }
         .main-tabs .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
-        /* Стили для подвкладок (Все / Группы) */
         .sub-tabs .tab-btn { font-size: 14px; padding: 8px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
         .sub-tabs .tab-btn.active { color: white; border-bottom: 2px solid #10b981; }
-
-        .alphabet-container { width: 100%; max-width: 360px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; }
-        
+        .alphabet-container { width: 100%; max-width: 360px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; }
         .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #10b981; padding-left: 10px;}
         .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        
         .kana-cell { background: rgba(255,255,255,0.9); color: #0f172a; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.2); transition: 0.2s; }
         .kana-cell:active { transform: scale(0.9); background: #e2e8f0; }
         .kana-char { font-size: 26px; font-weight: 900; margin-bottom: 2px; }
@@ -41,14 +34,11 @@
         #modal-overlay.active { opacity: 1; pointer-events: all; }
         .modal-card { background: white; width: 85%; max-width: 320px; border-radius: 30px; padding: 30px; text-align: center; color: #0f172a; transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;}
         #modal-overlay.active .modal-card { transform: scale(1); }
-        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; font-weight: bold; }
-        
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; font-weight: bold; padding: 10px;}
         .modal-symbol { font-size: 90px; font-weight: 900; line-height: 1; margin: 20px 0;}
-        .modal-gif { width: 120px; height: 120px; margin: 10px auto 20px auto; display: none; border-radius: 15px; border: 2px solid #e2e8f0; object-fit: contain;}
-        
+        .modal-gif { width: 150px; height: 150px; margin: 0 auto 20px auto; display: none; border-radius: 15px; border: 2px solid #e2e8f0; object-fit: contain;}
         .modal-romaji { font-size: 24px; font-weight: bold; color: #4f46e5; margin-bottom: 5px; text-transform: uppercase;}
         .modal-hint { font-size: 16px; color: #64748b; margin-bottom: 30px;}
-        
         .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .modal-btn { padding: 12px; border-radius: 15px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
         .btn-audio { background: #e0e7ff; color: #4f46e5; }
@@ -56,7 +46,22 @@
         .btn-gif { background: #f1f5f9; color: #334155; }
         .btn-gif:active { background: #e2e8f0; }
 
-        /* === ОСТАЛЬНЫЕ РЕЖИМЫ (РУЛЕТКА, СВАЙПЫ, КВИЗ) === */
+        /* === КВИЗ И ГРАММАТИКА === */
+        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.4s ease-out; }
+        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 30px; text-align: center; box-sizing: border-box; }
+        .symbol { font-size: 60px; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.3);}
+        .speaker-btn { background: rgba(255,255,255,0.2); border-radius: 50%; width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; margin-left: 15px; transition: 0.2s;}
+        .speaker-btn:active { transform: scale(0.9); }
+        .blank-slot { display: inline-block; min-width: 50px; height: 40px; border-bottom: 4px solid #fcd34d; color: #fcd34d; font-weight: bold; vertical-align: bottom; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 360px; margin-top: 20px;}
+        .btn-option { background: rgba(255,255,255,0.9); color: #1e293b; font-size: 18px; font-weight: 900; padding: 18px 10px; border-radius: 20px; cursor: pointer; border: none; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
+        .btn-option:active { transform: scale(0.95); }
+        .btn-option.correct { background: #10b981; color: white; transform: scale(1.05); }
+        .btn-option.wrong { background: #ef4444; color: white; }
+
+        /* ОСТАЛЬНОЕ */
         #wheel-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wheel-container { position: relative; width: 320px; height: 320px; margin-bottom: 40px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)); }
         .wheel-outer { position: absolute; top: -10px; left: -10px; width: calc(100% + 20px); height: calc(100% + 20px); border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706, #fcd34d); z-index: -1; box-shadow: 0 0 30px rgba(245,158,11,0.5); }
@@ -76,20 +81,6 @@
         .card-reading { font-size: 30px; font-weight: bold; margin-bottom: 10px; }
         .card-hint { font-size: 18px; color: #e2e8f0; text-align: center; }
 
-        #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.4s ease-out; }
-        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 30px; text-align: center; box-sizing: border-box; }
-        .symbol { font-size: 60px; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.3);}
-        .speaker-btn { background: rgba(255,255,255,0.2); border-radius: 50%; width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; margin-left: 15px; transition: 0.2s;}
-        .speaker-btn:active { transform: scale(0.9); }
-        .blank-slot { display: inline-block; min-width: 50px; height: 40px; border-bottom: 4px solid #fcd34d; color: #fcd34d; font-weight: bold; vertical-align: bottom; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 360px; margin-top: 20px;}
-        .btn-option { background: rgba(255,255,255,0.9); color: #1e293b; font-size: 18px; font-weight: 900; padding: 18px 10px; border-radius: 20px; cursor: pointer; border: none; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
-        .btn-option:active { transform: scale(0.95); }
-        .btn-option.correct { background: #10b981; color: white; transform: scale(1.05); }
-        .btn-option.wrong { background: #ef4444; color: white; }
-
         #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
         .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 20px; font-weight: bold; border: none; padding: 18px 40px; border-radius: 25px; width: 100%; max-width: 300px; margin-top: 30px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
         
@@ -104,34 +95,27 @@
 
     <!-- АЗБУКА С ВКЛАДКАМИ -->
     <div id="alphabet-mode" class="hidden">
-        <!-- Главные табы -->
         <div class="main-tabs">
             <div class="tab-btn active" id="tab-hira" onclick="switchMainTab('hira')">Хирагана</div>
             <div class="tab-btn" id="tab-kata" onclick="switchMainTab('kata')">Катакана</div>
         </div>
-        <!-- Под-табы -->
         <div class="sub-tabs">
-            <div class="tab-btn active" id="sub-all" onclick="switchSubTab('all')">Все символы</div>
-            <div class="tab-btn" id="sub-groups" onclick="switchSubTab('groups')">По группам</div>
+            <!-- БАГФИКС: Поменяли местами. "По группам" теперь первая! -->
+            <div class="tab-btn active" id="sub-groups" onclick="switchSubTab('groups')">По группам</div>
+            <div class="tab-btn" id="sub-all" onclick="switchSubTab('all')">Все символы</div>
         </div>
-        
-        <div class="alphabet-container" id="alphabet-container">
-            <!-- Сюда вставляются ряды с буквами -->
-        </div>
+        <div class="alphabet-container" id="alphabet-container"></div>
     </div>
 
     <!-- МОДАЛКА (КАРТОЧКА БУКВЫ) -->
     <div id="modal-overlay">
         <div class="modal-card">
             <div class="modal-close" onclick="closeModal()">✕</div>
-            
             <div class="modal-symbol" id="mod-sym">あ</div>
             <!-- GIF скрыта по умолчанию -->
             <img class="modal-gif" id="mod-gif" src="" alt="gif">
-            
             <div class="modal-romaji" id="mod-rom">a</div>
             <div class="modal-hint" id="mod-hint">Буква А с завитком</div>
-            
             <div class="modal-actions">
                 <button class="modal-btn btn-audio" onclick="playModalAudio()">🔊 Звук</button>
                 <button class="modal-btn btn-gif" onclick="toggleGif()">✍️ Начертание</button>
@@ -140,40 +124,20 @@
     </div>
 
     <!-- РУЛЕТКА -->
-    <div id="wheel-mode" class="hidden">
-        <div class="wheel-container">
-            <div class="wheel-outer"></div>
-            <div class="pointer">▼</div>
-            <div class="wheel" id="wheel"></div>
-        </div>
-        <button class="spin-btn" id="spin-btn" onclick="spin()">Крутить!</button>
-    </div>
+    <div id="wheel-mode" class="hidden"><div class="wheel-container"><div class="wheel-outer"></div><div class="pointer">▼</div><div class="wheel" id="wheel"></div></div><button class="spin-btn" id="spin-btn" onclick="spin()">Крутить!</button></div>
 
     <!-- СВАЙПЫ -->
-    <div id="swipe-mode" class="hidden">
-        <div class="card-stack" id="card-stack"></div>
-    </div>
+    <div id="swipe-mode" class="hidden"><div class="card-stack" id="card-stack"></div></div>
 
     <!-- КВИЗ -->
     <div id="quiz-mode" class="hidden">
         <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
-        <div class="question-card glass-panel">
-            <div style="display:flex; justify-content:center; align-items:center;">
-                <span class="symbol" id="symbol-display">...</span>
-                <div class="speaker-btn" id="speaker-btn" onclick="speakText()">🔊</div>
-            </div>
-            <p style="color:rgba(255,255,255,0.7); margin-top:10px;" id="hint-text">Перевод</p>
-        </div>
+        <div class="question-card glass-panel"><div style="display:flex; justify-content:center; align-items:center;"><span class="symbol" id="symbol-display">...</span><div class="speaker-btn" id="speaker-btn" onclick="speakText()">🔊</div></div><p style="color:rgba(255,255,255,0.7); margin-top:10px;" id="hint-text">Перевод</p></div>
         <div class="options-grid" id="options-container"></div>
     </div>
 
     <!-- ФИНАЛ -->
-    <div id="result-screen" class="hidden">
-        <div style="font-size: 100px;">🎉</div>
-        <h2 style="font-size: 40px; margin: 10px 0;">Завершено!</h2>
-        <p style="font-size: 22px; color: rgba(255,255,255,0.8);" id="result-desc"></p>
-        <button class="claim-btn" onclick="claimReward()">Забрать награду</button>
-    </div>
+    <div id="result-screen" class="hidden"><div style="font-size: 100px;">🎉</div><h2 style="font-size: 40px; margin: 10px 0;">Завершено!</h2><p style="font-size: 22px; color: rgba(255,255,255,0.8);" id="result-desc"></p><button class="claim-btn" onclick="claimReward()">Забрать награду</button></div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -188,29 +152,29 @@
 
         // --- ДАННЫЕ ДЛЯ АЗБУКИ (Полные 46 символов!) ---
         const hiraGroups = [
-            { t: "Гласные", i: [{k:'あ',r:'a'}, {k:'い',r:'i'}, {k:'う',r:'u'}, {k:'え',r:'e'}, {k:'お',r:'o'}] },
-            { t: "Ряд К", i: [{k:'か',r:'ka'}, {k:'き',r:'ki'}, {k:'く',r:'ku'}, {k:'け',r:'ke'}, {k:'こ',r:'ko'}] },
-            { t: "Ряд С", i: [{k:'さ',r:'sa'}, {k:'し',r:'shi'}, {k:'す',r:'su'}, {k:'せ',r:'se'}, {k:'そ',r:'so'}] },
-            { t: "Ряд Т", i: [{k:'た',r:'ta'}, {k:'ち',r:'chi'}, {k:'つ',r:'tsu'}, {k:'て',r:'te'}, {k:'と',r:'to'}] },
-            { t: "Ряд Н", i: [{k:'な',r:'na'}, {k:'に',r:'ni'}, {k:'ぬ',r:'nu'}, {k:'ね',r:'ne'}, {k:'の',r:'no'}] },
-            { t: "Ряд Х", i: [{k:'は',r:'ha'}, {k:'ひ',r:'hi'}, {k:'ふ',r:'fu'}, {k:'へ',r:'he'}, {k:'ほ',r:'ho'}] },
-            { t: "Ряд М", i: [{k:'ま',r:'ma'}, {k:'み',r:'mi'}, {k:'む',r:'mu'}, {k:'め',r:'me'}, {k:'も',r:'mo'}] },
-            { t: "Ряд Й", i: [{k:'や',r:'ya'}, {k:'ゆ',r:'yu'}, {k:'よ',r:'yo'}] },
-            { t: "Ряд Р", i: [{k:'ら',r:'ra'}, {k:'り',r:'ri'}, {k:'る',r:'ru'}, {k:'れ',r:'re'}, {k:'ろ',r:'ro'}] },
-            { t: "Ряд В/Н", i: [{k:'わ',r:'wa'}, {k:'を',r:'wo'}, {k:'ん',r:'n'}] }
+            { t: "Гласные", id: "vowels", i: [{k:'あ',r:'a'}, {k:'い',r:'i'}, {k:'う',r:'u'}, {k:'え',r:'e'}, {k:'お',r:'o'}] },
+            { t: "Ряд К", id: "k", i: [{k:'か',r:'ka'}, {k:'き',r:'ki'}, {k:'く',r:'ku'}, {k:'け',r:'ke'}, {k:'こ',r:'ko'}] },
+            { t: "Ряд С", id: "s", i: [{k:'さ',r:'sa'}, {k:'し',r:'shi'}, {k:'す',r:'su'}, {k:'せ',r:'se'}, {k:'そ',r:'so'}] },
+            { t: "Ряд Т", id: "t", i: [{k:'た',r:'ta'}, {k:'ち',r:'chi'}, {k:'つ',r:'tsu'}, {k:'て',r:'te'}, {k:'と',r:'to'}] },
+            { t: "Ряд Н", id: "n", i: [{k:'な',r:'na'}, {k:'に',r:'ni'}, {k:'ぬ',r:'nu'}, {k:'ね',r:'ne'}, {k:'の',r:'no'}] },
+            { t: "Ряд Х", id: "h", i: [{k:'は',r:'ha'}, {k:'ひ',r:'hi'}, {k:'ふ',r:'fu'}, {k:'へ',r:'he'}, {k:'ほ',r:'ho'}] },
+            { t: "Ряд М", id: "m", i: [{k:'ま',r:'ma'}, {k:'み',r:'mi'}, {k:'む',r:'mu'}, {k:'め',r:'me'}, {k:'も',r:'mo'}] },
+            { t: "Ряд Й", id: "y", i: [{k:'や',r:'ya'}, {k:'ゆ',r:'yu'}, {k:'よ',r:'yo'}] },
+            { t: "Ряд Р", id: "r", i: [{k:'ら',r:'ra'}, {k:'り',r:'ri'}, {k:'る',r:'ru'}, {k:'れ',r:'re'}, {k:'ろ',r:'ro'}] },
+            { t: "Ряд В/Н", id: "w", i: [{k:'わ',r:'wa'}, {k:'を',r:'wo'}, {k:'ん',r:'n'}] }
         ];
         
         const kataGroups = [
-            { t: "Гласные", i: [{k:'ア',r:'a'}, {k:'イ',r:'i'}, {k:'ウ',r:'u'}, {k:'エ',r:'e'}, {k:'オ',r:'o'}] },
-            { t: "Ряд К", i: [{k:'カ',r:'ka'}, {k:'キ',r:'ki'}, {k:'ク',r:'ku'}, {k:'ケ',r:'ke'}, {k:'コ',r:'ko'}] },
-            { t: "Ряд С", i: [{k:'サ',r:'sa'}, {k:'シ',r:'shi'}, {k:'ス',r:'su'}, {k:'セ',r:'se'}, {k:'ソ',r:'so'}] },
-            { t: "Ряд Т", i: [{k:'タ',r:'ta'}, {k:'チ',r:'chi'}, {k:'ツ',r:'tsu'}, {k:'テ',r:'te'}, {k:'ト',r:'to'}] },
-            { t: "Ряд Н", i: [{k:'ナ',r:'na'}, {k:'ニ',r:'ni'}, {k:'ヌ',r:'nu'}, {k:'ネ',r:'ne'}, {k:'ノ',r:'no'}] },
-            { t: "Ряд Х", i: [{k:'ハ',r:'ha'}, {k:'ヒ',r:'hi'}, {k:'フ',r:'fu'}, {k:'ヘ',r:'he'}, {k:'ホ',r:'ho'}] },
-            { t: "Ряд М", i: [{k:'マ',r:'ma'}, {k:'ミ',r:'mi'}, {k:'ム',r:'mu'}, {k:'メ',r:'me'}, {k:'モ',r:'mo'}] },
-            { t: "Ряд Й", i: [{k:'ヤ',r:'ya'}, {k:'ユ',r:'yu'}, {k:'ヨ',r:'yo'}] },
-            { t: "Ряд Р", i: [{k:'ラ',r:'ra'}, {k:'リ',r:'ri'}, {k:'ル',r:'ru'}, {k:'レ',r:'re'}, {k:'ロ',r:'ro'}] },
-            { t: "Ряд В/Н", i: [{k:'ワ',r:'wa'}, {k:'ヲ',r:'wo'}, {k:'ン',r:'n'}] }
+            { t: "Гласные", id: "vowels", i: [{k:'ア',r:'a'}, {k:'イ',r:'i'}, {k:'ウ',r:'u'}, {k:'エ',r:'e'}, {k:'オ',r:'o'}] },
+            { t: "Ряд К", id: "k", i: [{k:'カ',r:'ka'}, {k:'キ',r:'ki'}, {k:'ク',r:'ku'}, {k:'ケ',r:'ke'}, {k:'コ',r:'ko'}] },
+            { t: "Ряд С", id: "s", i: [{k:'サ',r:'sa'}, {k:'シ',r:'shi'}, {k:'ス',r:'su'}, {k:'セ',r:'se'}, {k:'ソ',r:'so'}] },
+            { t: "Ряд Т", id: "t", i: [{k:'タ',r:'ta'}, {k:'チ',r:'chi'}, {k:'ツ',r:'tsu'}, {k:'テ',r:'te'}, {k:'ト',r:'to'}] },
+            { t: "Ряд Н", id: "n", i: [{k:'ナ',r:'na'}, {k:'ニ',r:'ni'}, {k:'ヌ',r:'nu'}, {k:'ネ',r:'ne'}, {k:'ノ',r:'no'}] },
+            { t: "Ряд Х", id: "h", i: [{k:'ハ',r:'ha'}, {k:'ヒ',r:'hi'}, {k:'フ',r:'fu'}, {k:'ヘ',r:'he'}, {k:'ホ',r:'ho'}] },
+            { t: "Ряд М", id: "m", i: [{k:'マ',r:'ma'}, {k:'ミ',r:'mi'}, {k:'ム',r:'mu'}, {k:'メ',r:'me'}, {k:'モ',r:'mo'}] },
+            { t: "Ряд Й", id: "y", i: [{k:'ヤ',r:'ya'}, {k:'ユ',r:'yu'}, {k:'ヨ',r:'yo'}] },
+            { t: "Ряд Р", id: "r", i: [{k:'ラ',r:'ra'}, {k:'リ',r:'ri'}, {k:'ル',r:'ru'}, {k:'レ',r:'re'}, {k:'ロ',r:'ro'}] },
+            { t: "Ряд В/Н", id: "w", i: [{k:'ワ',r:'wa'}, {k:'ヲ',r:'wo'}, {k:'ン',r:'n'}] }
         ];
 
         // --- ДАННЫЕ ИГР ---
@@ -222,13 +186,46 @@
         let currentIndex = 0, score = 0;
         let currentModalChar = "", currentModalRomaji = "";
 
-        function generateQuestions(mode) {
+        // УНИВЕРСАЛЬНАЯ И НАДЕЖНАЯ ОЗВУЧКА
+        function playAudio(text) {
+            if (!text) return;
+            // Используем Google Translate API как скрытое аудио - работает всегда!
+            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
+            const a = new Audio(url);
+            a.play().catch(e => console.log("Автоплей заблокирован", e));
+        }
+
+        // ГЕНЕРАТОР ВОПРОСОВ (Включая тесты по Азбуке!)
+        function generateQuestions(mode, azbuka, group) {
             let items = [];
             const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
-            if (mode === 'swipe') {
+            
+            // ЕСЛИ ЭТО ТЕСТ АЗБУКИ ИЗ ПИТОНА
+            if (mode === 'alphatest') {
+                const targetGroups = azbuka === 'hiragana' ? hiraGroups : kataGroups;
+                const targetGroup = targetGroups.find(g => g.id === group);
+                
+                if (targetGroup) {
+                    // Создаем вопросы из этого ряда
+                    items = targetGroup.i.map(item => {
+                        // Берем правильный ответ (ромадзи)
+                        let correct = item.r;
+                        // Набираем ложные ответы из всей текущей азбуки
+                        let allRomaji = [];
+                        targetGroups.forEach(g => g.i.forEach(i => allRomaji.push(i.r)));
+                        
+                        let opts = shuffle(allRomaji.filter(r => r !== correct)).slice(0, 3);
+                        opts.push(correct);
+                        opts = shuffle(opts);
+                        return { t: "word", q: item.k, a: opts, c: opts.indexOf(correct) };
+                    });
+                }
+            } 
+            else if (mode === 'swipe') {
                 let keys = shuffle(Object.keys(DICT_KANJI)).slice(0, 5);
                 items = keys.map(k => ({ q: k, r: "Кандзи", t: DICT_KANJI[k] }));
-            } else if (mode === 'grammar') {
+            } 
+            else if (mode === 'grammar') {
                 let keys = shuffle(Object.keys(DICT_GRAMMAR)).slice(0, 5);
                 let particles = ["は", "を", "に", "で", "が", "と", "も"];
                 items = keys.map(k => {
@@ -237,7 +234,8 @@
                     opts.push(c); opts = shuffle(opts);
                     return { t: "grammar", q: k, a: opts, c: opts.indexOf(c) };
                 });
-            } else {
+            } 
+            else {
                 let keys = shuffle(Object.keys(DICT_WORDS)).slice(0, 5);
                 let allVals = Object.values(DICT_WORDS);
                 items = keys.map(k => {
@@ -251,15 +249,21 @@
         }
 
         window.onload = () => {
-            const mode = new URLSearchParams(window.location.search).get('mode') || 'alphabet';
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode') || 'alphabet';
+            
             appData.mode = mode;
             
             if (mode === 'wheel') initWheel();
             else if (mode === 'alphabet') initAlphabet();
             else {
-                appData.items = generateQuestions(mode);
+                // Если это тест (Слова, Грамматика или Азбука)
+                const azbukaType = urlParams.get('azbuka');
+                const groupType = urlParams.get('group');
+                appData.items = generateQuestions(mode, azbukaType, groupType);
+                
                 if (mode === 'swipe') initSwipeMode();
-                else initQuizMode();
+                else initQuizMode(); // Квиз используется и для слов, и для азбуки!
             }
         };
 
@@ -267,7 +271,7 @@
         // РЕЖИМ 1: УМНАЯ АЗБУКА (МОДАЛКА И GIF)
         // ==========================================
         let currentAlphaType = 'hira';
-        let currentViewMode = 'all';
+        let currentViewMode = 'groups'; // ПО УМОЛЧАНИЮ "ПО ГРУППАМ"
 
         function initAlphabet() {
             document.getElementById('alphabet-mode').classList.remove('hidden');
@@ -301,8 +305,7 @@
                 grid.className = 'kana-grid';
                 groups.forEach(group => {
                     group.i.forEach(item => {
-                        const cell = createKanaCell(item);
-                        grid.appendChild(cell);
+                        grid.appendChild(createKanaCell(item));
                     });
                 });
                 container.appendChild(grid);
@@ -339,13 +342,17 @@
         function openModal(char, romaji, hint) {
             currentModalChar = char;
             currentModalRomaji = romaji;
+            
             document.getElementById('mod-sym').innerText = char;
             document.getElementById('mod-rom').innerText = romaji;
-            document.getElementById('mod-hint').innerText = hint || "Запомните эту букву!";
+            document.getElementById('mod-hint').innerText = hint || "Основа языка";
             
+            // Скрываем GIF при новом открытии
             document.getElementById('mod-sym').style.display = "block";
             document.getElementById('mod-gif').style.display = "none";
             document.getElementById('modal-overlay').classList.add('active');
+            
+            // Автоматически произносим звук при открытии!
             playAudio(char); 
         }
 
@@ -363,6 +370,7 @@
                 
                 let prefix = currentAlphaType === 'hira' ? 'Hiragana' : 'Katakana';
                 let r = currentModalRomaji.toLowerCase();
+                // Замена сложных слогов для Википедии
                 if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
                 gif.src = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
             } else {
@@ -371,17 +379,10 @@
             }
         }
 
-        // --- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ ОЗВУЧКИ (ГАРАНТИРОВАННАЯ) ---
-        function playAudio(text) {
-            const googleTTSUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
-            new Audio(googleTTSUrl).play().catch(e => console.log(e));
-        }
-
         // ==========================================
         // РЕЖИМ 2: РУЛЕТКА
         // ==========================================
         const PRIZES = [100, 300, 500, 800, 1200];
-        
         function initWheel() { 
             document.getElementById('wheel-mode').classList.remove('hidden'); 
             document.getElementById('header-title').innerText = "Испытай удачу!"; 
@@ -394,7 +395,6 @@
                 wheel.appendChild(el);
             });
         }
-
         function spin() {
             document.getElementById('spin-btn').style.display = "none";
             let r = Math.random() * 100;
@@ -414,15 +414,24 @@
             let textToSpeak = appData.items[currentIndex].q.replace("___", "");
             playAudio(textToSpeak);
         }
+        
         function showResults() {
             document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('result-desc').innerText = `Счет: ${score} из ${appData.items.length}`;
         }
-        function claimReward() { tg.sendData(`${appData.mode}_result_${score}`); }
+        
+        function claimReward() { 
+            let eventName = appData.mode === 'alphatest' ? 'alphatest' : appData.mode;
+            tg.sendData(`${eventName}_result_${score}`); 
+        }
 
         let isWaiting = false;
-        function initQuizMode() { document.getElementById('quiz-mode').classList.remove('hidden'); document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : "Проверка знаний"; renderQuizCard(); }
+        function initQuizMode() { 
+            document.getElementById('quiz-mode').classList.remove('hidden'); 
+            document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : "Проверка знаний"; 
+            renderQuizCard(); 
+        }
         
         function renderQuizCard() {
             isWaiting = false; if (currentIndex >= appData.items.length) { showResults(); return; }
@@ -436,16 +445,19 @@
                 document.getElementById('speaker-btn').style.display = "none";
             } else {
                 document.getElementById('symbol-display').innerHTML = item.q;
-                document.getElementById('hint-text').innerText = "Выберите перевод";
+                // Для теста азбуки меняем подсказку
+                document.getElementById('hint-text').innerText = appData.mode === 'alphatest' ? "Выберите чтение (Ромадзи)" : "Выберите перевод";
                 document.getElementById('symbol-display').style.fontSize = "70px";
                 document.getElementById('speaker-btn').style.display = "inline-flex";
             }
+            
             const container = document.getElementById('options-container'); container.innerHTML = "";
             item.a.forEach((opt, index) => {
                 const btn = document.createElement("button"); btn.className = "btn-option"; btn.innerText = opt;
                 btn.onclick = () => checkAnswer(index, btn); container.appendChild(btn);
             });
         }
+        
         function checkAnswer(selectedIndex, btnElement) {
             if (isWaiting) return; isWaiting = true;
             const item = appData.items[currentIndex]; const allButtons = document.querySelectorAll('.btn-option');
