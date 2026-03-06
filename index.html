@@ -90,7 +90,7 @@
         .card-hint { font-size: 18px; color: #e2e8f0; text-align: center; }
 
         /* ФИНАЛ */
-        #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
+        #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; text-align: center;}
         .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 20px; font-weight: bold; border: none; padding: 18px 40px; border-radius: 25px; width: 100%; max-width: 300px; margin-top: 30px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
         
         #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
@@ -154,7 +154,12 @@
     </div>
 
     <!-- ФИНАЛ -->
-    <div id="result-screen" class="hidden"><div style="font-size: 100px;">🎉</div><h2 style="font-size: 40px; margin: 10px 0;">Завершено!</h2><p style="font-size: 22px; color: rgba(255,255,255,0.8);" id="result-desc"></p><button class="claim-btn" onclick="claimReward()">Забрать награду</button></div>
+    <div id="result-screen" class="hidden">
+        <div style="font-size: 100px;">🎉</div>
+        <h2 style="font-size: 36px; margin: 10px 0;" id="result-title">Завершено!</h2>
+        <p style="font-size: 20px; color: rgba(255,255,255,0.9);" id="result-desc"></p>
+        <button class="claim-btn" id="claim-btn" onclick="claimReward()">Забрать награду</button>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -201,12 +206,23 @@
         let currentIndex = 0, score = 0;
         let currentModalChar = "", currentModalRomaji = "";
 
-        // Прямое и надежное воспроизведение звука
+        // === ИДЕАЛЬНАЯ ОЗВУЧКА ===
+        // Работает через Google Translate Audio (срабатывает даже если телефон на беззвучном)
         function playAudio(text) {
             if (!text) return;
-            const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
-            const a = new Audio(url);
-            a.play().catch(e => console.log("Audio play blocked", e));
+            try {
+                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
+                const a = new Audio(url);
+                a.play().catch(e => {
+                    // Резервный вариант на случай блокировки аудио
+                    let u = new SpeechSynthesisUtterance(text);
+                    u.lang = 'ja-JP';
+                    window.speechSynthesis.speak(u);
+                });
+            } catch(err) {
+                let u = new SpeechSynthesisUtterance(text);
+                u.lang = 'ja-JP'; window.speechSynthesis.speak(u);
+            }
         }
 
         function generateQuestions(mode, azbuka, group) {
@@ -223,7 +239,7 @@
                         targetGroups.forEach(g => g.i.forEach(i => allRomaji.push(i.r)));
                         let opts = shuffle(allRomaji.filter(r => r !== correct)).slice(0, 3);
                         opts.push(correct);
-                        return { t: "word", q: item.k, a: shuffle(opts), c: shuffle(opts).indexOf(correct) }; 
+                        return { t: "word", q: item.k, a: shuffle(opts), c: -1 }; 
                     });
                     items.forEach(i => { i.c = i.a.indexOf(targetGroup.i.find(x => x.k === i.q).r) });
                     items = shuffle(items);
@@ -273,7 +289,7 @@
         };
 
         // ==========================================
-        // РЕЖИМ 1: УМНАЯ АЗБУКА
+        // РЕЖИМ 1: УМНАЯ АЗБУКА 
         // ==========================================
         let currentAlphaType = 'hira';
         let currentViewMode = 'groups'; 
@@ -327,6 +343,7 @@
                     container.appendChild(rowBlock);
                 });
             } else {
+                // МЕНЮ ТЕСТОВ
                 const testGrid = document.createElement('div');
                 testGrid.className = 'test-menu-grid';
                 groups.forEach(group => {
@@ -336,6 +353,8 @@
                     btn.onclick = () => {
                         try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
                         appData.mode = "alphatest";
+                        currentIndex = 0;
+                        score = 0;
                         appData.items = generateQuestions("alphatest", currentAlphaType, group.id);
                         document.getElementById('alphabet-mode').classList.add('hidden');
                         initQuizMode();
@@ -360,9 +379,11 @@
         function openModal(char, romaji, hint) {
             currentModalChar = char;
             currentModalRomaji = romaji;
+            
             document.getElementById('mod-sym').innerText = char;
             document.getElementById('mod-rom').innerText = romaji;
             document.getElementById('mod-hint').innerText = hint || "Основа языка";
+            
             document.getElementById('mod-sym').style.display = "block";
             document.getElementById('mod-gif').style.display = "none";
             document.getElementById('modal-overlay').classList.add('active');
@@ -375,6 +396,7 @@
             playAudio(currentModalChar); 
         }
 
+        // === ИДЕАЛЬНАЯ ЗАГРУЗКА GIF ===
         function toggleGif() {
             try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
             const sym = document.getElementById('mod-sym');
@@ -388,17 +410,26 @@
                 let r = currentModalRomaji.toLowerCase();
                 if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
                 
-                // Исправленные ссылки на Википедию
-                let gifUrl = `https://upload.wikimedia.org/wikipedia/commons/1/1b/${prefix}_${r}_stroke_order_animation.gif`;
-                gif.src = gifUrl;
+                gif.dataset.retried = "false";
+                // Сначала пробуем короткую ссылку
+                gif.src = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
                 
-                // Если картинка не найдена по первому варианту, пробуем второй вариант
+                // Если Википедия выдает 404, пробуем длинную ссылку
                 gif.onerror = function() {
-                    gif.src = `https://upload.wikimedia.org/wikipedia/commons/e/ec/${prefix}_letter_${r}_stroke_order_animation.gif`;
-                }
+                    if (this.dataset.retried === "false") {
+                        this.dataset.retried = "true";
+                        this.src = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_letter_${r}_stroke_order_animation.gif`;
+                    } else {
+                        // Если вообще нет GIF, возвращаем иероглиф
+                        this.alt = "GIF не найдена 😔";
+                        this.style.display = "none";
+                        sym.style.display = "block";
+                    }
+                };
             } else {
                 sym.style.display = "block";
                 gif.style.display = "none";
+                gif.src = "";
             }
         }
 
@@ -438,12 +469,35 @@
             playAudio(textToSpeak);
         }
         
+        // === ИСПРАВЛЕННЫЙ ЭКРАН РЕЗУЛЬТАТОВ (ОСОБЕННО ДЛЯ АЗБУКИ) ===
         function showResults() {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
+            
             document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('result-desc').innerText = `Счет: ${score} из ${appData.items.length}`;
+            
+            let rTitle = document.getElementById('result-title');
+            let rDesc = document.getElementById('result-desc');
+            let btn = document.getElementById('claim-btn');
+
+            if (appData.mode === 'alphatest') {
+                // Если мы играли в Азбуку - награда внутри игры! Не шлем данные боту.
+                rTitle.innerText = "Тест завершен!";
+                rDesc.innerHTML = `Вы набрали: <b style="color:#fcd34d">${score * 10} очков</b>!<br><br><span style="font-size:16px">Верных ответов: ${score} из ${appData.items.length}</span>`;
+                btn.innerText = "⬅️ Вернуться к выбору";
+                btn.onclick = () => {
+                    document.getElementById('result-screen').classList.add('hidden');
+                    initAlphabet();
+                    switchSubTab('tests');
+                };
+            } else {
+                rTitle.innerText = "Завершено!";
+                rDesc.innerText = `Верных ответов: ${score} из ${appData.items.length}`;
+                btn.innerText = "Забрать награду";
+                btn.onclick = () => { claimReward(); };
+            }
         }
+        
         function claimReward() { 
             let eventName = appData.mode === 'alphatest' ? 'alphatest' : appData.mode;
             tg.sendData(`${eventName}_result_${score}`); 
