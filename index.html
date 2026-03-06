@@ -160,12 +160,14 @@
     </div>
 
     <!-- ФИНАЛ -->
-    <div id="result-screen" class="hidden">
-        <div style="font-size: 100px;">🎉</div>
-        <h2 style="font-size: 36px; margin: 10px 0;" id="result-title">Завершено!</h2>
-        <p style="font-size: 20px; color: rgba(255,255,255,0.9);" id="result-desc"></p>
-        <button class="claim-btn" id="claim-btn" onclick="claimReward()">Забрать награду</button>
-    </div>
+        <div id="result-screen" class="hidden">
+            <div style="font-size: 100px;">🎉</div>
+            <h2 style="font-size: 36px; margin: 10px 0;" id="result-title">Завершено!</h2>
+            <p style="font-size: 20px; color: rgba(255,255,255,0.9);" id="result-desc"></p>
+            <div id="result-buttons" style="display: flex; gap: 15px; margin-top: 30px; width: 100%; max-width: 350px; justify-content: center;">
+                <button class="claim-btn" id="claim-btn" onclick="claimReward()">Забрать награду</button>
+            </div>
+        </div>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -558,7 +560,7 @@
             playAudio(textToSpeak);
         }
         
-        // === ИСПРАВЛЕННЫЙ ЭКРАН РЕЗУЛЬТАТОВ (ОСОБЕННО ДЛЯ АЗБУКИ) ===
+        // === ИСПРАВЛЕННЫЙ ЭКРАН РЕЗУЛЬТАТОВ ===
         function showResults() {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
@@ -567,63 +569,38 @@
             
             let rTitle = document.getElementById('result-title');
             let rDesc = document.getElementById('result-desc');
-            let btn = document.getElementById('claim-btn');
-
+            let buttonContainer = document.getElementById('result-buttons');
+            
             if (appData.mode === 'alphatest') {
-                // Если мы играли в Азбуку - награда внутри игры! Не шлем данные боту.
                 rTitle.innerText = "Тест завершен!";
                 rDesc.innerHTML = `Вы набрали: <b style="color:#fcd34d">${score * 10} очков</b>!<br><br><span style="font-size:16px">Верных ответов: ${score} из ${appData.items.length}</span>`;
                 
-                // Создаем контейнер для кнопок
-                const buttonContainer = document.createElement('div');
-                buttonContainer.style.display = 'flex';
-                buttonContainer.style.gap = '15px';
-                buttonContainer.style.marginTop = '20px';
-                buttonContainer.style.justifyContent = 'center';
-                buttonContainer.style.width = '100%';
-                buttonContainer.style.maxWidth = '350px';
-                
-                // Кнопка "Повторить тест"
-                const retryBtn = document.createElement('button');
-                retryBtn.className = 'claim-btn';
-                retryBtn.innerText = '🔄 Повторить';
-                retryBtn.style.marginTop = '0';
-                retryBtn.style.flex = '1';
-                retryBtn.onclick = () => {
-                    console.log("Повтор теста");
-                    currentIndex = 0;
-                    score = 0;
-                    document.getElementById('result-screen').classList.add('hidden');
-                    initQuizMode();
-                };
-                
-                // Кнопка "Назад к азбуке"
-                const backBtn = document.createElement('button');
-                backBtn.className = 'claim-btn';
-                backBtn.innerText = '⬅️ К азбуке';
-                backBtn.style.marginTop = '0';
-                backBtn.style.flex = '1';
-                backBtn.style.background = 'linear-gradient(135deg, #64748b, #475569)';
-                backBtn.onclick = () => {
-                    console.log("Возврат к азбуке");
-                    document.getElementById('result-screen').classList.add('hidden');
-                    document.getElementById('quiz-mode').classList.add('hidden');
-                    initAlphabet();
-                    switchSubTab('tests');
-                };
-                
-                buttonContainer.appendChild(retryBtn);
-                buttonContainer.appendChild(backBtn);
-                
-                // Очищаем и добавляем новые кнопки
-                btn.parentNode.innerHTML = '';
-                btn.parentNode.appendChild(buttonContainer);
+                // Очищаем и создаем кнопки заново
+                buttonContainer.innerHTML = `
+                    <button class="claim-btn" onclick="retryTest()" style="flex: 1;">🔄 Повторить</button>
+                    <button class="claim-btn" onclick="backToAlphabet()" style="flex: 1; background: linear-gradient(135deg, #64748b, #475569);">⬅️ К азбуке</button>
+                `;
             } else {
                 rTitle.innerText = "Завершено!";
                 rDesc.innerText = `Верных ответов: ${score} из ${appData.items.length}`;
-                btn.innerText = "Забрать награду";
-                btn.onclick = () => { claimReward(); };
+                buttonContainer.innerHTML = `<button class="claim-btn" onclick="claimReward()">Забрать награду</button>`;
             }
+        }
+        
+        function retryTest() {
+            console.log("Повтор теста");
+            currentIndex = 0;
+            score = 0;
+            document.getElementById('result-screen').classList.add('hidden');
+            initQuizMode();
+        }
+        
+        function backToAlphabet() {
+            console.log("Возврат к азбуке");
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-mode').classList.add('hidden');
+            initAlphabet();
+            switchSubTab('tests');
         }
         
         function claimReward() { 
