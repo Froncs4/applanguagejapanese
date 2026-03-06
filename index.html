@@ -11,15 +11,19 @@
         .header { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; }
         .glass-panel { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); border-radius: 30px; }
 
-        /* === АЗБУКА === */
+        /* === РЕЖИМ 1: УМНАЯ АЗБУКА === */
         #alphabet-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 50px; box-sizing: border-box;}
+        
+        /* Главные вкладки (Хирагана / Катакана) */
         .main-tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 10px; padding: 5px; }
-        .sub-tabs { display: flex; width: 100%; max-width: 350px; border-bottom: 2px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; }
-        .main-tabs .tab-btn { border-radius: 10px; }
+        .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; border-radius: 10px; }
         .main-tabs .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
-        .sub-tabs .tab-btn { font-size: 14px; padding: 8px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
-        .sub-tabs .tab-btn.active { color: white; border-bottom: 2px solid #10b981; }
+        
+        /* Вкладки режимов (По группам / Все символы / ТЕСТЫ) */
+        .mode-tabs { display: flex; width: 100%; max-width: 350px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 5px;}
+        .mode-tabs .tab-btn { font-size: 13px; padding: 8px 5px; }
+        .mode-tabs .tab-btn.active { background: #10b981; color: white; }
+
         .alphabet-container { width: 100%; max-width: 360px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
         .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; }
         .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #10b981; padding-left: 10px;}
@@ -46,7 +50,12 @@
         .btn-gif { background: #f1f5f9; color: #334155; }
         .btn-gif:active { background: #e2e8f0; }
 
-        /* === КВИЗ И ГРАММАТИКА === */
+        /* МЕНЮ ВЫБОРА ТЕСТА АЗБУКИ */
+        .test-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 350px; }
+        .test-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 20px 10px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .test-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
+
+        /* === РЕЖИМ 2: КВИЗ И ГРАММАТИКА === */
         #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
         .progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.4s ease-out; }
@@ -61,7 +70,16 @@
         .btn-option.correct { background: #10b981; color: white; transform: scale(1.05); }
         .btn-option.wrong { background: #ef4444; color: white; }
 
-        /* ОСТАЛЬНОЕ */
+        /* === РЕЖИМ 3: ГОЛОСОВАЯ КОМНАТА ИИ (РАЦИЯ) === */
+        #voice-mode { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+        .ai-avatar { font-size: 110px; animation: float 4s ease-in-out infinite; margin-bottom: 20px; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));}
+        .transcription-box { width: 85%; max-width: 350px; min-height: 80px; padding: 25px; text-align: center; font-size: 20px; font-weight: 500; color: white; margin-bottom: 30px; display: flex; align-items: center; justify-content: center;}
+        .mic-wrapper { position: relative; width: 120px; height: 120px; margin-top: 20px; }
+        .mic-btn { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 50px; border: none; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10; user-select: none; -webkit-user-select: none; transition: transform 0.1s;}
+        .mic-btn.listening { transform: scale(0.9); background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
+        .helper-text { margin-top: 40px; color: #cbd5e1; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+
+        /* === РЕЖИМ 4: РУЛЕТКА === */
         #wheel-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wheel-container { position: relative; width: 320px; height: 320px; margin-bottom: 40px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)); }
         .wheel-outer { position: absolute; top: -10px; left: -10px; width: calc(100% + 20px); height: calc(100% + 20px); border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706, #fcd34d); z-index: -1; box-shadow: 0 0 30px rgba(245,158,11,0.5); }
@@ -71,6 +89,7 @@
         .spin-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 20px 60px; border-radius: 30px; font-size: 26px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 25px rgba(245,158,11,0.5); transition: 0.2s;}
         .spin-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #b45309; }
 
+        /* === РЕЖИМ 5: СВАЙПЫ === */
         #swipe-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .card-stack { position: relative; width: 300px; height: 400px; perspective: 1000px; }
         .swipe-card { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: grab; user-select: none; }
@@ -81,11 +100,13 @@
         .card-reading { font-size: 30px; font-weight: bold; margin-bottom: 10px; }
         .card-hint { font-size: 18px; color: #e2e8f0; text-align: center; }
 
+        /* ФИНАЛ */
         #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
         .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 20px; font-weight: bold; border: none; padding: 18px 40px; border-radius: 25px; width: 100%; max-width: 300px; margin-top: 30px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
         
         #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: -1; }
+        @keyframes float { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-25px);} }
     </style>
 </head>
 <body>
@@ -99,10 +120,10 @@
             <div class="tab-btn active" id="tab-hira" onclick="switchMainTab('hira')">Хирагана</div>
             <div class="tab-btn" id="tab-kata" onclick="switchMainTab('kata')">Катакана</div>
         </div>
-        <div class="sub-tabs">
-            <!-- БАГФИКС: Поменяли местами. "По группам" теперь первая! -->
+        <div class="mode-tabs">
             <div class="tab-btn active" id="sub-groups" onclick="switchSubTab('groups')">По группам</div>
-            <div class="tab-btn" id="sub-all" onclick="switchSubTab('all')">Все символы</div>
+            <div class="tab-btn" id="sub-all" onclick="switchSubTab('all')">Сетка</div>
+            <div class="tab-btn" id="sub-tests" onclick="switchSubTab('tests')">🎯 ТЕСТЫ</div>
         </div>
         <div class="alphabet-container" id="alphabet-container"></div>
     </div>
@@ -112,7 +133,6 @@
         <div class="modal-card">
             <div class="modal-close" onclick="closeModal()">✕</div>
             <div class="modal-symbol" id="mod-sym">あ</div>
-            <!-- GIF скрыта по умолчанию -->
             <img class="modal-gif" id="mod-gif" src="" alt="gif">
             <div class="modal-romaji" id="mod-rom">a</div>
             <div class="modal-hint" id="mod-hint">Буква А с завитком</div>
@@ -123,20 +143,22 @@
         </div>
     </div>
 
-    <!-- РУЛЕТКА -->
     <div id="wheel-mode" class="hidden"><div class="wheel-container"><div class="wheel-outer"></div><div class="pointer">▼</div><div class="wheel" id="wheel"></div></div><button class="spin-btn" id="spin-btn" onclick="spin()">Крутить!</button></div>
+    
+    <div id="voice-mode" class="hidden">
+        <div class="ai-avatar">🦊</div>
+        <div class="transcription-box glass-panel" id="t-box">Нажмите на микрофон и начните говорить</div>
+        <div class="mic-wrapper"><button class="mic-btn" id="mic">🎙</button></div>
+    </div>
 
-    <!-- СВАЙПЫ -->
     <div id="swipe-mode" class="hidden"><div class="card-stack" id="card-stack"></div></div>
 
-    <!-- КВИЗ -->
     <div id="quiz-mode" class="hidden">
         <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         <div class="question-card glass-panel"><div style="display:flex; justify-content:center; align-items:center;"><span class="symbol" id="symbol-display">...</span><div class="speaker-btn" id="speaker-btn" onclick="speakText()">🔊</div></div><p style="color:rgba(255,255,255,0.7); margin-top:10px;" id="hint-text">Перевод</p></div>
         <div class="options-grid" id="options-container"></div>
     </div>
 
-    <!-- ФИНАЛ -->
     <div id="result-screen" class="hidden"><div style="font-size: 100px;">🎉</div><h2 style="font-size: 40px; margin: 10px 0;">Завершено!</h2><p style="font-size: 22px; color: rgba(255,255,255,0.8);" id="result-desc"></p><button class="claim-btn" onclick="claimReward()">Забрать награду</button></div>
 
     <script>
@@ -150,7 +172,7 @@
             bg.style.transform = `translate(${-x}px, ${-y}px)`;
         });
 
-        // --- ДАННЫЕ ДЛЯ АЗБУКИ (Полные 46 символов!) ---
+        // --- ДАННЫЕ ДЛЯ АЗБУКИ ---
         const hiraGroups = [
             { t: "Гласные", id: "vowels", i: [{k:'あ',r:'a'}, {k:'い',r:'i'}, {k:'う',r:'u'}, {k:'え',r:'e'}, {k:'お',r:'o'}] },
             { t: "Ряд К", id: "k", i: [{k:'か',r:'ka'}, {k:'き',r:'ki'}, {k:'く',r:'ku'}, {k:'け',r:'ke'}, {k:'こ',r:'ko'}] },
@@ -189,36 +211,33 @@
         // УНИВЕРСАЛЬНАЯ И НАДЕЖНАЯ ОЗВУЧКА
         function playAudio(text) {
             if (!text) return;
-            // Используем Google Translate API как скрытое аудио - работает всегда!
+            // Используем Google Translate API как скрытое аудио - работает 100% даже на беззвучном режиме iOS!
             const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
             const a = new Audio(url);
             a.play().catch(e => console.log("Автоплей заблокирован", e));
         }
 
-        // ГЕНЕРАТОР ВОПРОСОВ (Включая тесты по Азбуке!)
+        // ГЕНЕРАТОР ВОПРОСОВ 
         function generateQuestions(mode, azbuka, group) {
             let items = [];
             const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
             
-            // ЕСЛИ ЭТО ТЕСТ АЗБУКИ ИЗ ПИТОНА
+            // ЕСЛИ ЭТО ТЕСТ АЗБУКИ (генерация внутри Web App!)
             if (mode === 'alphatest') {
                 const targetGroups = azbuka === 'hiragana' ? hiraGroups : kataGroups;
                 const targetGroup = targetGroups.find(g => g.id === group);
                 
                 if (targetGroup) {
-                    // Создаем вопросы из этого ряда
                     items = targetGroup.i.map(item => {
-                        // Берем правильный ответ (ромадзи)
                         let correct = item.r;
-                        // Набираем ложные ответы из всей текущей азбуки
                         let allRomaji = [];
                         targetGroups.forEach(g => g.i.forEach(i => allRomaji.push(i.r)));
-                        
                         let opts = shuffle(allRomaji.filter(r => r !== correct)).slice(0, 3);
                         opts.push(correct);
                         opts = shuffle(opts);
                         return { t: "word", q: item.k, a: opts, c: opts.indexOf(correct) };
                     });
+                    items = shuffle(items);
                 }
             } 
             else if (mode === 'swipe') {
@@ -251,27 +270,26 @@
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const mode = urlParams.get('mode') || 'alphabet';
-            
             appData.mode = mode;
             
             if (mode === 'wheel') initWheel();
+            else if (mode === 'voice') initVoice();
             else if (mode === 'alphabet') initAlphabet();
             else {
-                // Если это тест (Слова, Грамматика или Азбука)
                 const azbukaType = urlParams.get('azbuka');
                 const groupType = urlParams.get('group');
                 appData.items = generateQuestions(mode, azbukaType, groupType);
                 
                 if (mode === 'swipe') initSwipeMode();
-                else initQuizMode(); // Квиз используется и для слов, и для азбуки!
+                else initQuizMode(); // Квиз для слов, грамматики и тестов азбуки
             }
         };
 
         // ==========================================
-        // РЕЖИМ 1: УМНАЯ АЗБУКА (МОДАЛКА И GIF)
+        // РЕЖИМ 1: УМНАЯ АЗБУКА
         // ==========================================
         let currentAlphaType = 'hira';
-        let currentViewMode = 'groups'; // ПО УМОЛЧАНИЮ "ПО ГРУППАМ"
+        let currentViewMode = 'groups';
 
         function initAlphabet() {
             document.getElementById('alphabet-mode').classList.remove('hidden');
@@ -291,6 +309,7 @@
             currentViewMode = viewMode;
             document.getElementById('sub-all').classList.remove('active');
             document.getElementById('sub-groups').classList.remove('active');
+            document.getElementById('sub-tests').classList.remove('active');
             document.getElementById(`sub-${viewMode}`).classList.add('active');
             renderKana();
         }
@@ -303,19 +322,14 @@
             if (currentViewMode === 'all') {
                 const grid = document.createElement('div');
                 grid.className = 'kana-grid';
-                groups.forEach(group => {
-                    group.i.forEach(item => {
-                        grid.appendChild(createKanaCell(item));
-                    });
-                });
+                groups.forEach(group => { group.i.forEach(item => { grid.appendChild(createKanaCell(item)); }); });
                 container.appendChild(grid);
-            } else {
+            } else if (currentViewMode === 'groups') {
                 groups.forEach(group => {
                     const rowBlock = document.createElement('div');
                     rowBlock.className = 'row-group';
                     const title = document.createElement('div');
-                    title.className = 'row-title';
-                    title.innerText = group.t;
+                    title.className = 'row-title'; title.innerText = group.t;
                     rowBlock.appendChild(title);
                     
                     const grid = document.createElement('div');
@@ -325,6 +339,25 @@
                     rowBlock.appendChild(grid);
                     container.appendChild(rowBlock);
                 });
+            } else {
+                // МЕНЮ ТЕСТОВ (Рендерим кнопки для каждого ряда)
+                const testGrid = document.createElement('div');
+                testGrid.className = 'test-menu-grid';
+                groups.forEach(group => {
+                    const btn = document.createElement('button');
+                    btn.className = 'test-btn';
+                    btn.innerText = `Тест: ${group.t}`;
+                    btn.onclick = () => {
+                        try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
+                        // Запускаем тест прямо здесь, не выходя из Web App!
+                        appData.mode = "alphatest";
+                        appData.items = generateQuestions("alphatest", currentAlphaType, group.id);
+                        document.getElementById('alphabet-mode').classList.add('hidden');
+                        initQuizMode();
+                    };
+                    testGrid.appendChild(btn);
+                });
+                container.appendChild(testGrid);
             }
         }
 
@@ -342,18 +375,15 @@
         function openModal(char, romaji, hint) {
             currentModalChar = char;
             currentModalRomaji = romaji;
-            
             document.getElementById('mod-sym').innerText = char;
             document.getElementById('mod-rom').innerText = romaji;
             document.getElementById('mod-hint').innerText = hint || "Основа языка";
             
-            // Скрываем GIF при новом открытии
             document.getElementById('mod-sym').style.display = "block";
             document.getElementById('mod-gif').style.display = "none";
             document.getElementById('modal-overlay').classList.add('active');
             
-            // Автоматически произносим звук при открытии!
-            playAudio(char); 
+            playAudio(char); // Авто-звук при открытии
         }
 
         function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
@@ -370,8 +400,8 @@
                 
                 let prefix = currentAlphaType === 'hira' ? 'Hiragana' : 'Katakana';
                 let r = currentModalRomaji.toLowerCase();
-                // Замена сложных слогов для Википедии
                 if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
+                
                 gif.src = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
             } else {
                 sym.style.display = "block";
@@ -380,7 +410,77 @@
         }
 
         // ==========================================
-        // РЕЖИМ 2: РУЛЕТКА
+        // ЛОГИКА ГОЛОСОВОГО ИИ
+        // ==========================================
+        let recognition;
+        let isRecording = false;
+        let finalTranscript = "";
+
+        function initVoice() {
+            document.getElementById('voice-mode').classList.remove('hidden');
+            document.getElementById('header-title').innerText = "Разговор с Акирой";
+            document.getElementById('t-box').innerText = "Нажмите на микрофон и начните говорить";
+            
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (window.SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'ru-RU'; 
+                recognition.interimResults = false; 
+                recognition.continuous = true; 
+                
+                recognition.onstart = () => {
+                    isRecording = true;
+                    document.getElementById('mic').classList.add('listening');
+                    document.getElementById('t-box').innerText = "Слушаю... (Нажмите еще раз, чтобы остановить)";
+                    try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
+                };
+
+                recognition.onresult = (event) => {
+                    let text = "";
+                    for(let i = 0; i < event.results.length; i++) text += event.results[i][0].transcript;
+                    finalTranscript = text;
+                    document.getElementById('t-box').innerText = finalTranscript;
+                };
+
+                recognition.onerror = (event) => {
+                    isRecording = false;
+                    document.getElementById('mic').classList.remove('listening');
+                    document.getElementById('t-box').innerText = "Ошибка: " + event.error + ". Попробуйте снова.";
+                };
+            } else {
+                document.getElementById('t-box').innerText = "Ваш браузер не поддерживает микрофон 😔";
+            }
+
+            const micBtn = document.getElementById('mic');
+            micBtn.onclick = function() {
+                if (!recognition) return;
+                
+                if (isRecording) {
+                    recognition.stop();
+                    isRecording = false;
+                    micBtn.classList.remove('listening');
+                    
+                    if (finalTranscript.trim().length > 0) {
+                        document.getElementById('t-box').innerText = "Отправляю Сенсею...";
+                        let safeText = finalTranscript.replace(/[^\w\sа-яА-ЯёЁ]/gi, ' ').substring(0, 100).trim();
+                        if (safeText.length > 0) {
+                            try { tg.HapticFeedback.impactOccurred("heavy"); } catch(e){}
+                            tg.sendData("voice_query_" + safeText);
+                            setTimeout(() => { tg.close(); }, 300);
+                        }
+                    } else {
+                        document.getElementById('t-box').innerText = "Я ничего не услышал. Нажмите снова.";
+                    }
+                } else {
+                    finalTranscript = "";
+                    try { recognition.start(); } catch (e) { console.log(e); }
+                }
+            };
+        }
+
+        // ==========================================
+        // ЛОГИКА РУЛЕТКИ
         // ==========================================
         const PRIZES = [100, 300, 500, 800, 1200];
         function initWheel() { 
@@ -429,7 +529,7 @@
         let isWaiting = false;
         function initQuizMode() { 
             document.getElementById('quiz-mode').classList.remove('hidden'); 
-            document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : "Проверка знаний"; 
+            document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : (appData.mode === 'alphatest' ? "Тест Азбуки" : "Проверка знаний"); 
             renderQuizCard(); 
         }
         
@@ -445,8 +545,7 @@
                 document.getElementById('speaker-btn').style.display = "none";
             } else {
                 document.getElementById('symbol-display').innerHTML = item.q;
-                // Для теста азбуки меняем подсказку
-                document.getElementById('hint-text').innerText = appData.mode === 'alphatest' ? "Выберите чтение (Ромадзи)" : "Выберите перевод";
+                document.getElementById('hint-text').innerText = appData.mode === 'alphatest' ? "Выберите правильное чтение" : "Выберите перевод";
                 document.getElementById('symbol-display').style.fontSize = "70px";
                 document.getElementById('speaker-btn').style.display = "inline-flex";
             }
