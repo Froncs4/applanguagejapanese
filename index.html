@@ -5,27 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TeleLingo Premium Web</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- ПОДКЛЮЧАЕМ БИБЛИОТЕКУ КОНФЕТТИ ДЛЯ АНИМАЦИЙ! -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; overflow: hidden; }
         .hidden { display: none !important; }
-        .header { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; }
+        .header { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; animation: fadeIn 0.5s;}
         .glass-panel { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); border-radius: 30px; }
 
-        /* === РЕЖИМ 1: УМНАЯ АЗБУКА === */
+        /* === АЗБУКА === */
         #alphabet-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 50px; box-sizing: border-box;}
-        
-        /* Главные вкладки (Хирагана / Катакана) */
         .main-tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.4); border-radius: 15px; margin-bottom: 10px; padding: 5px; }
-        .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; border-radius: 10px; }
+        .sub-tabs { display: flex; width: 100%; max-width: 350px; border-bottom: 2px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; }
+        .main-tabs .tab-btn { border-radius: 10px; }
         .main-tabs .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
-        
-        /* Вкладки режимов (По группам / Все символы / ТЕСТЫ) */
-        .mode-tabs { display: flex; width: 100%; max-width: 350px; margin-bottom: 20px; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 5px;}
-        .mode-tabs .tab-btn { font-size: 13px; padding: 8px 5px; }
-        .mode-tabs .tab-btn.active { background: #10b981; color: white; }
-
+        .sub-tabs .tab-btn { font-size: 14px; padding: 8px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .sub-tabs .tab-btn.active { color: white; border-bottom: 2px solid #10b981; }
         .alphabet-container { width: 100%; max-width: 360px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
-        .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; }
+        .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; animation: slideUp 0.4s ease-out;}
         .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #10b981; padding-left: 10px;}
         .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
         .kana-cell { background: rgba(255,255,255,0.9); color: #0f172a; border-radius: 15px; padding: 12px 5px; text-align: center; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.2); transition: 0.2s; }
@@ -50,36 +48,22 @@
         .btn-gif { background: #f1f5f9; color: #334155; }
         .btn-gif:active { background: #e2e8f0; }
 
-        /* МЕНЮ ВЫБОРА ТЕСТА АЗБУКИ */
-        .test-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 350px; }
-        .test-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 20px 10px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .test-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
-
-        /* === РЕЖИМ 2: КВИЗ И ГРАММАТИКА === */
+        /* === КВИЗ И ГРАММАТИКА === */
         #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
         .progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.4s ease-out; }
-        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 30px; text-align: center; box-sizing: border-box; }
+        .question-card { width: 90%; max-width: 360px; padding: 40px 20px; margin-top: 30px; text-align: center; box-sizing: border-box; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .symbol { font-size: 60px; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 15px rgba(0,0,0,0.3);}
         .speaker-btn { background: rgba(255,255,255,0.2); border-radius: 50%; width: 45px; height: 45px; display: inline-flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; margin-left: 15px; transition: 0.2s;}
-        .speaker-btn:active { transform: scale(0.9); }
+        .speaker-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4);}
         .blank-slot { display: inline-block; min-width: 50px; height: 40px; border-bottom: 4px solid #fcd34d; color: #fcd34d; font-weight: bold; vertical-align: bottom; }
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 360px; margin-top: 20px;}
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 360px; margin-top: 20px; animation: slideUp 0.5s ease-out;}
         .btn-option { background: rgba(255,255,255,0.9); color: #1e293b; font-size: 18px; font-weight: 900; padding: 18px 10px; border-radius: 20px; cursor: pointer; border: none; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2);}
         .btn-option:active { transform: scale(0.95); }
         .btn-option.correct { background: #10b981; color: white; transform: scale(1.05); }
-        .btn-option.wrong { background: #ef4444; color: white; }
+        .btn-option.wrong { background: #ef4444; color: white; animation: shake 0.4s; }
 
-        /* === РЕЖИМ 3: ГОЛОСОВАЯ КОМНАТА ИИ (РАЦИЯ) === */
-        #voice-mode { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
-        .ai-avatar { font-size: 110px; animation: float 4s ease-in-out infinite; margin-bottom: 20px; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.4));}
-        .transcription-box { width: 85%; max-width: 350px; min-height: 80px; padding: 25px; text-align: center; font-size: 20px; font-weight: 500; color: white; margin-bottom: 30px; display: flex; align-items: center; justify-content: center;}
-        .mic-wrapper { position: relative; width: 120px; height: 120px; margin-top: 20px; }
-        .mic-btn { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; font-size: 50px; border: none; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.5); display: flex; justify-content: center; align-items: center; z-index: 10; user-select: none; -webkit-user-select: none; transition: transform 0.1s;}
-        .mic-btn.listening { transform: scale(0.9); background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.5); }
-        .helper-text { margin-top: 40px; color: #cbd5e1; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
-
-        /* === РЕЖИМ 4: РУЛЕТКА === */
+        /* === РУЛЕТКА === */
         #wheel-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wheel-container { position: relative; width: 320px; height: 320px; margin-bottom: 40px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)); }
         .wheel-outer { position: absolute; top: -10px; left: -10px; width: calc(100% + 20px); height: calc(100% + 20px); border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706, #fcd34d); z-index: -1; box-shadow: 0 0 30px rgba(245,158,11,0.5); }
@@ -89,8 +73,12 @@
         .spin-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 20px 60px; border-radius: 30px; font-size: 26px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 25px rgba(245,158,11,0.5); transition: 0.2s;}
         .spin-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #b45309; }
 
-        /* === РЕЖИМ 5: СВАЙПЫ === */
+        /* === СВАЙПЫ (ИСПРАВЛЕНО) === */
         #swipe-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        
+        /* ПУЛЬСИРУЮЩАЯ ПОДСКАЗКА НАД КАРТОЧКАМИ */
+        .swipe-hint-top { font-size: 18px; font-weight: bold; color: #fcd34d; margin-bottom: 20px; animation: pulseHint 2s infinite; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; }
+        
         .card-stack { position: relative; width: 300px; height: 400px; perspective: 1000px; }
         .swipe-card { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: grab; user-select: none; }
         .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 30px; padding: 20px; box-sizing: border-box; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
@@ -106,7 +94,13 @@
         
         #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: -1; }
+        
+        /* Анимации */
         @keyframes float { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-25px);} }
+        @keyframes popIn { 0% {transform: scale(0.8); opacity: 0;} 100% {transform: scale(1); opacity: 1;} }
+        @keyframes slideUp { 0% {transform: translateY(30px); opacity: 0;} 100% {transform: translateY(0); opacity: 1;} }
+        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-10px);} 75% {transform: translateX(10px);} }
+        @keyframes pulseHint { 0%, 100% {opacity: 1;} 50% {opacity: 0.5;} }
     </style>
 </head>
 <body>
@@ -120,10 +114,9 @@
             <div class="tab-btn active" id="tab-hira" onclick="switchMainTab('hira')">Хирагана</div>
             <div class="tab-btn" id="tab-kata" onclick="switchMainTab('kata')">Катакана</div>
         </div>
-        <div class="mode-tabs">
+        <div class="sub-tabs">
             <div class="tab-btn active" id="sub-groups" onclick="switchSubTab('groups')">По группам</div>
-            <div class="tab-btn" id="sub-all" onclick="switchSubTab('all')">Сетка</div>
-            <div class="tab-btn" id="sub-tests" onclick="switchSubTab('tests')">🎯 ТЕСТЫ</div>
+            <div class="tab-btn" id="sub-all" onclick="switchSubTab('all')">Все символы</div>
         </div>
         <div class="alphabet-container" id="alphabet-container"></div>
     </div>
@@ -143,22 +136,23 @@
         </div>
     </div>
 
+    <!-- РУЛЕТКА -->
     <div id="wheel-mode" class="hidden"><div class="wheel-container"><div class="wheel-outer"></div><div class="pointer">▼</div><div class="wheel" id="wheel"></div></div><button class="spin-btn" id="spin-btn" onclick="spin()">Крутить!</button></div>
-    
-    <div id="voice-mode" class="hidden">
-        <div class="ai-avatar">🦊</div>
-        <div class="transcription-box glass-panel" id="t-box">Нажмите на микрофон и начните говорить</div>
-        <div class="mic-wrapper"><button class="mic-btn" id="mic">🎙</button></div>
+
+    <!-- СВАЙПЫ -->
+    <div id="swipe-mode" class="hidden">
+        <div class="swipe-hint-top">Нажми, чтобы узнать перевод 👆</div>
+        <div class="card-stack" id="card-stack"></div>
     </div>
 
-    <div id="swipe-mode" class="hidden"><div class="card-stack" id="card-stack"></div></div>
-
+    <!-- КВИЗ -->
     <div id="quiz-mode" class="hidden">
         <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
-        <div class="question-card glass-panel"><div style="display:flex; justify-content:center; align-items:center;"><span class="symbol" id="symbol-display">...</span><div class="speaker-btn" id="speaker-btn" onclick="speakText()">🔊</div></div><p style="color:rgba(255,255,255,0.7); margin-top:10px;" id="hint-text">Перевод</p></div>
+        <div class="question-card glass-panel" id="q-card"><div style="display:flex; justify-content:center; align-items:center;"><span class="symbol" id="symbol-display">...</span><div class="speaker-btn" id="speaker-btn" onclick="speakText()">🔊</div></div><p style="color:rgba(255,255,255,0.7); margin-top:10px;" id="hint-text">Перевод</p></div>
         <div class="options-grid" id="options-container"></div>
     </div>
 
+    <!-- ФИНАЛ -->
     <div id="result-screen" class="hidden"><div style="font-size: 100px;">🎉</div><h2 style="font-size: 40px; margin: 10px 0;">Завершено!</h2><p style="font-size: 22px; color: rgba(255,255,255,0.8);" id="result-desc"></p><button class="claim-btn" onclick="claimReward()">Забрать награду</button></div>
 
     <script>
@@ -172,7 +166,6 @@
             bg.style.transform = `translate(${-x}px, ${-y}px)`;
         });
 
-        // --- ДАННЫЕ ДЛЯ АЗБУКИ ---
         const hiraGroups = [
             { t: "Гласные", id: "vowels", i: [{k:'あ',r:'a'}, {k:'い',r:'i'}, {k:'う',r:'u'}, {k:'え',r:'e'}, {k:'お',r:'o'}] },
             { t: "Ряд К", id: "k", i: [{k:'か',r:'ka'}, {k:'き',r:'ki'}, {k:'く',r:'ku'}, {k:'け',r:'ke'}, {k:'こ',r:'ko'}] },
@@ -199,7 +192,6 @@
             { t: "Ряд В/Н", id: "w", i: [{k:'ワ',r:'wa'}, {k:'ヲ',r:'wo'}, {k:'ン',r:'n'}] }
         ];
 
-        // --- ДАННЫЕ ИГР ---
         const DICT_KANJI = {"一":"один", "二":"два", "三":"три", "四":"четыре", "五":"пять", "日":"день", "月":"месяц", "火":"огонь", "水":"вода", "木":"дерево", "金":"золото", "土":"земля", "人":"человек", "大":"большой", "小":"маленький"};
         const DICT_WORDS = {"こんにちは":"здравствуйте", "ありがとう":"спасибо", "さようなら":"до свидания", "たべる":"кушать", "のむ":"пить", "いく":"идти", "くる":"приходить", "ねこ":"кошка", "いぬ":"собака", "くるま":"машина", "ほん":"книга", "みず":"вода"};
         const DICT_GRAMMAR = {"わたし ___ がくせい です": "は", "りんご ___ たべる": "を", "がっこう ___ いく": "に", "ペン ___ かきます": "で", "いぬ ___ ねこ が います": "と", "あそこ ___ あります": "に", "だれ ___ きますか": "が", "としょかん ___ ほんをよむ": "で"};
@@ -208,25 +200,19 @@
         let currentIndex = 0, score = 0;
         let currentModalChar = "", currentModalRomaji = "";
 
-        // УНИВЕРСАЛЬНАЯ И НАДЕЖНАЯ ОЗВУЧКА
         function playAudio(text) {
             if (!text) return;
-            // Используем Google Translate API как скрытое аудио - работает 100% даже на беззвучном режиме iOS!
             const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
-            const a = new Audio(url);
-            a.play().catch(e => console.log("Автоплей заблокирован", e));
+            new Audio(url).play().catch(e => console.log(e));
         }
 
-        // ГЕНЕРАТОР ВОПРОСОВ 
         function generateQuestions(mode, azbuka, group) {
             let items = [];
             const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
             
-            // ЕСЛИ ЭТО ТЕСТ АЗБУКИ (генерация внутри Web App!)
             if (mode === 'alphatest') {
                 const targetGroups = azbuka === 'hiragana' ? hiraGroups : kataGroups;
                 const targetGroup = targetGroups.find(g => g.id === group);
-                
                 if (targetGroup) {
                     items = targetGroup.i.map(item => {
                         let correct = item.r;
@@ -234,9 +220,11 @@
                         targetGroups.forEach(g => g.i.forEach(i => allRomaji.push(i.r)));
                         let opts = shuffle(allRomaji.filter(r => r !== correct)).slice(0, 3);
                         opts.push(correct);
-                        opts = shuffle(opts);
-                        return { t: "word", q: item.k, a: opts, c: opts.indexOf(correct) };
+                        return { t: "word", q: item.k, a: shuffle(opts), c: shuffle(opts).indexOf(correct) }; // FIX: правильный индекс
                     });
+                    
+                    // Жесткая фиксация правильного индекса для Азбуки
+                    items.forEach(i => { i.c = i.a.indexOf(targetGroup.i.find(x => x.k === i.q).r) });
                     items = shuffle(items);
                 }
             } 
@@ -273,23 +261,21 @@
             appData.mode = mode;
             
             if (mode === 'wheel') initWheel();
-            else if (mode === 'voice') initVoice();
             else if (mode === 'alphabet') initAlphabet();
             else {
                 const azbukaType = urlParams.get('azbuka');
                 const groupType = urlParams.get('group');
                 appData.items = generateQuestions(mode, azbukaType, groupType);
-                
                 if (mode === 'swipe') initSwipeMode();
-                else initQuizMode(); // Квиз для слов, грамматики и тестов азбуки
+                else initQuizMode(); 
             }
         };
 
         // ==========================================
-        // РЕЖИМ 1: УМНАЯ АЗБУКА
+        // РЕЖИМ 1: УМНАЯ АЗБУКА 
         // ==========================================
         let currentAlphaType = 'hira';
-        let currentViewMode = 'groups';
+        let currentViewMode = 'groups'; 
 
         function initAlphabet() {
             document.getElementById('alphabet-mode').classList.remove('hidden');
@@ -309,7 +295,6 @@
             currentViewMode = viewMode;
             document.getElementById('sub-all').classList.remove('active');
             document.getElementById('sub-groups').classList.remove('active');
-            document.getElementById('sub-tests').classList.remove('active');
             document.getElementById(`sub-${viewMode}`).classList.add('active');
             renderKana();
         }
@@ -324,7 +309,7 @@
                 grid.className = 'kana-grid';
                 groups.forEach(group => { group.i.forEach(item => { grid.appendChild(createKanaCell(item)); }); });
                 container.appendChild(grid);
-            } else if (currentViewMode === 'groups') {
+            } else {
                 groups.forEach(group => {
                     const rowBlock = document.createElement('div');
                     rowBlock.className = 'row-group';
@@ -339,25 +324,6 @@
                     rowBlock.appendChild(grid);
                     container.appendChild(rowBlock);
                 });
-            } else {
-                // МЕНЮ ТЕСТОВ (Рендерим кнопки для каждого ряда)
-                const testGrid = document.createElement('div');
-                testGrid.className = 'test-menu-grid';
-                groups.forEach(group => {
-                    const btn = document.createElement('button');
-                    btn.className = 'test-btn';
-                    btn.innerText = `Тест: ${group.t}`;
-                    btn.onclick = () => {
-                        try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
-                        // Запускаем тест прямо здесь, не выходя из Web App!
-                        appData.mode = "alphatest";
-                        appData.items = generateQuestions("alphatest", currentAlphaType, group.id);
-                        document.getElementById('alphabet-mode').classList.add('hidden');
-                        initQuizMode();
-                    };
-                    testGrid.appendChild(btn);
-                });
-                container.appendChild(testGrid);
             }
         }
 
@@ -378,12 +344,10 @@
             document.getElementById('mod-sym').innerText = char;
             document.getElementById('mod-rom').innerText = romaji;
             document.getElementById('mod-hint').innerText = hint || "Основа языка";
-            
             document.getElementById('mod-sym').style.display = "block";
             document.getElementById('mod-gif').style.display = "none";
             document.getElementById('modal-overlay').classList.add('active');
-            
-            playAudio(char); // Авто-звук при открытии
+            playAudio(char); 
         }
 
         function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
@@ -393,15 +357,12 @@
             try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
             const sym = document.getElementById('mod-sym');
             const gif = document.getElementById('mod-gif');
-            
             if (gif.style.display === "none") {
                 sym.style.display = "none";
                 gif.style.display = "block";
-                
                 let prefix = currentAlphaType === 'hira' ? 'Hiragana' : 'Katakana';
                 let r = currentModalRomaji.toLowerCase();
                 if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
-                
                 gif.src = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
             } else {
                 sym.style.display = "block";
@@ -410,77 +371,7 @@
         }
 
         // ==========================================
-        // ЛОГИКА ГОЛОСОВОГО ИИ
-        // ==========================================
-        let recognition;
-        let isRecording = false;
-        let finalTranscript = "";
-
-        function initVoice() {
-            document.getElementById('voice-mode').classList.remove('hidden');
-            document.getElementById('header-title').innerText = "Разговор с Акирой";
-            document.getElementById('t-box').innerText = "Нажмите на микрофон и начните говорить";
-            
-            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (window.SpeechRecognition) {
-                recognition = new SpeechRecognition();
-                recognition.lang = 'ru-RU'; 
-                recognition.interimResults = false; 
-                recognition.continuous = true; 
-                
-                recognition.onstart = () => {
-                    isRecording = true;
-                    document.getElementById('mic').classList.add('listening');
-                    document.getElementById('t-box').innerText = "Слушаю... (Нажмите еще раз, чтобы остановить)";
-                    try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
-                };
-
-                recognition.onresult = (event) => {
-                    let text = "";
-                    for(let i = 0; i < event.results.length; i++) text += event.results[i][0].transcript;
-                    finalTranscript = text;
-                    document.getElementById('t-box').innerText = finalTranscript;
-                };
-
-                recognition.onerror = (event) => {
-                    isRecording = false;
-                    document.getElementById('mic').classList.remove('listening');
-                    document.getElementById('t-box').innerText = "Ошибка: " + event.error + ". Попробуйте снова.";
-                };
-            } else {
-                document.getElementById('t-box').innerText = "Ваш браузер не поддерживает микрофон 😔";
-            }
-
-            const micBtn = document.getElementById('mic');
-            micBtn.onclick = function() {
-                if (!recognition) return;
-                
-                if (isRecording) {
-                    recognition.stop();
-                    isRecording = false;
-                    micBtn.classList.remove('listening');
-                    
-                    if (finalTranscript.trim().length > 0) {
-                        document.getElementById('t-box').innerText = "Отправляю Сенсею...";
-                        let safeText = finalTranscript.replace(/[^\w\sа-яА-ЯёЁ]/gi, ' ').substring(0, 100).trim();
-                        if (safeText.length > 0) {
-                            try { tg.HapticFeedback.impactOccurred("heavy"); } catch(e){}
-                            tg.sendData("voice_query_" + safeText);
-                            setTimeout(() => { tg.close(); }, 300);
-                        }
-                    } else {
-                        document.getElementById('t-box').innerText = "Я ничего не услышал. Нажмите снова.";
-                    }
-                } else {
-                    finalTranscript = "";
-                    try { recognition.start(); } catch (e) { console.log(e); }
-                }
-            };
-        }
-
-        // ==========================================
-        // ЛОГИКА РУЛЕТКИ
+        // РЕЖИМ 2: РУЛЕТКА
         // ==========================================
         const PRIZES = [100, 300, 500, 800, 1200];
         function initWheel() { 
@@ -516,11 +407,13 @@
         }
         
         function showResults() {
+            // Фейерверк при завершении!
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            
             document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('result-desc').innerText = `Счет: ${score} из ${appData.items.length}`;
         }
-        
         function claimReward() { 
             let eventName = appData.mode === 'alphatest' ? 'alphatest' : appData.mode;
             tg.sendData(`${eventName}_result_${score}`); 
@@ -537,6 +430,12 @@
             isWaiting = false; if (currentIndex >= appData.items.length) { showResults(); return; }
             const item = appData.items[currentIndex];
             document.getElementById('progress-bar').style.width = ((currentIndex / appData.items.length) * 100) + "%";
+            
+            // Анимация вылета карточки
+            const qCard = document.getElementById('q-card');
+            qCard.style.animation = 'none';
+            qCard.offsetHeight; // триггер рефлоу
+            qCard.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             
             if (item.t === "grammar") {
                 document.getElementById('symbol-display').innerHTML = item.q.replace("___", `<span class="blank-slot" id="grammar-blank"></span>`);
@@ -567,28 +466,54 @@
         }
 
         let activeCard = null;
-        function initSwipeMode() { document.getElementById('swipe-mode').classList.remove('hidden'); document.getElementById('header-title').innerText = "Свайп: Вправо-Помню, Влево-Забыл"; renderCards(); }
+        function initSwipeMode() { document.getElementById('swipe-mode').classList.remove('hidden'); document.getElementById('header-title').innerText = "Изучение слов"; renderCards(); }
+        
         function renderCards() {
             const stack = document.getElementById('card-stack'); stack.innerHTML = "";
             for (let i = appData.items.length - 1; i >= currentIndex; i--) {
                 const item = appData.items[i]; const card = document.createElement('div'); card.className = 'swipe-card'; card.style.zIndex = appData.items.length - i;
                 if (i === currentIndex) { activeCard = card; setupCardPhysics(card); } else card.style.transform = `scale(${1 - (i-currentIndex)*0.05}) translateY(${(i-currentIndex)*10}px)`;
-                card.innerHTML = `<div class="card-front" onclick="flipCard(this.parentElement)"><h1 class="card-symbol">${item.q}</h1><div class="tap-hint">Нажми, чтобы перевернуть</div></div><div class="card-back" onclick="flipCard(this.parentElement)"><div class="card-reading">${item.r}</div><div class="card-hint">${item.t}</div></div>`;
+                card.innerHTML = `<div class="card-front" onclick="flipCard(this.parentElement, event)"><h1 class="card-symbol">${item.q}</h1></div><div class="card-back" onclick="flipCard(this.parentElement, event)"><div class="card-reading">${item.r}</div><div class="card-hint">${item.t}</div></div>`;
                 stack.appendChild(card);
             }
         }
-        function flipCard(card) {
+        
+        function flipCard(card, event) {
+            // Если это был свайп (мышкой водили), не переворачиваем!
+            if (event && event.type === "click" && card.dataset.dragging === "true") return;
+            
             if (card.style.transform.includes('rotateY(180deg)')) card.style.transform = 'rotateY(0deg)';
             else { card.style.transform = 'rotateY(180deg)'; try { tg.HapticFeedback.impactOccurred("light"); } catch(e){} }
         }
+        
         function setupCardPhysics(card) {
             let startX = 0, currentX = 0, isDragging = false;
-            const onStart = (e) => { isDragging = true; startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; card.style.transition = 'none'; };
-            const onMove = (e) => { if (!isDragging) return; currentX = (e.type.includes('mouse') ? e.pageX : e.touches[0].pageX) - startX; const isFlipped = card.style.transform.includes('rotateY'); card.style.transform = `translate(${currentX}px, ${Math.abs(currentX)*0.1}px) rotate(${currentX*0.1}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; };
+            
+            const onStart = (e) => { 
+                isDragging = true; 
+                card.dataset.dragging = "false"; // Сбрасываем флаг драга
+                startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; 
+                card.style.transition = 'none'; 
+            };
+            const onMove = (e) => { 
+                if (!isDragging) return; 
+                currentX = (e.type.includes('mouse') ? e.pageX : e.touches[0].pageX) - startX; 
+                
+                // Если мы сдвинули больше чем на 15 пикселей, считаем это свайпом, а не кликом
+                if (Math.abs(currentX) > 15) {
+                    card.dataset.dragging = "true";
+                }
+                
+                const isFlipped = card.style.transform.includes('rotateY'); 
+                card.style.transform = `translate(${currentX}px, ${Math.abs(currentX)*0.1}px) rotate(${currentX*0.1}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; 
+            };
             const onEnd = () => {
                 isDragging = false; card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                 if (currentX > 100) swipeCard('right'); else if (currentX < -100) swipeCard('left');
-                else { const isFlipped = card.style.transform.includes('rotateY'); card.style.transform = `translate(0px, 0px) rotate(0deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; }
+                else { 
+                    const isFlipped = card.style.transform.includes('rotateY'); 
+                    card.style.transform = `translate(0px, 0px) rotate(0deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; 
+                }
             };
             card.addEventListener('mousedown', onStart); document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
             card.addEventListener('touchstart', onStart, {passive: true}); document.addEventListener('touchmove', onMove, {passive: true}); document.addEventListener('touchend', onEnd);
