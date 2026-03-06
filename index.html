@@ -11,53 +11,52 @@
         .header { position: absolute; top: 20px; width: 100%; text-align: center; font-size: 20px; font-weight: bold; color: #94a3b8; z-index: 10; }
         .glass-panel { background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); border-radius: 30px; }
 
-        /* === РЕЖИМ 1: АЗБУКА (НОВОЕ!) === */
+        /* === РЕЖИМ 1: УМНАЯ АЗБУКА С ГРУППАми И МОДАЛКОЙ === */
         #alphabet-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 60px; box-sizing: border-box;}
-        .tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-bottom: 20px; padding: 5px; }
+        .tabs { display: flex; width: 100%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 15px; margin-bottom: 10px; padding: 5px; }
         .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; border-radius: 10px; cursor: pointer; transition: 0.3s; color: #94a3b8; }
         .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
-        .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; width: 100%; max-width: 350px; overflow-y: auto; padding-bottom: 30px; }
-        .kana-cell { background: rgba(255,255,255,0.9); color: #0f172a; border-radius: 15px; padding: 15px 5px; text-align: center; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.1s; }
+        
+        .alphabet-container { width: 100%; max-width: 350px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; }
+        .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; }
+        .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #6366f1; padding-left: 10px;}
+        .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        
+        .kana-cell { background: rgba(255,255,255,0.9); color: #0f172a; border-radius: 15px; padding: 15px 5px; text-align: center; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: 0.2s; position: relative; overflow: hidden; }
         .kana-cell:active { transform: scale(0.9); background: #e2e8f0; }
         .kana-char { font-size: 28px; font-weight: 900; margin-bottom: 5px; }
         .kana-romaji { font-size: 12px; color: #64748b; font-weight: bold; text-transform: uppercase; }
 
-        /* === РЕЖИМ 2: РОСКОШНАЯ РУЛЕТКА === */
+        /* Всплывающее окно (Модалка) для буквы */
+        #modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
+        #modal-overlay.active { opacity: 1; pointer-events: all; }
+        .modal-card { background: white; width: 85%; max-width: 320px; border-radius: 30px; padding: 30px; text-align: center; color: #0f172a; transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative;}
+        #modal-overlay.active .modal-card { transform: scale(1); }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; font-weight: bold; }
+        
+        .modal-symbol { font-size: 100px; font-weight: 900; line-height: 1; margin: 20px 0;}
+        .modal-gif { width: 150px; height: 150px; margin: 0 auto 10px auto; display: none; border-radius: 15px; background: #f1f5f9;}
+        
+        .modal-romaji { font-size: 24px; font-weight: bold; color: #4f46e5; margin-bottom: 5px; text-transform: uppercase;}
+        .modal-hint { font-size: 16px; color: #64748b; margin-bottom: 30px;}
+        
+        .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .modal-btn { padding: 15px; border-radius: 15px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .btn-audio { background: #e0e7ff; color: #4f46e5; }
+        .btn-audio:active { background: #c7d2fe; }
+        .btn-gif { background: #f1f5f9; color: #334155; }
+        .btn-gif:active { background: #e2e8f0; }
+
+        /* === ОСТАЛЬНЫЕ РЕЖИМЫ (РУЛЕТКА, СВАЙПЫ, КВИЗ) ОСТАЛИСЬ БЕЗ ИЗМЕНЕНИЙ === */
         #wheel-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .wheel-container { position: relative; width: 320px; height: 320px; margin-bottom: 40px; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)); }
-        
-        /* Внешняя золотая рамка */
         .wheel-outer { position: absolute; top: -10px; left: -10px; width: calc(100% + 20px); height: calc(100% + 20px); border-radius: 50%; background: linear-gradient(135deg, #fbbf24, #d97706, #fcd34d); z-index: -1; box-shadow: 0 0 30px rgba(245,158,11,0.5); }
-        
-        .wheel { 
-            width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5); 
-            transition: transform 5s cubic-bezier(0.2, 0.9, 0.2, 1); /* Очень плавное торможение */
-            position: relative; overflow: hidden;
-            /* 5 Секторов по 72 градуса */
-            background: conic-gradient(
-                #3b82f6 0deg 72deg,    /* 100 XP - Синий */
-                #10b981 72deg 144deg,  /* 300 XP - Зеленый */
-                #f59e0b 144deg 216deg, /* 500 XP - Желтый */
-                #ef4444 216deg 288deg, /* 800 XP - Красный */
-                #8b5cf6 288deg 360deg  /* 1200 XP - Фиолетовый (Джекпот) */
-            ); 
-        }
-
-        .slice-text { 
-            position: absolute; top: 50%; left: 50%; 
-            font-weight: 900; font-size: 22px; color: white; 
-            text-shadow: 0 3px 6px rgba(0,0,0,0.8);
-            transform-origin: 0 0;
-            display: flex; align-items: center; justify-content: center;
-        }
-
+        .wheel { width: 100%; height: 100%; border-radius: 50%; border: 4px solid #fff; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); transition: transform 5s cubic-bezier(0.2, 0.9, 0.2, 1); position: relative; overflow: hidden; background: conic-gradient(#3b82f6 0deg 72deg, #10b981 72deg 144deg, #f59e0b 144deg 216deg, #ef4444 216deg 288deg, #8b5cf6 288deg 360deg); }
+        .slice-text { position: absolute; top: 50%; left: 50%; font-weight: 900; font-size: 22px; color: white; text-shadow: 0 3px 6px rgba(0,0,0,0.8); transform-origin: 0 0; display: flex; align-items: center; justify-content: center; }
         .pointer { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 60px; color: #fcd34d; z-index: 10; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8)); }
-        
         .spin-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 20px 60px; border-radius: 30px; font-size: 26px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 25px rgba(245,158,11,0.5); transition: 0.2s;}
         .spin-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #b45309; }
 
-        /* === РЕЖИМ 3: СВАЙПЫ === */
         #swipe-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .card-stack { position: relative; width: 300px; height: 400px; perspective: 1000px; }
         .swipe-card { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: grab; user-select: none; }
@@ -68,7 +67,6 @@
         .card-reading { font-size: 30px; font-weight: bold; margin-bottom: 10px; }
         .card-hint { font-size: 18px; color: #e2e8f0; text-align: center; }
 
-        /* === РЕЖИМ 4: КВИЗ === */
         #quiz-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .progress-container { position: absolute; top: 60px; width: 85%; max-width: 350px; background: rgba(0,0,0,0.3); border-radius: 10px; height: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);}
         .progress-bar { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); width: 0%; transition: width 0.4s ease-out; }
@@ -83,12 +81,16 @@
         .btn-option.correct { background: #10b981; color: white; transform: scale(1.05); }
         .btn-option.wrong { background: #ef4444; color: white; }
 
-        /* ФИНАЛ */
         #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
         .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 20px; font-weight: bold; border: none; padding: 18px 40px; border-radius: 25px; width: 100%; max-width: 300px; margin-top: 30px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
+        
+        #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: -1; }
     </style>
 </head>
 <body>
+    <div id="parallax-bg"></div>
+    <div class="overlay"></div>
     <div class="header" id="header-title">Загрузка...</div>
 
     <!-- АЗБУКА -->
@@ -97,7 +99,27 @@
             <div class="tab-btn active" id="tab-hira" onclick="switchTab('hira')">Хирагана</div>
             <div class="tab-btn" id="tab-kata" onclick="switchTab('kata')">Катакана</div>
         </div>
-        <div class="kana-grid" id="kana-grid"></div>
+        <div class="alphabet-container" id="alphabet-container">
+            <!-- Сюда вставляются ряды с буквами -->
+        </div>
+    </div>
+
+    <!-- МОДАЛКА (КАРТОЧКА БУКВЫ) -->
+    <div id="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-close" onclick="closeModal()">✕</div>
+            
+            <div class="modal-symbol" id="mod-sym">あ</div>
+            <img class="modal-gif" id="mod-gif" src="" alt="gif">
+            
+            <div class="modal-romaji" id="mod-rom">a</div>
+            <div class="modal-hint" id="mod-hint">Буква А с завитком</div>
+            
+            <div class="modal-actions">
+                <button class="modal-btn btn-audio" onclick="playModalAudio()">🔊 Звук</button>
+                <button class="modal-btn btn-gif" onclick="toggleGif()">✍️ Начертание</button>
+            </div>
+        </div>
     </div>
 
     <!-- РУЛЕТКА -->
@@ -105,9 +127,7 @@
         <div class="wheel-container">
             <div class="wheel-outer"></div>
             <div class="pointer">▼</div>
-            <div class="wheel" id="wheel">
-                <!-- Текст расставляется математически через JS -->
-            </div>
+            <div class="wheel" id="wheel"></div>
         </div>
         <button class="spin-btn" id="spin-btn" onclick="spin()">Крутить!</button>
     </div>
@@ -142,24 +162,57 @@
         const tg = window.Telegram.WebApp;
         tg.ready(); tg.expand();
 
+        // --- ДАННЫЕ ДЛЯ АЗБУКИ (Сгруппированные по рядам!) ---
+        const hiraGroups = [
+            { t: "Гласные", i: [{k:'あ',r:'a', h:'А с завитком'}, {k:'い',r:'i', h:'Две палочки'}, {k:'う',r:'u', h:'Похоже на У'}, {k:'え',r:'e', h:'Треугольник'}, {k:'お',r:'o', h:'Человечек'}] },
+            { t: "Ряд К", i: [{k:'か',r:'ka', h:'Катана'}, {k:'き',r:'ki', h:'Кит'}, {k:'く',r:'ku', h:'Кувшин'}, {k:'け',r:'ke', h:'Буква К'}, {k:'こ',r:'ko', h:'Два колеса'}] },
+            { t: "Ряд С", i: [{k:'さ',r:'sa', h:'Сабля'}, {k:'し',r:'shi', h:'Шип'}, {k:'す',r:'su', h:'Суп'}, {k:'せ',r:'se', h:'Стрелка'}, {k:'そ',r:'so', h:'Сок'}] },
+            { t: "Ряд Т", i: [{k:'た',r:'ta', h:'Танец'}, {k:'ち',r:'chi', h:'Цифра 5'}, {k:'つ',r:'tsu', h:'Улыбка'}, {k:'て',r:'te', h:'Телевизор'}, {k:'と',r:'to', h:'Торнадо'}] },
+            { t: "Ряд Н", i: [{k:'な',r:'na', h:'Узел'}, {k:'に',r:'ni', h:'Нитка'}, {k:'ぬ',r:'nu', h:'Лапша'}, {k:'ね',r:'ne', h:'Кошка'}, {k:'の',r:'no', h:'Номер'}] }
+        ];
+        
+        const kataGroups = [
+            { t: "Гласные", i: [{k:'ア',r:'a', h:'Угол'}, {k:'イ',r:'i', h:'Две палочки'}, {k:'ウ',r:'u', h:'У с шапкой'}, {k:'エ',r:'e', h:'Этажерка'}, {k:'オ',r:'o', h:'О - бежит'}] },
+            { t: "Ряд К", i: [{k:'カ',r:'ka', h:'Острый угол'}, {k:'キ',r:'ki', h:'Кит'}, {k:'ク',r:'ku', h:'Куб'}, {k:'ケ',r:'ke', h:'Кетчуп'}, {k:'コ',r:'ko', h:'Коробка'}] },
+            { t: "Ряд С", i: [{k:'サ',r:'sa', h:'Сабля'}, {k:'シ',r:'shi', h:'Широкая улыбка'}, {k:'ス',r:'su', h:'Сундук'}, {k:'セ',r:'se', h:'Сэндвич'}, {k:'ソ',r:'so', h:'Сок'}] }
+        ];
+
+        // --- ДАННЫЕ ИГР ---
+        const DICT_KANJI = {"一":"один", "二":"два", "三":"три", "四":"четыре", "五":"пять", "日":"день", "月":"месяц", "火":"огонь", "水":"вода", "木":"дерево", "金":"золото", "土":"земля", "人":"человек", "大":"большой", "小":"маленький"};
+        const DICT_WORDS = {"こんにちは":"здравствуйте", "ありがとう":"спасибо", "さようなら":"до свидания", "たべる":"кушать", "のむ":"пить", "いく":"идти", "くる":"приходить", "ねこ":"кошка", "いぬ":"собака", "くるま":"машина", "ほん":"книга", "みず":"вода"};
+        const DICT_GRAMMAR = {"わたし ___ がくせい です": "は", "りんご ___ たべる": "を", "がっこう ___ いく": "に", "ペン ___ かきます": "で", "いぬ ___ ねこ が います": "と", "あそこ ___ あります": "に", "だれ ___ きますか": "が", "としょかん ___ ほんをよむ": "で"};
+
         let appData = { mode: "quiz", items: [] };
         let currentIndex = 0, score = 0;
+        let currentModalChar = "";
 
-        // --- ДАННЫЕ ДЛЯ АЗБУКИ ---
-        const hiraData = [
-            {k:'あ',r:'a'}, {k:'い',r:'i'}, {k:'う',r:'u'}, {k:'え',r:'e'}, {k:'お',r:'o'},
-            {k:'か',r:'ka'}, {k:'き',r:'ki'}, {k:'く',r:'ku'}, {k:'け',r:'ke'}, {k:'こ',r:'ko'},
-            {k:'さ',r:'sa'}, {k:'し',r:'shi'}, {k:'す',r:'su'}, {k:'せ',r:'se'}, {k:'そ',r:'so'},
-            {k:'た',r:'ta'}, {k:'ち',r:'chi'}, {k:'つ',r:'tsu'}, {k:'て',r:'te'}, {k:'と',r:'to'},
-            {k:'な',r:'na'}, {k:'に',r:'ni'}, {k:'ぬ',r:'nu'}, {k:'ね',r:'ne'}, {k:'の',r:'no'}
-        ];
-        const kataData = [
-            {k:'ア',r:'a'}, {k:'イ',r:'i'}, {k:'ウ',r:'u'}, {k:'エ',r:'e'}, {k:'オ',r:'o'},
-            {k:'カ',r:'ka'}, {k:'キ',r:'ki'}, {k:'ク',r:'ku'}, {k:'ケ',r:'ke'}, {k:'コ',r:'ko'},
-            {k:'サ',r:'sa'}, {k:'シ',r:'shi'}, {k:'ス',r:'su'}, {k:'セ',r:'se'}, {k:'ソ',r:'so'},
-            {k:'タ',r:'ta'}, {k:'チ',r:'chi'}, {k:'ツ',r:'tsu'}, {k:'テ',r:'te'}, {k:'ト',r:'to'},
-            {k:'ナ',r:'na'}, {k:'ニ',r:'ni'}, {k:'ヌ',r:'nu'}, {k:'ネ',r:'ne'}, {k:'ノ',r:'no'}
-        ];
+        function generateQuestions(mode) {
+            let items = [];
+            const shuffle = (arr) => arr.sort(() => 0.5 - Math.random());
+            if (mode === 'swipe') {
+                let keys = shuffle(Object.keys(DICT_KANJI)).slice(0, 5);
+                items = keys.map(k => ({ q: k, r: "Кандзи", t: DICT_KANJI[k] }));
+            } else if (mode === 'grammar') {
+                let keys = shuffle(Object.keys(DICT_GRAMMAR)).slice(0, 5);
+                let particles = ["は", "を", "に", "で", "が", "と", "も"];
+                items = keys.map(k => {
+                    let c = DICT_GRAMMAR[k];
+                    let opts = shuffle(particles.filter(p => p !== c)).slice(0, 3);
+                    opts.push(c); opts = shuffle(opts);
+                    return { t: "grammar", q: k, a: opts, c: opts.indexOf(c) };
+                });
+            } else {
+                let keys = shuffle(Object.keys(DICT_WORDS)).slice(0, 5);
+                let allVals = Object.values(DICT_WORDS);
+                items = keys.map(k => {
+                    let c = DICT_WORDS[k];
+                    let opts = shuffle(allVals.filter(v => v !== c)).slice(0, 3);
+                    opts.push(c); opts = shuffle(opts);
+                    return { t: "word", q: k, a: opts, c: opts.indexOf(c) };
+                });
+            }
+            return items;
+        }
 
         window.onload = () => {
             const mode = new URLSearchParams(window.location.search).get('mode') || 'alphabet';
@@ -168,11 +221,12 @@
             if (mode === 'wheel') initWheel();
             else if (mode === 'alphabet') initAlphabet();
             else {
-                // Извлекаем вопросы для свайпов или квиза
                 try {
                     const rawData = new URLSearchParams(window.location.search).get('d');
-                    appData.items = JSON.parse(decodeURIComponent(rawData));
+                    if (rawData) appData.items = JSON.parse(decodeURIComponent(rawData));
                 } catch(e) {}
+                
+                if (appData.items.length === 0) appData.items = generateQuestions(mode);
                 
                 if (mode === 'swipe') initSwipeMode();
                 else initQuizMode();
@@ -180,8 +234,10 @@
         };
 
         // ==========================================
-        // РЕЖИМ: АЗБУКА
+        // РЕЖИМ 1: УМНАЯ АЗБУКА (Модалки и GIF)
         // ==========================================
+        let currentAlphaType = 'hira';
+
         function initAlphabet() {
             document.getElementById('alphabet-mode').classList.remove('hidden');
             document.getElementById('header-title').innerText = "Японская Азбука";
@@ -189,6 +245,7 @@
         }
 
         function switchTab(type) {
+            currentAlphaType = type;
             document.getElementById('tab-hira').classList.remove('active');
             document.getElementById('tab-kata').classList.remove('active');
             document.getElementById(`tab-${type}`).classList.add('active');
@@ -196,30 +253,96 @@
         }
 
         function renderKana(type) {
-            const grid = document.getElementById('kana-grid');
-            grid.innerHTML = "";
-            const data = type === 'hira' ? hiraData : kataData;
+            const container = document.getElementById('alphabet-container');
+            container.innerHTML = "";
+            const groups = type === 'hira' ? hiraGroups : kataGroups;
             
-            data.forEach(item => {
-                const cell = document.createElement('div');
-                cell.className = 'kana-cell';
-                cell.innerHTML = `<div class="kana-char">${item.k}</div><div class="kana-romaji">${item.r}</div>`;
-                cell.onclick = () => {
-                    try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
-                    let u = new SpeechSynthesisUtterance(item.k);
-                    u.lang = 'ja-JP'; window.speechSynthesis.speak(u);
+            groups.forEach(group => {
+                const rowBlock = document.createElement('div');
+                rowBlock.className = 'row-group';
+                
+                const title = document.createElement('div');
+                title.className = 'row-title';
+                title.innerText = group.t;
+                rowBlock.appendChild(title);
+                
+                const grid = document.createElement('div');
+                grid.className = 'kana-grid';
+                
+                group.i.forEach(item => {
+                    const cell = document.createElement('div');
+                    cell.className = 'kana-cell';
+                    cell.innerHTML = `<div class="kana-char">${item.k}</div><div class="kana-romaji">${item.r}</div>`;
                     
-                    // Анимация нажатия
-                    cell.style.transform = "scale(0.9)";
-                    cell.style.background = "#e2e8f0";
-                    setTimeout(()=> { cell.style.transform = "scale(1)"; cell.style.background = "rgba(255,255,255,0.9)";}, 150);
-                };
-                grid.appendChild(cell);
+                    cell.onclick = () => {
+                        try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
+                        openModal(item.k, item.r, item.h);
+                    };
+                    grid.appendChild(cell);
+                });
+                
+                rowBlock.appendChild(grid);
+                container.appendChild(rowBlock);
             });
         }
 
+        function openModal(char, romaji, hint) {
+            currentModalChar = char;
+            document.getElementById('mod-sym').innerText = char;
+            document.getElementById('mod-rom').innerText = romaji;
+            document.getElementById('mod-hint').innerText = hint || "Нет подсказки";
+            
+            // Прячем GIF при каждом новом открытии (до нажатия кнопки)
+            document.getElementById('mod-sym').style.display = "block";
+            document.getElementById('mod-gif').style.display = "none";
+            
+            document.getElementById('modal-overlay').classList.add('active');
+            playAudio(char); // Авто-звук при открытии карточки!
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        function playModalAudio() {
+            try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
+            playAudio(currentModalChar);
+        }
+
+        function playAudio(text) {
+            let u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ja-JP'; 
+            window.speechSynthesis.speak(u);
+        }
+
+        // Подгрузка GIF из Википедии (как в Python-боте)
+        function toggleGif() {
+            try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
+            const sym = document.getElementById('mod-sym');
+            const gif = document.getElementById('mod-gif');
+            const romaji = document.getElementById('mod-rom').innerText.toLowerCase();
+            
+            if (gif.style.display === "none") {
+                sym.style.display = "none";
+                gif.style.display = "block";
+                
+                // Формируем URL для GIF
+                let prefix = currentAlphaType === 'hira' ? 'Hiragana' : 'Katakana';
+                // Подменяем ши/чи/цу/фу для правильных ссылок вики
+                let r = romaji;
+                if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
+                
+                let gifUrl = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
+                gif.src = gifUrl;
+            } else {
+                sym.style.display = "block";
+                gif.style.display = "none";
+                gif.src = "";
+            }
+        }
+
         // ==========================================
-        // РЕЖИМ: РУЛЕТКА (МАТЕМАТИКА + ВЕРОЯТНОСТИ)
+        // РЕЖИМ 2: РУЛЕТКА (МАТЕМАТИКА)
         // ==========================================
         const PRIZES = [100, 300, 500, 800, 1200];
         
@@ -227,13 +350,10 @@
             document.getElementById('wheel-mode').classList.remove('hidden'); 
             document.getElementById('header-title').innerText = "Испытай удачу!"; 
             
-            // Расставляем текст по секторам математически (5 секторов по 72 градуса)
             const wheel = document.getElementById('wheel');
             PRIZES.forEach((prize, index) => {
                 let el = document.createElement('div');
                 el.className = 'slice-text';
-                // Сектор начинается с index*72. Его центр: index*72 + 36.
-                // Сдвигаем в центр, крутим, и отодвигаем вверх (к краю колеса)
                 el.style.transform = `translate(-50%, -50%) rotate(${index * 72 + 36}deg) translateY(-110px)`;
                 el.innerText = prize;
                 wheel.appendChild(el);
@@ -243,42 +363,31 @@
         function spin() {
             document.getElementById('spin-btn').style.display = "none";
             
-            // 1. ОПРЕДЕЛЯЕМ ВЫИГРЫШ ЧЕРЕЗ ВЕРОЯТНОСТИ (Weighted Random)
+            // ВЕРОЯТНОСТИ ИЗ ВАШИХ ТРЕБОВАНИЙ:
             let r = Math.random() * 100;
-            let winningIndex = 0; // По умолчанию 100 XP (сектор 0)
+            let winningIndex = 0; 
             
-            if (r < 1) winningIndex = 4;        // 1% шанс на 1200 XP (сектор 4)
-            else if (r < 11) winningIndex = 3;  // 10% шанс на 800 XP (сектор 3)
-            else if (r < 41) winningIndex = 2;  // 30% шанс на 500 XP (сектор 2)
-            else if (r < 71) winningIndex = 1;  // 30% шанс на 300 XP (сектор 1)
-            else winningIndex = 0;              // 29% шанс на 100 XP (сектор 0)
+            if (r < 1) winningIndex = 4;        // 1% - 1200
+            else if (r < 11) winningIndex = 3;  // 10% - 800
+            else if (r < 41) winningIndex = 2;  // 30% - 500
+            else if (r < 71) winningIndex = 1;  // 30% - 300
+            else winningIndex = 0;              // 29% - 100
 
-            let prizeAmount = PRIZES[winningIndex];
-
-            // 2. ВЫЧИСЛЯЕМ УГОЛ ОСТАНОВКИ
-            // Центр нужного сектора
             let targetCenterDeg = winningIndex * 72 + 36; 
-            
-            // Чтобы нужный сектор оказался наверху (под стрелкой, т.е. на 0 градусах),
-            // колесо должно быть повернуто на (360 - центр сектора).
-            // Добавляем 5 полных оборотов (1800 градусов) для долгой крутки.
-            // И добавляем легкий рандом (-20 до +20), чтобы стрелка не всегда стояла идеально по центру.
             let finalRotation = 1800 + (360 - targetCenterDeg) + (Math.random() * 40 - 20);
 
             document.getElementById('wheel').style.transform = `rotate(${finalRotation}deg)`;
             try { tg.HapticFeedback.impactOccurred("heavy"); } catch(e){}
             
-            setTimeout(() => {
-                tg.sendData("wheel_reward_" + prizeAmount);
-            }, 5200); // Тормозит 5 секунд
+            setTimeout(() => { tg.sendData("wheel_reward_" + PRIZES[winningIndex]); }, 5200);
         }
 
         // ==========================================
-        // КВИЗ И СВАЙПЫ
+        // КВИЗ И СВАЙПЫ (Классика)
         // ==========================================
         function speakText() {
             let textToSpeak = appData.items[currentIndex].q.replace("___", "");
-            new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textToSpeak)}&tl=ja&client=tw-ob`).play().catch(e=>e);
+            playAudio(textToSpeak);
         }
         function showResults() {
             document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
@@ -289,7 +398,6 @@
 
         let isWaiting = false;
         function initQuizMode() { document.getElementById('quiz-mode').classList.remove('hidden'); document.getElementById('header-title').innerText = appData.mode === 'grammar' ? "Интерактивная Грамматика" : "Проверка знаний"; renderQuizCard(); }
-        
         function renderQuizCard() {
             isWaiting = false; if (currentIndex >= appData.items.length) { showResults(); return; }
             const item = appData.items[currentIndex];
