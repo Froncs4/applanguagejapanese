@@ -87,8 +87,8 @@
         .card-hint { font-size: 18px; color: #e2e8f0; text-align: center; }
 
         /* ФИНАЛ */
-        #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; text-align: center; padding-top: 60px; box-sizing: border-box;}
-        .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 18px; font-weight: bold; border: none; padding: 12px 25px; border-radius: 25px; width: 100%; max-width: 280px; margin-top: 15px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
+        #result-screen { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%; width: 100%; text-align: center; padding-top: 40px; box-sizing: border-box;}
+        .claim-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; font-size: 16px; font-weight: bold; border: none; padding: 10px 20px; border-radius: 25px; width: 100%; max-width: 250px; margin-top: 10px; box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
         
         #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: -1; }
@@ -160,10 +160,10 @@
 
     <!-- ФИНАЛ -->
         <div id="result-screen" class="hidden">
-            <div style="font-size: 100px;">🎉</div>
-            <h2 style="font-size: 36px; margin: 10px 0;" id="result-title">Завершено!</h2>
-            <p style="font-size: 20px; color: rgba(255,255,255,0.9);" id="result-desc"></p>
-            <div id="result-buttons" style="display: flex; flex-direction: column; gap: 8px; margin-top: 20px; width: 100%; max-width: 350px; align-items: center;">
+            <div style="font-size: 80px; margin: 5px 0;">🎉</div>
+            <h2 style="font-size: 32px; margin: 5px 0;" id="result-title">Завершено!</h2>
+            <p style="font-size: 18px; color: rgba(255,255,255,0.9); margin: 5px 0;" id="result-desc"></p>
+            <div id="result-buttons" style="display: flex; flex-direction: column; gap: 6px; margin-top: 15px; width: 100%; max-width: 350px; align-items: center;">
                 <button class="claim-btn" id="claim-btn" onclick="claimReward()">Забрать награду</button>
             </div>
         </div>
