@@ -1712,25 +1712,22 @@
             return false;
         }
 
-        async function fetchLeaderboard() {
-            const container = document.getElementById('leaderboardList');
-            container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>';
-            try {
-                const response = await fetch(`${API_BASE}/api/leaderboard`, {
-                    headers: { 'X-Telegram-Init-Data': tg.initData }
-                });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const data = await response.json();
-                if (data.success) {
-                    renderLeaderboard(data.players);
-                } else {
-                    container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Нет данных</div>';
-                }
-            } catch (e) {
-                console.error('Leaderboard error:', e);
-                container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Ошибка загрузки</div>';
+async function fetchLeaderboard() {
+    try {
+        const response = await fetch(`${API_BASE}/api/leaderboard`, {
+            headers: {
+                'X-Telegram-Init-Data': tg.initData
             }
+        });
+        if (!response.ok) throw new Error('Ошибка');
+        const data = await response.json();
+        if (data.success) {
+            renderLeaderboard(data.players);
         }
+    } catch (e) {
+        console.error(e);
+    }
+}
 
         async function fetchUserStats() {
             try {
@@ -2410,3 +2407,4 @@
     </script>
 </body>
 </html>
+
