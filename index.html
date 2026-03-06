@@ -234,10 +234,18 @@
             border-radius: 16px;
             overflow: hidden;
             display: none;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-gif.show {
-            display: block;
+            display: flex;
+        }
+
+        .modal-gif.hidden {
+            display: none;
         }
 
         .modal-gif img {
@@ -316,14 +324,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            cursor: grab;
             user-select: none;
             transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        .swipe-card.dragging {
-            cursor: grabbing;
-            transition: none;
+            touch-action: pan-y;
         }
 
         .swipe-card .card-char {
@@ -336,6 +339,8 @@
         .swipe-card .card-question {
             font-size: 18px;
             color: #999;
+            padding: 0 20px;
+            text-align: center;
         }
 
         .swipe-card .card-answer {
@@ -383,11 +388,48 @@
             color: white;
         }
 
+        .swipe-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .swipe-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: none;
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .swipe-btn:active {
+            transform: scale(0.95);
+        }
+
+        .swipe-btn.no {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: white;
+        }
+
+        .swipe-btn.show {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .swipe-btn.yes {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            color: white;
+        }
+
         .swipe-hint {
             text-align: center;
-            padding: 24px;
-            color: rgba(255,255,255,0.6);
-            font-size: 15px;
+            padding: 10px 24px 24px;
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
         }
 
         /* ========== QUIZ MODE ========== */
@@ -621,6 +663,13 @@
             margin-bottom: 8px;
         }
 
+        .results-xp {
+            font-size: 24px;
+            color: #fbbf24;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
         .results-subtitle {
             font-size: 18px;
             color: rgba(255,255,255,0.7);
@@ -689,7 +738,6 @@
         </div>
 
         <div class="container">
-            <!-- Action Buttons for Tests -->
             <div class="action-buttons">
                 <button class="action-btn" onclick="startQuickTest()">📝 Быстрый тест</button>
                 <button class="action-btn secondary" onclick="startFullTest()">🎯 Полный тест</button>
@@ -718,13 +766,20 @@
                     <div class="indicator know">👍 Знаю</div>
                 </div>
                 <div class="card-char">あ</div>
-                <div class="card-question">Нажми чтобы увидеть</div>
+                <div class="card-question">Нажми 👁 чтобы увидеть ответ</div>
                 <div class="card-answer">a</div>
             </div>
         </div>
 
+        <!-- Кнопки вместо свайпов -->
+        <div class="swipe-buttons">
+            <button class="swipe-btn no" onclick="swipeAction('left')">👎</button>
+            <button class="swipe-btn show" onclick="toggleAnswer()">👁</button>
+            <button class="swipe-btn yes" onclick="swipeAction('right')">👍</button>
+        </div>
+
         <div class="swipe-hint">
-            ← Свайп влево: Учить &nbsp;|&nbsp; Свайп вправо: Знаю →
+            👎 Не знаю — нужно учить &nbsp;|&nbsp; 👍 Знаю — запомнил
         </div>
     </div>
 
@@ -767,6 +822,7 @@
         <div class="results-icon" id="resultsIcon">🎉</div>
         <div class="results-title" id="resultsTitle">Отлично!</div>
         <div class="results-score" id="resultsScore">5 / 5</div>
+        <div class="results-xp" id="resultsXp">+50 XP</div>
         <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
         <button class="results-btn" onclick="sendResults()">✨ Завершить</button>
     </div>
@@ -778,8 +834,7 @@
             <div class="modal-reading" id="modalReading">a</div>
             <div class="modal-hint" id="modalHint">Подсказка</div>
             
-            <!-- GIF Container -->
-            <div class="modal-gif" id="modalGif">
+            <div class="modal-gif hidden" id="modalGif">
                 <img id="gifImage" src="" alt="Stroke order">
             </div>
             
@@ -796,6 +851,9 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
+
+        // XP за правильный ответ
+        const XP_PER_CORRECT = 10;
 
         // Data
         const HIRAGANA = [
@@ -912,10 +970,8 @@
         let correctCount = 0;
         let wrongCount = 0;
         let quizItems = [];
-        let swipeStartX = 0;
-        let swipeCurrentX = 0;
-        let isDragging = false;
         let currentModalChar = null;
+        let testSource = 'alphabet'; // Откуда запущен тест
 
         // ==================== ROUTING ====================
         function init() {
@@ -978,6 +1034,7 @@
             document.getElementById('modalChar').textContent = item.char;
             document.getElementById('modalReading').textContent = item.reading;
             document.getElementById('modalHint').textContent = item.hint;
+            document.getElementById('modalGif').classList.add('hidden');
             document.getElementById('modalGif').classList.remove('show');
             document.getElementById('modal').classList.add('show');
             
@@ -986,6 +1043,7 @@
 
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
+            document.getElementById('modalGif').classList.add('hidden');
             document.getElementById('modalGif').classList.remove('show');
             currentModalChar = null;
         }
@@ -995,13 +1053,15 @@
             
             const char = currentModalChar.char;
             
-            // Try Web Speech API
             if ('speechSynthesis' in window) {
+                // Отменяем предыдущее воспроизведение
+                speechSynthesis.cancel();
+                
                 const utterance = new SpeechSynthesisUtterance(char);
                 utterance.lang = 'ja-JP';
-                utterance.rate = 0.8;
+                utterance.rate = 0.7;
+                utterance.pitch = 1;
                 
-                // Find Japanese voice
                 const voices = speechSynthesis.getVoices();
                 const japaneseVoice = voices.find(v => v.lang.startsWith('ja'));
                 if (japaneseVoice) {
@@ -1014,9 +1074,11 @@
             try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
         }
 
-        // Load voices
+        // Загрузка голосов
         if ('speechSynthesis' in window) {
             speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+            // Принудительная загрузка
+            speechSynthesis.getVoices();
         }
 
         function showStrokeGif() {
@@ -1027,74 +1089,90 @@
             const gifContainer = document.getElementById('modalGif');
             const gifImage = document.getElementById('gifImage');
             
-            // Generate GIF URL
-            const hexCode = char.charCodeAt(0).toString(16).padStart(5, '0');
+            // Показываем контейнер
+            gifContainer.classList.remove('hidden');
+            gifContainer.innerHTML = '<div style="color:#999;font-size:14px;">Загрузка...</div>';
             
-            // Try different sources
-            const urls = [
-                `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hexCode}.gif`,
-                `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hexCode}.gif`
-            ];
+            // Генерируем URL
+            const hexCode = char.charCodeAt(0).toString(16).toLowerCase();
+            const hexCode5 = hexCode.padStart(5, '0');
             
-            // For hiragana/katakana try Wikimedia
+            // Разные источники
+            let urls = [];
+            
             if (currentTab === 'hiragana') {
-                urls.unshift(`https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Hiragana_${reading}_stroke_order_animation.gif/120px-Hiragana_${reading}_stroke_order_animation.gif`);
-            } else {
-                urls.unshift(`https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Katakana_${reading}_stroke_order_animation.gif/120px-Katakana_${reading}_stroke_order_animation.gif`);
+                urls = [
+                    `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hexCode}.gif`,
+                    `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hexCode5}.gif`
+                ];
+            } else if (currentTab === 'katakana') {
+                urls = [
+                    `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hexCode}.gif`,
+                    `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hexCode5}.gif`
+                ];
             }
             
-            // Try to load
-            let loaded = false;
+            // Пробуем загрузить
+            let imageLoaded = false;
+            let triedCount = 0;
             
-            function tryLoad(index) {
-                if (index >= urls.length) {
-                    gifContainer.innerHTML = '<p style="color:#999;font-size:14px;">GIF недоступен</p>';
-                    gifContainer.classList.add('show');
+            function tryLoadImage(index) {
+                if (index >= urls.length || imageLoaded) {
+                    if (!imageLoaded) {
+                        gifContainer.innerHTML = '<div style="color:#f87171;font-size:14px;">GIF недоступен 😔</div>';
+                    }
                     return;
                 }
                 
-                const img = new Image();
-                img.onload = () => {
-                    if (!loaded) {
-                        loaded = true;
-                        gifImage.src = urls[index];
+                const testImg = new Image();
+                testImg.onload = () => {
+                    if (!imageLoaded) {
+                        imageLoaded = true;
+                        gifContainer.innerHTML = `<img src="${urls[index]}" alt="Stroke order" style="max-width:180px;border-radius:12px;">`;
                         gifContainer.classList.add('show');
                     }
                 };
-                img.onerror = () => tryLoad(index + 1);
-                img.src = urls[index];
+                testImg.onerror = () => {
+                    triedCount++;
+                    tryLoadImage(index + 1);
+                };
+                testImg.src = urls[index];
             }
             
-            tryLoad(0);
+            tryLoadImage(0);
             try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
         }
 
-        // Close modal on overlay click
+        // Закрытие модала по клику на оверлей
         document.getElementById('modal').addEventListener('click', (e) => {
             if (e.target.id === 'modal') closeModal();
         });
 
-        // Quick test from alphabet mode
+        // ==================== TESTS FROM ALPHABET ====================
         function startQuickTest() {
+            testSource = 'alphabet';
             hideAllModes();
+            currentMode = 'quiz';
             currentIndex = 0;
             correctCount = 0;
             wrongCount = 0;
             quizItems = shuffleArray([...currentData]).slice(0, 5);
             document.getElementById('quizMode').classList.add('active');
-            currentMode = 'quiz';
             renderQuizQuestion();
+            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
         }
 
         function startFullTest() {
+            testSource = 'alphabet';
             hideAllModes();
+            currentMode = 'quiz';
             currentIndex = 0;
             correctCount = 0;
             wrongCount = 0;
             quizItems = shuffleArray([...currentData]).slice(0, 15);
             document.getElementById('quizMode').classList.add('active');
-            currentMode = 'quiz';
             renderQuizQuestion();
+            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
         }
 
         function hideAllModes() {
@@ -1105,6 +1183,7 @@
         // ==================== SWIPE MODE ====================
         function startSwipeMode() {
             currentMode = 'swipe';
+            testSource = 'swipe';
             currentIndex = 0;
             correctCount = 0;
             wrongCount = 0;
@@ -1114,7 +1193,6 @@
 
             document.getElementById('swipeMode').classList.add('active');
             renderSwipeCard();
-            setupSwipeGestures();
         }
 
         function renderSwipeCard() {
@@ -1138,113 +1216,38 @@
             document.querySelectorAll('.indicator').forEach(ind => ind.style.opacity = '0');
         }
 
-        function setupSwipeGestures() {
+        function toggleAnswer() {
             const card = document.getElementById('swipeCard');
-
-            card.addEventListener('click', (e) => {
-                if (!isDragging) {
-                    card.classList.toggle('show-answer');
-                }
-            });
-
-            card.addEventListener('touchstart', handleTouchStart, {passive: true});
-            card.addEventListener('touchmove', handleTouchMove, {passive: false});
-            card.addEventListener('touchend', handleTouchEnd);
-
-            card.addEventListener('mousedown', handleMouseDown);
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
+            card.classList.toggle('show-answer');
+            try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
         }
 
-        function handleTouchStart(e) {
-            swipeStartX = e.touches[0].clientX;
-            isDragging = true;
-            document.getElementById('swipeCard').classList.add('dragging');
-        }
-
-        function handleTouchMove(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            swipeCurrentX = e.touches[0].clientX;
-            updateCardPosition();
-        }
-
-        function handleTouchEnd() {
-            if (!isDragging) return;
-            isDragging = false;
-            document.getElementById('swipeCard').classList.remove('dragging');
-            handleSwipeEnd();
-        }
-
-        function handleMouseDown(e) {
-            swipeStartX = e.clientX;
-            isDragging = true;
-            document.getElementById('swipeCard').classList.add('dragging');
-        }
-
-        function handleMouseMove(e) {
-            if (!isDragging) return;
-            swipeCurrentX = e.clientX;
-            updateCardPosition();
-        }
-
-        function handleMouseUp() {
-            if (!isDragging) return;
-            isDragging = false;
-            document.getElementById('swipeCard').classList.remove('dragging');
-            handleSwipeEnd();
-        }
-
-        function updateCardPosition() {
-            const diff = swipeCurrentX - swipeStartX;
+        function swipeAction(direction) {
             const card = document.getElementById('swipeCard');
-            const rotation = diff * 0.1;
-            card.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
-
-            const knowInd = document.querySelector('.indicator.know');
-            const dontKnowInd = document.querySelector('.indicator.dont-know');
-
-            if (diff > 50) {
-                knowInd.style.opacity = Math.min((diff - 50) / 100, 1);
-                dontKnowInd.style.opacity = '0';
-            } else if (diff < -50) {
-                dontKnowInd.style.opacity = Math.min((-diff - 50) / 100, 1);
-                knowInd.style.opacity = '0';
+            
+            if (direction === 'right') {
+                correctCount++;
+                card.style.transform = 'translateX(400px) rotate(20deg)';
+                document.querySelector('.indicator.know').style.opacity = '1';
             } else {
-                knowInd.style.opacity = '0';
-                dontKnowInd.style.opacity = '0';
+                wrongCount++;
+                card.style.transform = 'translateX(-400px) rotate(-20deg)';
+                document.querySelector('.indicator.dont-know').style.opacity = '1';
             }
-        }
+            card.style.opacity = '0';
 
-        function handleSwipeEnd() {
-            const diff = swipeCurrentX - swipeStartX;
-            const card = document.getElementById('swipeCard');
+            try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
 
-            if (Math.abs(diff) > 100) {
-                if (diff > 0) {
-                    correctCount++;
-                    card.style.transform = 'translateX(500px) rotate(30deg)';
-                } else {
-                    wrongCount++;
-                    card.style.transform = 'translateX(-500px) rotate(-30deg)';
-                }
-                card.style.opacity = '0';
-
-                try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
-
-                setTimeout(() => {
-                    currentIndex++;
-                    renderSwipeCard();
-                }, 300);
-            } else {
-                card.style.transform = 'translateX(0) rotate(0deg)';
-                document.querySelectorAll('.indicator').forEach(ind => ind.style.opacity = '0');
-            }
+            setTimeout(() => {
+                currentIndex++;
+                renderSwipeCard();
+            }, 350);
         }
 
         // ==================== QUIZ MODE ====================
         function startQuizMode() {
             currentMode = 'quiz';
+            testSource = 'quiz';
             currentIndex = 0;
             correctCount = 0;
             wrongCount = 0;
@@ -1304,6 +1307,7 @@
         // ==================== GRAMMAR MODE ====================
         function startGrammarMode() {
             currentMode = 'grammar';
+            testSource = 'grammar';
             currentIndex = 0;
             correctCount = 0;
             wrongCount = 0;
@@ -1364,6 +1368,7 @@
             const total = quizItems.length;
             const score = correctCount;
             const percent = Math.round((score / total) * 100);
+            const xpEarned = correctCount * XP_PER_CORRECT;
 
             let icon, title, subtitle;
 
@@ -1388,15 +1393,40 @@
             document.getElementById('resultsIcon').textContent = icon;
             document.getElementById('resultsTitle').textContent = title;
             document.getElementById('resultsScore').textContent = `${score} / ${total}`;
+            document.getElementById('resultsXp').textContent = `+${xpEarned} XP`;
             document.getElementById('resultsSubtitle').textContent = subtitle;
 
             try { tg.HapticFeedback.notificationOccurred('success'); } catch(e) {}
         }
 
         function sendResults() {
-            const prefix = currentMode === 'grammar' ? 'grammar_result_' : 
-                          currentMode === 'swipe' ? 'swipe_result_' : 'quiz_result_';
-            tg.sendData(prefix + correctCount);
+            // Отправляем результат в бота
+            // Формат: режим_result_количествоПравильных
+            // Бот потом умножит на 10 XP за каждый правильный ответ
+            
+            let prefix;
+            switch(testSource) {
+                case 'grammar':
+                    prefix = 'grammar_result_';
+                    break;
+                case 'swipe':
+                    prefix = 'swipe_result_';
+                    break;
+                case 'alphabet':
+                    prefix = 'alphatest_result_';
+                    break;
+                default:
+                    prefix = 'quiz_result_';
+            }
+            
+            // Отправляем данные в Telegram бота
+            try {
+                tg.sendData(prefix + correctCount);
+            } catch(e) {
+                console.error('Error sending data:', e);
+                // Fallback - закрываем Web App
+                tg.close();
+            }
         }
 
         // ==================== HELPERS ====================
