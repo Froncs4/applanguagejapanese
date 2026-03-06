@@ -209,8 +209,8 @@
             }
         };
 
-        // ==========================================
-        // ЛОГИКА ГОЛОСОВОГО ИИ (РЕЖИМ РАЦИИ - PUSH TO TALK)
+         // ==========================================
+        // ЛОГИКА ГОЛОСОВОГО ИИ (КЛИК ДЛЯ СТАРТА / КЛИК ДЛЯ СТОПА)
         // ==========================================
         let recognition;
         let isRecording = false;
@@ -219,71 +219,85 @@
         function initVoice() {
             document.getElementById('voice-mode').classList.remove('hidden');
             document.getElementById('header-title').innerText = "Разговор с Акирой";
-            document.getElementById('t-box').innerText = "Зажмите микрофон и говорите";
+            document.getElementById('t-box').innerText = "Нажмите на микрофон и начните говорить";
             
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
             if (window.SpeechRecognition) {
                 recognition = new SpeechRecognition();
-                recognition.lang = 'ru-RU'; 
-                recognition.interimResults = true;
+                recognition.lang = 'ru-RU'; // Поддерживает русский и японский с акцентом
+                // Отключаем промежуточные результаты, чтобы не ловить мусор
+                recognition.interimResults = false; 
+                recognition.continuous = true; // Слушать, пока не остановим
                 
                 recognition.onstart = () => {
                     isRecording = true;
-                    document.getElementById('t-box').innerText = "Слушаю...";
+                    document.getElementById('mic').classList.add('listening');
+                    document.getElementById('t-box').innerText = "Слушаю... (Нажмите микрофон еще раз, чтобы остановить)";
+                    try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
                 };
 
                 recognition.onresult = (event) => {
-                    let text = Array.from(event.results).map(r => r[0].transcript).join("");
-                    document.getElementById('t-box').innerText = text;
-                    if (event.results[0].isFinal) finalTranscript = text;
+                    // Собираем весь текст
+                    let text = "";
+                    for(let i = 0; i < event.results.length; i++){
+                        text += event.results[i][0].transcript;
+                    }
+                    finalTranscript = text;
+                    document.getElementById('t-box').innerText = finalTranscript;
                 };
 
-                recognition.onend = () => {
+                recognition.onerror = (event) => {
                     isRecording = false;
+                    document.getElementById('mic').classList.remove('listening');
+                    document.getElementById('t-box').innerText = "Ошибка: " + event.error + ". Попробуйте снова.";
+                };
+                
+            } else {
+                document.getElementById('t-box').innerText = "Ваш браузер не поддерживает микрофон 😔";
+            }
+
+            // Навешиваем обычный КЛИК на кнопку (не удержание!)
+            const micBtn = document.getElementById('mic');
+            
+            micBtn.onclick = function() {
+                if (!recognition) return;
+                
+                if (isRecording) {
+                    // Если уже пишем - останавливаем и отправляем
+                    recognition.stop();
+                    isRecording = false;
+                    micBtn.classList.remove('listening');
+                    
                     if (finalTranscript.trim().length > 0) {
                         document.getElementById('t-box').innerText = "Отправляю Сенсею...";
                         
-                        // АВТОМАТИЧЕСКАЯ ОТПРАВКА СРАЗУ ПОСЛЕ ОКОНЧАНИЯ РЕЧИ!
-                        let safeText = finalTranscript.replace(/[\n\r]/g, ' ').replace(/[#_*\[\]]/g, '');
-                        safeText = safeText.substring(0, 150); 
-                        let payload = "voice_query_" + encodeURIComponent(safeText);
-                        tg.sendData(payload); 
+                        // ИДЕАЛЬНАЯ ОЧИСТКА СТРОКИ: Оставляем только буквы, цифры и пробелы
+                        let safeText = finalTranscript.replace(/[^\w\sа-яА-ЯёЁ]/gi, ' ');
+                        safeText = safeText.substring(0, 100).trim();
+                        
+                        if (safeText.length > 0) {
+                            try { tg.HapticFeedback.impactOccurred("heavy"); } catch(e){}
+                            // Отправляем и ПРИНУДИТЕЛЬНО ЗАКРЫВАЕМ
+                            tg.sendData("voice_query_" + safeText);
+                            setTimeout(() => { tg.close(); }, 300);
+                        } else {
+                            document.getElementById('t-box').innerText = "Не удалось распознать слова. Нажмите снова.";
+                        }
                     } else {
-                        document.getElementById('t-box').innerText = "Ничего не расслышал. Зажмите снова.";
+                        document.getElementById('t-box').innerText = "Я ничего не услышал. Нажмите снова.";
                     }
-                };
-                
-                recognition.onerror = (event) => {
-                    isRecording = false;
-                    document.getElementById('t-box').innerText = "Ошибка доступа к микрофону.";
-                };
-            } else {
-                document.getElementById('t-box').innerText = "Браузер не поддерживает микрофон 😔";
-            }
-
-            // Настройка кнопок рации
-            const micBtn = document.getElementById('mic');
-            const startRecord = (e) => {
-                e.preventDefault(); 
-                if (!recognition || isRecording) return;
-                finalTranscript = ""; 
-                micBtn.classList.add('listening');
-                try { tg.HapticFeedback.impactOccurred("medium"); } catch(err){}
-                recognition.start();
+                    
+                } else {
+                    // Если не пишем - запускаем
+                    finalTranscript = "";
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
             };
-            const stopRecord = (e) => {
-                e.preventDefault();
-                if (!isRecording) return;
-                micBtn.classList.remove('listening');
-                try { tg.HapticFeedback.impactOccurred("light"); } catch(err){}
-                recognition.stop(); 
-            };
-
-            micBtn.addEventListener('touchstart', startRecord, {passive: false});
-            micBtn.addEventListener('touchend', stopRecord, {passive: false});
-            micBtn.addEventListener('mousedown', startRecord);
-            micBtn.addEventListener('mouseup', stopRecord);
-            micBtn.addEventListener('mouseleave', stopRecord); 
         }
 
         // ==========================================
@@ -387,3 +401,4 @@
     </script>
 </body>
 </html>
+
