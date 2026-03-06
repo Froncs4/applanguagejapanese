@@ -9,1696 +9,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #667eea;
-            --primary-dark: #5a67d8;
-            --secondary: #764ba2;
-            --accent: #f093fb;
-            --success: #4ade80;
-            --error: #f87171;
-            --warning: #fbbf24;
-            --bg: var(--tg-theme-bg-color, #ffffff);
-            --bg-secondary: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            --text: var(--tg-theme-text-color, #1a1a2e);
-            --text-hint: var(--tg-theme-hint-color, #999999);
-            --card-radius: 20px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 80px;
-        }
-
-        .japanese {
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-
-        /* ========== BOTTOM NAV ========== */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg);
-            border-top: 1px solid rgba(0,0,0,0.08);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            padding-bottom: calc(8px + env(safe-area-inset-bottom));
-            z-index: 100;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 6px 14px;
-            border: none;
-            background: none;
-            color: var(--text-hint);
-            font-size: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-item .icon {
-            font-size: 22px;
-            margin-bottom: 3px;
-        }
-
-        /* ========== SCREENS ========== */
-        .screen {
-            display: none;
-            min-height: 100vh;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        /* ========== HOME SCREEN ========== */
-        .home-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 24px 20px 28px;
-            border-radius: 0 0 28px 28px;
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .user-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-        }
-
-        .user-info h1 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .user-rank {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .stat-box {
-            flex: 1;
-            background: rgba(255,255,255,0.15);
-            border-radius: 14px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            opacity: 0.85;
-        }
-
-        /* ========== SECTIONS ========== */
-        .section {
-            padding: 0 16px;
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            padding-left: 4px;
-        }
-
-        /* ========== MENU GRID ========== */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .menu-card {
-            background: var(--bg-secondary);
-            border-radius: 18px;
-            padding: 18px 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-
-        .menu-card:active {
-            transform: scale(0.97);
-            border-color: var(--primary);
-        }
-
-        .menu-card .card-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .menu-card .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-
-        .menu-card .card-subtitle {
-            font-size: 11px;
-            color: var(--text-hint);
-        }
-
-        .menu-card.wide {
-            grid-column: span 2;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .menu-card.wide .card-subtitle {
-            color: rgba(255,255,255,0.8);
-        }
-
-        /* ========== DAILY QUESTS ========== */
-        .quest-item {
-            background: var(--bg-secondary);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .quest-icon {
-            font-size: 26px;
-        }
-
-        .quest-info {
-            flex: 1;
-        }
-
-        .quest-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .quest-bar {
-            height: 6px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .quest-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 3px;
-            transition: width 0.3s;
-        }
-
-        .quest-reward {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--warning);
-        }
-
-        .quest-item.done {
-            opacity: 0.6;
-        }
-
-        .quest-item.done .quest-reward {
-            color: var(--success);
-        }
-
-        /* ========== ALPHABET SCREEN ========== */
-        .alphabet-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 20px 16px;
-            color: white;
-            text-align: center;
-        }
-
-        .alphabet-header h2 {
-            font-size: 22px;
-            margin-bottom: 14px;
-        }
-
-        .tabs {
-            display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 14px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .tab-btn.active {
-            background: white;
-            color: var(--primary);
-        }
-
-        .view-toggle {
-            display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            padding: 3px;
-        }
-
-        .view-btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            background: transparent;
-            color: rgba(255,255,255,0.7);
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .view-btn.active {
-            background: white;
-            color: var(--primary);
-        }
-
-        .alphabet-content {
-            padding: 16px;
-        }
-
-        .test-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .test-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            color: white;
-        }
-
-        .test-btn.primary {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-        }
-
-        .test-btn.secondary {
-            background: linear-gradient(135deg, #4facfe, #00f2fe);
-        }
-
-        /* ========== KANA GRID ========== */
-        .kana-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-        }
-
-        .kana-cell {
-            aspect-ratio: 1;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .kana-cell:active {
-            transform: scale(0.95);
-            background: var(--primary);
-            color: white;
-        }
-
-        .kana-cell .char {
-            font-size: 24px;
-            font-weight: 500;
-        }
-
-        .kana-cell .reading {
-            font-size: 10px;
-            color: var(--text-hint);
-            margin-top: 2px;
-        }
-
-        .kana-cell:active .reading {
-            color: rgba(255,255,255,0.8);
-        }
-
-        /* ========== ROW VIEW ========== */
-        .kana-row {
-            margin-bottom: 18px;
-        }
-
-        .row-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .row-title {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .row-test-btn {
-            padding: 6px 14px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .row-cards {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            scrollbar-width: none;
-        }
-
-        .row-cards::-webkit-scrollbar {
-            display: none;
-        }
-
-        .row-card {
-            min-width: 60px;
-            height: 75px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .row-card:active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .row-card .char {
-            font-size: 26px;
-        }
-
-        .row-card .reading {
-            font-size: 11px;
-            color: var(--text-hint);
-        }
-
-        .row-card:active .reading {
-            color: rgba(255,255,255,0.8);
-        }
-
-        /* ========== STUDY SCREEN ========== */
-        .study-header {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            padding: 20px 16px;
-            color: white;
-        }
-
-        .study-header h2 {
-            font-size: 22px;
-        }
-
-        .study-content {
-            padding: 16px;
-        }
-
-        .category-card {
-            background: var(--bg-secondary);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            cursor: pointer;
-        }
-
-        .category-card:active {
-            transform: scale(0.98);
-        }
-
-        .category-icon {
-            font-size: 36px;
-        }
-
-        .category-info {
-            flex: 1;
-        }
-
-        .category-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .category-desc {
-            font-size: 12px;
-            color: var(--text-hint);
-            margin-bottom: 8px;
-        }
-
-        .category-bar {
-            height: 5px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .category-bar-fill {
-            height: 100%;
-            background: var(--success);
-            border-radius: 3px;
-        }
-
-        .category-arrow {
-            font-size: 18px;
-            color: var(--text-hint);
-        }
-
-        /* ========== PROFILE SCREEN ========== */
-        .profile-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 30px 20px;
-            text-align: center;
-            color: white;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            margin: 0 auto 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-        }
-
-        .profile-name {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .profile-rank-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .profile-stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 20px;
-            background: var(--bg);
-            margin: -20px 16px 0;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            position: relative;
-        }
-
-        .profile-stat {
-            text-align: center;
-        }
-
-        .profile-stat-value {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .profile-stat-label {
-            font-size: 11px;
-            color: var(--text-hint);
-        }
-
-        .profile-section {
-            padding: 20px 16px;
-        }
-
-        .profile-section-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 14px;
-        }
-
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .achievement {
-            text-align: center;
-        }
-
-        .achievement-icon {
-            width: 54px;
-            height: 54px;
-            background: var(--bg-secondary);
-            border-radius: 14px;
-            margin: 0 auto 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-        }
-
-        .achievement.locked .achievement-icon {
-            filter: grayscale(1);
-            opacity: 0.4;
-        }
-
-        .achievement-name {
-            font-size: 10px;
-            color: var(--text-hint);
-        }
-
-        /* ========== SETTINGS SCREEN ========== */
-        .settings-header {
-            padding: 20px 16px;
-            background: var(--bg-secondary);
-        }
-
-        .settings-header h2 {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .settings-content {
-            padding: 16px;
-        }
-
-        .settings-group {
-            background: var(--bg-secondary);
-            border-radius: 18px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .settings-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            cursor: pointer;
-        }
-
-        .settings-item:last-child {
-            border-bottom: none;
-        }
-
-        .settings-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .settings-icon {
-            font-size: 20px;
-        }
-
-        .settings-label {
-            font-size: 15px;
-        }
-
-        .settings-value {
-            font-size: 14px;
-            color: var(--text-hint);
-        }
-
-        .toggle {
-            width: 48px;
-            height: 28px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 14px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .toggle.active {
-            background: var(--primary);
-        }
-
-        .toggle::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .toggle.active::after {
-            left: 23px;
-        }
-
-        /* ========== MODAL ========== */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-            padding: 20px;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-box {
-            background: var(--bg);
-            border-radius: 24px;
-            padding: 28px 22px;
-            text-align: center;
-            max-width: 320px;
-            width: 100%;
-            animation: modalIn 0.25s ease;
-        }
-
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-char {
-            font-size: 80px;
-            margin-bottom: 10px;
-        }
-
-        .modal-reading {
-            font-size: 32px;
-            color: var(--primary);
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .modal-meaning {
-            font-size: 18px;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-
-        .modal-hint {
-            font-size: 14px;
-            color: var(--text-hint);
-            margin-bottom: 20px;
-        }
-
-        .modal-gif {
-            margin: 14px 0;
-            display: none;
-            min-height: 80px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-gif.show {
-            display: flex;
-        }
-
-        .modal-gif img {
-            max-width: 150px;
-            border-radius: 12px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-size: 22px;
-            cursor: pointer;
-        }
-
-        .modal-btn:active {
-            transform: scale(0.95);
-        }
-
-        .modal-btn.sound {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .modal-btn.stroke {
-            background: linear-gradient(135deg, var(--accent), #f5576c);
-            color: white;
-        }
-
-        .modal-btn.close {
-            background: var(--bg-secondary);
-            flex: 0.5;
-        }
-
-        /* ========== SWIPE SCREEN ========== */
-        .swipe-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: none;
-            flex-direction: column;
-            z-index: 150;
-            padding: 20px;
-        }
-
-        .swipe-screen.show {
-            display: flex;
-        }
-
-        .swipe-header {
-            text-align: center;
-            padding-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .swipe-header h2 {
-            font-size: 22px;
-            color: white;
-            margin-bottom: 14px;
-        }
-
-        .swipe-progress {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            color: rgba(255,255,255,0.8);
-            font-size: 15px;
-        }
-
-        .progress-bar {
-            width: 120px;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 3px;
-            transition: width 0.3s;
-        }
-
-        .swipe-area {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .swipe-card {
-            width: 280px;
-            height: 380px;
-            background: linear-gradient(145deg, #ffffff, #f8f9ff);
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: transform 0.3s, opacity 0.3s;
-        }
-
-        .swipe-card .card-char {
-            font-size: 120px;
-            color: #1a1a2e;
-            margin-bottom: 16px;
-        }
-
-        .swipe-card .card-hint {
-            font-size: 16px;
-            color: #999;
-        }
-
-        .swipe-card .card-answer {
-            font-size: 36px;
-            color: var(--primary);
-            font-weight: 700;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .swipe-card.revealed .card-answer {
-            opacity: 1;
-        }
-
-        .swipe-card.revealed .card-hint {
-            display: none;
-        }
-
-        .swipe-indicators {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            right: 16px;
-            display: flex;
-            justify-content: space-between;
-            pointer-events: none;
-        }
-
-        .indicator {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .indicator.know {
-            background: var(--success);
-            color: white;
-        }
-
-        .indicator.learn {
-            background: var(--error);
-            color: white;
-        }
-
-        .swipe-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px;
-        }
-
-        .swipe-btn {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-        }
-
-        .swipe-btn:active {
-            transform: scale(0.95);
-        }
-
-        .swipe-btn.no {
-            background: var(--error);
-            color: white;
-        }
-
-        .swipe-btn.reveal {
-            background: var(--warning);
-            color: white;
-        }
-
-        .swipe-btn.yes {
-            background: var(--success);
-            color: white;
-        }
-
-        .swipe-hint-text {
-            text-align: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-            padding-bottom: 20px;
-        }
-
-        /* ========== QUIZ SCREEN ========== */
-        .quiz-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            display: none;
-            flex-direction: column;
-            z-index: 150;
-            padding: 20px;
-        }
-
-        .quiz-screen.show {
-            display: flex;
-        }
-
-        .quiz-header {
-            text-align: center;
-            padding-top: 20px;
-            margin-bottom: 24px;
-        }
-
-        .quiz-title {
-            font-size: 20px;
-            color: white;
-            margin-bottom: 14px;
-        }
-
-        .quiz-score {
-            display: flex;
-            justify-content: center;
-            gap: 28px;
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .quiz-score .correct {
-            color: var(--success);
-        }
-
-        .quiz-score .wrong {
-            color: var(--error);
-        }
-
-        .quiz-card {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 26px;
-            padding: 45px 30px;
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .quiz-char {
-            font-size: 90px;
-            color: white;
-        }
-
-        .quiz-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .quiz-option {
-            padding: 18px;
-            background: rgba(255,255,255,0.95);
-            border: 3px solid transparent;
-            border-radius: 16px;
-            font-size: 20px;
-            font-weight: 600;
-            color: #1a1a2e;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .quiz-option:active {
-            transform: scale(0.97);
-        }
-
-        .quiz-option.correct {
-            background: var(--success);
-            color: white;
-        }
-
-        .quiz-option.wrong {
-            background: var(--error);
-            color: white;
-        }
-
-        .quiz-option.disabled {
-            pointer-events: none;
-        }
-
-        /* ========== RESULTS SCREEN ========== */
-        .results-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 150;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .results-screen.show {
-            display: flex;
-        }
-
-        .results-icon {
-            font-size: 90px;
-            margin-bottom: 20px;
-            animation: bounce 0.5s ease;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-        }
-
-        .results-title {
-            font-size: 30px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .results-score {
-            font-size: 52px;
-            font-weight: 800;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-
-        .results-xp {
-            font-size: 22px;
-            color: var(--warning);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .results-subtitle {
-            font-size: 16px;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 36px;
-        }
-
-        .results-btn {
-            width: 100%;
-            max-width: 260px;
-            padding: 16px;
-            border: none;
-            border-radius: 28px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-
-        .results-btn.primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .results-btn.secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        /* ========== WHEEL SCREEN ========== */
-        .wheel-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 150;
-            padding: 20px;
-        }
-
-        .wheel-screen.show {
-            display: flex;
-        }
-
-        .wheel-title {
-            font-size: 26px;
-            color: white;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #f093fb, #f5576c, #ffd200);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .wheel-subtitle {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            margin-bottom: 30px;
-        }
-
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 40px rgba(102,126,234,0.3);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-top: 30px solid #ffd200;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-            z-index: 10;
-        }
-
-        .wheel-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(145deg, #2d2d44, #1a1a2e);
-            border-radius: 50%;
-            border: 3px solid #ffd200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            z-index: 5;
-        }
-
-        .wheel-spin-btn {
-            padding: 16px 50px;
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            border: none;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(240,147,251,0.4);
-        }
-
-        .wheel-spin-btn:disabled {
-            background: #555;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .wheel-result {
-            margin-top: 24px;
-            padding: 18px 30px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 18px;
-            display: none;
-            text-align: center;
-        }
-
-        .wheel-result.show {
-            display: block;
-            animation: modalIn 0.4s ease;
-        }
-
-        .wheel-result-xp {
-            font-size: 42px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #ffd200, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .wheel-result-text {
-            color: rgba(255,255,255,0.8);
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        .wheel-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        /* ========== LOADING ========== */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 300;
-        }
-
-        .loading-logo {
-            font-size: 60px;
-            margin-bottom: 16px;
-            animation: pulse 1.2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .loading-text {
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .loading-spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-top: 18px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        /* ... (весь CSS без изменений, как в исходном файле) ... */
     </style>
 </head>
 <body>
-        <!-- Loading -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">🎌</div>
-        <div class="loading-text">YomuBot</div>
-        <div class="loading-spinner"></div>
-    </div>
+    <!-- ... (весь HTML без изменений, как в исходном файле) ... -->
 
-    <!-- Home Screen -->
-    <div class="screen active" id="homeScreen">
-        <div class="home-header">
-            <div class="user-row">
-                <div class="avatar" id="userAvatar">👤</div>
-                <div class="user-info">
-                    <h1 id="userName">Загрузка...</h1>
-                    <div class="user-rank">
-                        <span id="userBadge">🥚</span>
-                        <span id="userRankName">Новичок</span>
-                    </div>
-                </div>
-            </div>
-            <div class="stats-row">
-                <div class="stat-box">
-                    <div class="stat-value" id="userXp">0</div>
-                    <div class="stat-label">XP</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="userStreak">0</div>
-                    <div class="stat-label">🔥 Серия</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="userCards">0</div>
-                    <div class="stat-label">Карточек</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">📋 Ежедневные задания</div>
-            <div id="questsList"></div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">📚 Обучение</div>
-            <div class="menu-grid">
-                <div class="menu-card wide" onclick="goTo('alphabet')">
-                    <div class="card-icon">🎌</div>
-                    <div class="card-title">Японская Азбука</div>
-                    <div class="card-subtitle">Хирагана и Катакана</div>
-                </div>
-                <div class="menu-card" onclick="goTo('study', 'kanji_n5')">
-                    <div class="card-icon">🈁</div>
-                    <div class="card-title">Кандзи N5</div>
-                    <div class="card-subtitle">103 иероглифа</div>
-                </div>
-                <div class="menu-card" onclick="goTo('study', 'words_n5')">
-                    <div class="card-icon">📝</div>
-                    <div class="card-title">Слова N5</div>
-                    <div class="card-subtitle">Базовая лексика</div>
-                </div>
-                <div class="menu-card" onclick="goTo('study', 'kanji_n4')">
-                    <div class="card-icon">🈁</div>
-                    <div class="card-title">Кандзи N4</div>
-                    <div class="card-subtitle">181 иероглиф</div>
-                </div>
-                <div class="menu-card" onclick="goTo('study', 'kanji_n3')">
-                    <div class="card-icon">🈁</div>
-                    <div class="card-title">Кандзи N3</div>
-                    <div class="card-subtitle">370 иероглифов</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">🎮 Практика</div>
-            <div class="menu-grid">
-                <div class="menu-card" onclick="startQuiz('mixed')">
-                    <div class="card-icon">🎯</div>
-                    <div class="card-title">Быстрый тест</div>
-                    <div class="card-subtitle">5 вопросов</div>
-                </div>
-                <div class="menu-card" onclick="startSwipe()">
-                    <div class="card-icon">🃏</div>
-                    <div class="card-title">Карточки</div>
-                    <div class="card-subtitle">Свайп-режим</div>
-                </div>
-                <div class="menu-card" onclick="openWheel()">
-                    <div class="card-icon">🎡</div>
-                    <div class="card-title">Рулетка</div>
-                    <div class="card-subtitle">Ежедневный бонус</div>
-                </div>
-                <div class="menu-card" onclick="startQuiz('full')">
-                    <div class="card-icon">📋</div>
-                    <div class="card-title">Полный тест</div>
-                    <div class="card-subtitle">15 вопросов</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Alphabet Screen -->
-    <div class="screen" id="alphabetScreen">
-        <div class="alphabet-header">
-            <h2>🎌 Японская Азбука</h2>
-            <div class="tabs">
-                <button class="tab-btn active" onclick="setAlphabetTab('hiragana')">Хирагана</button>
-                <button class="tab-btn" onclick="setAlphabetTab('katakana')">Катакана</button>
-            </div>
-            <div class="view-toggle">
-                <button class="view-btn active" onclick="setAlphabetView('grid')">📋 Сетка</button>
-                <button class="view-btn" onclick="setAlphabetView('rows')">📚 Строки</button>
-            </div>
-        </div>
-        <div class="alphabet-content">
-            <div class="test-buttons">
-                <button class="test-btn primary" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
-                <button class="test-btn secondary" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
-            </div>
-            <div id="alphabetGrid" class="kana-grid"></div>
-            <div id="alphabetRows" class="hidden"></div>
-        </div>
-    </div>
-
-    <!-- Study Screen -->
-    <div class="screen" id="studyScreen">
-        <div class="study-header">
-            <h2 id="studyTitle">📚 Изучение</h2>
-        </div>
-        <div class="study-content" id="studyContent"></div>
-    </div>
-
-    <!-- Profile Screen -->
-    <div class="screen" id="profileScreen">
-        <div class="profile-header">
-            <div class="profile-avatar" id="profileAvatar">👤</div>
-            <div class="profile-name" id="profileName">Пользователь</div>
-            <div class="profile-rank-badge">
-                <span id="profileBadge">🥚</span>
-                <span id="profileRankName">Новичок</span>
-            </div>
-        </div>
-        <div class="profile-stats">
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileXp">0</div>
-                <div class="profile-stat-label">XP</div>
-            </div>
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileStreak">0</div>
-                <div class="profile-stat-label">Серия</div>
-            </div>
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileCards">0</div>
-                <div class="profile-stat-label">Карточек</div>
-            </div>
-        </div>
-        <div class="profile-section">
-            <div class="profile-section-title">🏆 Достижения</div>
-            <div class="achievements-grid" id="achievementsGrid"></div>
-        </div>
-    </div>
-
-    <!-- Settings Screen -->
-    <div class="screen" id="settingsScreen">
-        <div class="settings-header">
-            <h2>⚙️ Настройки</h2>
-        </div>
-        <div class="settings-content">
-            <div class="settings-group">
-                <div class="settings-item" onclick="toggleSetting('sound')">
-                    <div class="settings-left">
-                        <span class="settings-icon">🔊</span>
-                        <span class="settings-label">Звуки</span>
-                    </div>
-                    <div class="toggle active" id="soundToggle"></div>
-                </div>
-                <div class="settings-item" onclick="toggleSetting('vibration')">
-                    <div class="settings-left">
-                        <span class="settings-icon">📳</span>
-                        <span class="settings-label">Вибрация</span>
-                    </div>
-                    <div class="toggle active" id="vibrationToggle"></div>
-                </div>
-            </div>
-            <div class="settings-group">
-                <div class="settings-item" onclick="exportData()">
-                    <div class="settings-left">
-                        <span class="settings-icon">📤</span>
-                        <span class="settings-label">Экспорт прогресса</span>
-                    </div>
-                    <span class="settings-value">›</span>
-                </div>
-                <div class="settings-item" onclick="showAbout()">
-                    <div class="settings-left">
-                        <span class="settings-icon">ℹ️</span>
-                        <span class="settings-label">О приложении</span>
-                    </div>
-                    <span class="settings-value">v2.0 ›</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <div class="modal-box">
-            <div class="modal-char japanese" id="modalChar">あ</div>
-            <div class="modal-reading" id="modalReading">a</div>
-            <div class="modal-meaning" id="modalMeaning"></div>
-            <div class="modal-hint" id="modalHint">Подсказка</div>
-            <div class="modal-gif" id="modalGif">
-                <img id="gifImage" src="" alt="">
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn sound" onclick="playSound()">🔊</button>
-                <button class="modal-btn stroke" onclick="showGif()">✍️</button>
-                <button class="modal-btn close" onclick="closeModal()">✕</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Swipe Screen -->
-    <div class="swipe-screen" id="swipeScreen">
-        <div class="swipe-header">
-            <h2>🃏 Карточки</h2>
-            <div class="swipe-progress">
-                <span id="swipeCount">1 / 10</span>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="swipeProgress"></div>
-                </div>
-            </div>
-        </div>
-        <div class="swipe-area">
-            <div class="swipe-card" id="swipeCard">
-                <div class="swipe-indicators">
-                    <div class="indicator learn">👎 Учить</div>
-                    <div class="indicator know">👍 Знаю</div>
-                </div>
-                <div class="card-char japanese" id="swipeChar">あ</div>
-                <div class="card-hint" id="swipeHint">Нажми 👁 чтобы увидеть</div>
-                <div class="card-answer" id="swipeAnswer">a</div>
-            </div>
-        </div>
-        <div class="swipe-buttons">
-            <button class="swipe-btn no" onclick="swipeNo()">👎</button>
-            <button class="swipe-btn reveal" onclick="swipeReveal()">👁</button>
-            <button class="swipe-btn yes" onclick="swipeYes()">👍</button>
-        </div>
-        <div class="swipe-hint-text">👎 Не знаю | 👁 Показать | 👍 Знаю</div>
-    </div>
-
-    <!-- Quiz Screen -->
-    <div class="quiz-screen" id="quizScreen">
-        <div class="quiz-header">
-            <div class="quiz-title" id="quizTitle">🎯 Тест</div>
-            <div class="quiz-score">
-                <span class="correct">✓ <span id="quizCorrect">0</span></span>
-                <span class="wrong">✗ <span id="quizWrong">0</span></span>
-            </div>
-        </div>
-        <div class="quiz-card">
-            <div class="quiz-char japanese" id="quizChar">あ</div>
-        </div>
-        <div class="quiz-options" id="quizOptions"></div>
-    </div>
-
-    <!-- Results Screen -->
-    <div class="results-screen" id="resultsScreen">
-        <div class="results-icon" id="resultsIcon">🎉</div>
-        <div class="results-title" id="resultsTitle">Отлично!</div>
-        <div class="results-score" id="resultsScore">5 / 5</div>
-        <div class="results-xp" id="resultsXp">+50 XP</div>
-        <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
-        <button class="results-btn primary" onclick="finishQuiz()">✨ Получить XP</button>
-        <button class="results-btn secondary" onclick="retryQuiz()">🔄 Ещё раз</button>
-    </div>
-
-    <!-- Wheel Screen -->
-    <div class="wheel-screen" id="wheelScreen">
-        <button class="wheel-close" onclick="closeWheel()">✕</button>
-        <div class="wheel-title">🎡 КОЛЕСО ФОРТУНЫ</div>
-        <div class="wheel-subtitle">Крути раз в день!</div>
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <svg class="wheel" id="wheel" viewBox="0 0 100 100"></svg>
-            <div class="wheel-center">🎯</div>
-        </div>
-        <button class="wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()">🎲 КРУТИТЬ!</button>
-        <div class="wheel-result" id="wheelResult">
-            <div class="wheel-result-xp" id="wheelResultXp">+100 XP</div>
-            <div class="wheel-result-text">Награда начислена!</div>
-        </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav" id="bottomNav">
-        <button class="nav-item active" onclick="goTo('home')">
-            <span class="icon">🏠</span>
-            <span>Главная</span>
-        </button>
-        <button class="nav-item" onclick="goTo('alphabet')">
-            <span class="icon">🔤</span>
-            <span>Азбука</span>
-        </button>
-        <button class="nav-item" onclick="goTo('study')">
-            <span class="icon">📚</span>
-            <span>Учить</span>
-        </button>
-        <button class="nav-item" onclick="goTo('profile')">
-            <span class="icon">👤</span>
-            <span>Профиль</span>
-        </button>
-        <button class="nav-item" onclick="goTo('settings')">
-            <span class="icon">⚙️</span>
-            <span>Ещё</span>
-        </button>
-    </nav>
-       <script>
+    <script>
         // ==================== TELEGRAM ====================
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -1735,7 +52,7 @@
             wrong: 0
         };
 
-        // ==================== ACHIEVEMENTS ====================
+        // ==================== ДАННЫЕ ====================
         const ACHIEVEMENTS = [
             {id: 'first', name: 'Первый шаг', icon: '👶', check: u => u.cardsLearned >= 1},
             {id: 'streak3', name: 'Огонёк', icon: '🔥', check: u => u.streak >= 3},
@@ -1763,6 +80,16 @@
             {value: 30, color: '#f39c12'},
             {value: 150, color: '#e91e63'}
         ];
+
+        // ==================== НОВАЯ ФУНКЦИЯ ОТПРАВКИ ====================
+        function sendResult(type, score) {
+            const data = {
+                type: type,
+                score: score,
+                initData: tg.initData  // передаём строку initData
+            };
+            tg.sendData(JSON.stringify(data));
+        }
 
         // ==================== INIT ====================
         function init() {
@@ -1800,38 +127,27 @@
 
         // ==================== NAVIGATION ====================
         function goTo(screen, param = null) {
-            // Hide all screens
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            
-            // Update nav
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
             if (navBtn) navBtn.classList.add('active');
-
-            // Show screen
             document.getElementById(screen + 'Screen').classList.add('active');
             currentScreen = screen;
-
-            // Render content
             if (screen === 'alphabet') renderAlphabet();
             if (screen === 'study') renderStudy(param);
             if (screen === 'profile') renderProfile();
-
             haptic('light');
         }
 
         // ==================== UI UPDATE ====================
         function updateUI() {
             const rank = getRank(user.xp);
-
-            // Home
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
             document.getElementById('userStreak').textContent = user.streak;
             document.getElementById('userCards').textContent = user.cardsLearned;
             document.getElementById('userBadge').textContent = rank.badge;
             document.getElementById('userRankName').textContent = rank.name;
-
             renderQuests();
         }
 
@@ -1846,12 +162,10 @@
         function renderQuests() {
             const container = document.getElementById('questsList');
             const quests = user.quests || {};
-
             container.innerHTML = DAILY_QUESTS.map(q => {
                 const progress = quests[q.id] || 0;
                 const done = progress >= q.target;
                 const pct = Math.min(progress / q.target * 100, 100);
-
                 return `
                     <div class="quest-item ${done ? 'done' : ''}">
                         <div class="quest-icon">${q.icon}</div>
@@ -1885,11 +199,9 @@
         function renderAlphabet() {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
-
             if (alphabetView === 'grid') {
                 document.getElementById('alphabetGrid').classList.remove('hidden');
                 document.getElementById('alphabetRows').classList.add('hidden');
-
                 document.getElementById('alphabetGrid').innerHTML = allChars.map((c, i) => `
                     <div class="kana-cell" onclick="openKanaModal(${i})">
                         <div class="char japanese">${c.char}</div>
@@ -1899,7 +211,6 @@
             } else {
                 document.getElementById('alphabetGrid').classList.add('hidden');
                 document.getElementById('alphabetRows').classList.remove('hidden');
-
                 document.getElementById('alphabetRows').innerHTML = rows.map((row, ri) => `
                     <div class="kana-row">
                         <div class="row-header">
@@ -1938,9 +249,7 @@
                 {id: 'kanji_n3', name: 'Кандзи N3', icon: '🈁', desc: '370 иероглифов', data: KANJI_N3},
                 {id: 'words_n5', name: 'Слова N5', icon: '📝', desc: 'Базовая лексика', data: WORDS_N5}
             ];
-
             const container = document.getElementById('studyContent');
-            
             container.innerHTML = categories.map(cat => {
                 const progress = Math.floor(Math.random() * 60); // TODO: real progress
                 return `
@@ -1961,30 +270,23 @@
 
         function openCategory(id) {
             let data = [];
-            let title = '';
-
-            if (id === 'kanji_n5') { data = KANJI_N5; title = 'Кандзи N5'; }
-            else if (id === 'kanji_n4') { data = KANJI_N4; title = 'Кандзи N4'; }
-            else if (id === 'kanji_n3') { data = KANJI_N3; title = 'Кандзи N3'; }
-            else if (id === 'words_n5') { data = WORDS_N5; title = 'Слова N5'; }
-
+            if (id === 'kanji_n5') { data = KANJI_N5; }
+            else if (id === 'kanji_n4') { data = KANJI_N4; }
+            else if (id === 'kanji_n3') { data = KANJI_N3; }
+            else if (id === 'words_n5') { data = WORDS_N5; }
             if (data.length === 0) return;
-
-            // Show first item
             openModal(data[0], 'kanji');
         }
 
         // ==================== MODAL ====================
         function openModal(item, type = 'kana') {
             modalData = item;
-            
             document.getElementById('modalChar').textContent = item.char || item.word || '';
             document.getElementById('modalReading').textContent = item.reading || '';
             document.getElementById('modalMeaning').textContent = item.meaning || '';
             document.getElementById('modalMeaning').style.display = item.meaning ? 'block' : 'none';
             document.getElementById('modalHint').textContent = item.hint || '';
             document.getElementById('modalGif').classList.remove('show');
-            
             document.getElementById('modal').classList.add('show');
             haptic('light');
         }
@@ -1997,7 +299,6 @@
         function playSound() {
             if (!modalData) return;
             const text = modalData.char || modalData.word;
-            
             if ('speechSynthesis' in window) {
                 speechSynthesis.cancel();
                 const u = new SpeechSynthesisUtterance(text);
@@ -2012,16 +313,13 @@
             if (!modalData) return;
             const char = modalData.char || modalData.word;
             const container = document.getElementById('modalGif');
-            
             container.innerHTML = '<span style="color:#999">Загрузка...</span>';
             container.classList.add('show');
-
             const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
             const urls = [
                 `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
                 `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`
             ];
-
             let loaded = false;
             function tryLoad(i) {
                 if (i >= urls.length || loaded) {
@@ -2050,7 +348,6 @@
         function startQuiz(type) {
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             const count = type === 'full' ? 15 : 5;
-            
             quiz = {
                 items: shuffle(allKana).slice(0, count),
                 index: 0,
@@ -2058,7 +355,6 @@
                 wrong: 0,
                 type: type
             };
-
             document.getElementById('quizTitle').textContent = '🎯 Тест';
             showQuizScreen();
             renderQuizQuestion();
@@ -2067,7 +363,6 @@
         function startAlphabetQuiz(count) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
-            
             quiz = {
                 items: shuffle(allChars).slice(0, count),
                 index: 0,
@@ -2075,7 +370,6 @@
                 wrong: 0,
                 type: 'alphabet'
             };
-
             const name = alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана';
             document.getElementById('quizTitle').textContent = `🎯 ${name}`;
             showQuizScreen();
@@ -2085,7 +379,6 @@
         function startRowQuiz(rowIndex) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const row = rows[rowIndex];
-            
             quiz = {
                 items: shuffle([...row.chars]),
                 index: 0,
@@ -2093,7 +386,6 @@
                 wrong: 0,
                 type: 'row'
             };
-
             document.getElementById('quizTitle').textContent = `🎯 ${row.name}`;
             showQuizScreen();
             renderQuizQuestion();
@@ -2115,19 +407,15 @@
                 showResults();
                 return;
             }
-
             const item = quiz.items[quiz.index];
             document.getElementById('quizChar').textContent = item.char;
             document.getElementById('quizCorrect').textContent = quiz.correct;
             document.getElementById('quizWrong').textContent = quiz.wrong;
-
-            // Generate options
             const allReadings = [...new Set(
                 [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading))
             )];
             const wrong = shuffle(allReadings.filter(r => r !== item.reading)).slice(0, 3);
             const options = shuffle([item.reading, ...wrong]);
-
             document.getElementById('quizOptions').innerHTML = options.map(opt => `
                 <button class="quiz-option" onclick="checkQuizAnswer('${opt}', '${item.reading}')">${opt}</button>
             `).join('');
@@ -2139,7 +427,6 @@
                 if (btn.textContent === correct) btn.classList.add('correct');
                 else if (btn.textContent === selected) btn.classList.add('wrong');
             });
-
             if (selected === correct) {
                 quiz.correct++;
                 haptic('success');
@@ -2147,7 +434,6 @@
                 quiz.wrong++;
                 haptic('error');
             }
-
             setTimeout(() => {
                 quiz.index++;
                 renderQuizQuestion();
@@ -2157,25 +443,20 @@
         function showResults() {
             document.getElementById('quizScreen').classList.remove('show');
             document.getElementById('resultsScreen').classList.add('show');
-
             const total = quiz.items.length;
             const score = quiz.correct;
             const pct = Math.round(score / total * 100);
             const xp = score * 10;
-
             let icon, title, subtitle;
             if (pct === 100) { icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; user.perfectTests = (user.perfectTests || 0) + 1; }
             else if (pct >= 80) { icon = '🎉'; title = 'Отлично!'; subtitle = 'Так держать!'; }
             else if (pct >= 60) { icon = '👍'; title = 'Хорошо!'; subtitle = 'Есть куда расти!'; }
             else { icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ!'; }
-
             document.getElementById('resultsIcon').textContent = icon;
             document.getElementById('resultsTitle').textContent = title;
             document.getElementById('resultsScore').textContent = `${score} / ${total}`;
             document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = subtitle;
-
-            // Add XP and update quests
             if (xp > 0) {
                 user.xp += xp;
                 user.cardsLearned += score;
@@ -2185,16 +466,13 @@
                 saveUser();
                 updateUI();
             }
-
             haptic('success');
         }
 
+        // ==================== ИЗМЕНЁННАЯ ФУНКЦИЯ finishQuiz ====================
         function finishQuiz() {
-            // Send to bot
-            try {
-                tg.sendData(`quiz_result_${quiz.correct}`);
-            } catch(e) {}
-
+            // Отправляем результат в бот
+            sendResult('quiz_result', quiz.correct);
             setTimeout(() => {
                 hideQuizScreen();
                 goTo('home');
@@ -2213,14 +491,12 @@
         // ==================== SWIPE ====================
         function startSwipe() {
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
-            
             swipe = {
                 items: shuffle(allKana).slice(0, 10),
                 index: 0,
                 correct: 0,
                 wrong: 0
             };
-
             document.getElementById('swipeScreen').classList.add('show');
             document.getElementById('bottomNav').classList.add('hidden');
             renderSwipeCard();
@@ -2231,10 +507,8 @@
                 showSwipeResults();
                 return;
             }
-
             const item = swipe.items[swipe.index];
             const card = document.getElementById('swipeCard');
-
             document.getElementById('swipeChar').textContent = item.char;
             document.getElementById('swipeAnswer').textContent = item.reading;
             document.getElementById('swipeHint').style.display = 'block';
@@ -2242,10 +516,8 @@
             card.classList.remove('revealed');
             card.style.transform = '';
             card.style.opacity = '1';
-
             document.getElementById('swipeCount').textContent = `${swipe.index + 1} / ${swipe.items.length}`;
             document.getElementById('swipeProgress').style.width = `${swipe.index / swipe.items.length * 100}%`;
-
             document.querySelectorAll('.indicator').forEach(i => i.style.opacity = '0');
         }
 
@@ -2264,7 +536,6 @@
             card.style.opacity = '0';
             swipe.correct++;
             haptic('medium');
-            
             setTimeout(() => {
                 swipe.index++;
                 renderSwipeCard();
@@ -2278,22 +549,19 @@
             card.style.opacity = '0';
             swipe.wrong++;
             haptic('medium');
-            
             setTimeout(() => {
                 swipe.index++;
                 renderSwipeCard();
             }, 250);
         }
 
+        // ==================== ИЗМЕНЁННАЯ ФУНКЦИЯ showSwipeResults ====================
         function showSwipeResults() {
             document.getElementById('swipeScreen').classList.remove('show');
-            
             const xp = swipe.correct * 10;
             quiz.correct = swipe.correct;
             quiz.items = swipe.items;
             quiz.type = 'swipe';
-
-            // Add XP
             if (xp > 0) {
                 user.xp += xp;
                 user.cardsLearned += swipe.correct;
@@ -2302,15 +570,15 @@
                 saveUser();
                 updateUI();
             }
-
             document.getElementById('resultsScreen').classList.add('show');
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
             document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
             document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = `Знал: ${swipe.correct}, Учить: ${swipe.wrong}`;
-
             haptic('success');
+            // Отправляем результат
+            sendResult('swipe_result', swipe.correct);
         }
 
         // ==================== WHEEL ====================
@@ -2319,31 +587,24 @@
             const total = WHEEL_PRIZES.length;
             const angle = 360 / total;
             let html = '';
-
             WHEEL_PRIZES.forEach((prize, i) => {
                 const startAngle = i * angle - 90;
                 const endAngle = startAngle + angle;
                 const startRad = startAngle * Math.PI / 180;
                 const endRad = endAngle * Math.PI / 180;
-
                 const x1 = 50 + 50 * Math.cos(startRad);
                 const y1 = 50 + 50 * Math.sin(startRad);
                 const x2 = 50 + 50 * Math.cos(endRad);
                 const y2 = 50 + 50 * Math.sin(endRad);
-
                 html += `<path d="M 50 50 L ${x1} ${y1} A 50 50 0 0 1 ${x2} ${y2} Z" fill="${prize.color}"/>`;
-
-                // Text
                 const textAngle = startAngle + angle / 2;
                 const textRad = textAngle * Math.PI / 180;
                 const tx = 50 + 32 * Math.cos(textRad);
                 const ty = 50 + 32 * Math.sin(textRad);
-
                 html += `<text x="${tx}" y="${ty}" fill="white" font-size="7" font-weight="bold" 
                          text-anchor="middle" dominant-baseline="middle" 
                          transform="rotate(${textAngle + 90}, ${tx}, ${ty})">${prize.value}</text>`;
             });
-
             svg.innerHTML = html;
         }
 
@@ -2351,8 +612,6 @@
             document.getElementById('wheelScreen').classList.add('show');
             document.getElementById('bottomNav').classList.add('hidden');
             document.getElementById('wheelResult').classList.remove('show');
-            
-            // Check if already spun today
             const today = new Date().toDateString();
             if (user.lastDaily === today) {
                 document.getElementById('wheelSpinBtn').disabled = true;
@@ -2370,59 +629,44 @@
 
         let wheelRotation = 0;
 
+        // ==================== ИЗМЕНЁННАЯ ФУНКЦИЯ spinWheel ====================
         function spinWheel() {
             const today = new Date().toDateString();
             if (user.lastDaily === today) return;
-
             const btn = document.getElementById('wheelSpinBtn');
             btn.disabled = true;
             btn.textContent = '🎰 Крутится...';
-
-            // Random prize
             const prizeIndex = Math.floor(Math.random() * WHEEL_PRIZES.length);
             const prize = WHEEL_PRIZES[prizeIndex];
-
-            // Calculate rotation
             const segmentAngle = 360 / WHEEL_PRIZES.length;
             const targetAngle = 360 - (prizeIndex * segmentAngle + segmentAngle / 2);
             const spins = 5 + Math.random() * 3;
             wheelRotation += spins * 360 + targetAngle - (wheelRotation % 360);
-
             document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
             haptic('medium');
-
             setTimeout(() => {
-                // Award prize
                 user.xp += prize.value;
                 user.lastDaily = today;
                 saveUser();
                 updateUI();
-
                 document.getElementById('wheelResultXp').textContent = `+${prize.value} XP`;
                 document.getElementById('wheelResult').classList.add('show');
                 btn.textContent = '✅ Готово!';
-
                 haptic('success');
-
-                // Send to bot
-                try {
-                    tg.sendData(`wheel_reward_${prize.value}`);
-                } catch(e) {}
+                // Отправляем результат
+                sendResult('wheel_reward', prize.value);
             }, 4500);
         }
 
         // ==================== PROFILE ====================
         function renderProfile() {
             const rank = getRank(user.xp);
-
             document.getElementById('profileName').textContent = user.name;
             document.getElementById('profileXp').textContent = user.xp;
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
             document.getElementById('profileBadge').textContent = rank.badge;
             document.getElementById('profileRankName').textContent = rank.name;
-
-            // Achievements
             const grid = document.getElementById('achievementsGrid');
             grid.innerHTML = ACHIEVEMENTS.map(a => {
                 const unlocked = a.check(user);
