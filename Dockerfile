@@ -2,21 +2,18 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Установка зависимостей
+# Устанавливаем зависимости
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Копирование всего проекта
+# Копируем весь проект
 COPY . .
 
-# Создание папки для базы данных (том будет смонтирован сюда)
-RUN mkdir -p /app/data
+# Создаём папку для базы данных (будет смонтирована)
+RUN mkdir -p /data
 
-# Указываем переменную окружения для пути к БД
-ENV DB_PATH=/app/data/japanese_bot.db
-
-# Открываем порт для API (как в bot.py)
+# Указываем порт, который слушает бот (в bot.py у вас 8080)
 EXPOSE 8080
 
-# Запуск бота
+# Запускаем бота
 CMD ["python", "bot.py"]
