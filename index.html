@@ -118,6 +118,7 @@
             font-size: 26px;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
         }
 
         .user-info h1 {
@@ -561,6 +562,7 @@
             font-size: 38px;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
         }
 
         .profile-name {
@@ -1708,6 +1710,11 @@
         tg.expand();
         tg.ready();
 
+        // ==================== КОНФИГУРАЦИЯ СЕРВЕРА ====================
+        // Замените на реальный адрес вашего сервера (например, https://xxxx.ngrok.io)
+        // Если сервер недоступен, данные будут браться из localStorage
+        const API_BASE = 'https://ваш-сервер.com'; 
+
         // ==================== STATE ====================
         let user = {
             id: null,
@@ -1780,11 +1787,38 @@
                 initData: tg.initData
             };
             tg.sendData(JSON.stringify(data));
-            // Здесь мы не ждём ответа от сервера, так как сервер недоступен
+            // Здесь можно было бы обновить данные с сервера, но пока оставим локально
         }
 
-        // ==================== ЗАГРУЗКА ДАННЫХ ИЗ STORAGE ====================
-        function loadUser() {
+        // ==================== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====================
+        async function fetchUserFromServer() {
+            try {
+                const response = await fetch(`${API_BASE}/api/user`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Telegram-Init-Data': tg.initData
+                    }
+                });
+                if (!response.ok) throw new Error('Server error');
+                const data = await response.json();
+                if (data.success) {
+                    user.id = data.user.id;
+                    user.name = data.user.name;
+                    user.xp = data.user.xp;
+                    user.streak = data.user.streak;
+                    user.cardsLearned = data.user.cards_learned;
+                    // Здесь можно добавить другие поля
+                    saveUser();
+                    return true;
+                }
+            } catch (e) {
+                console.warn('Failed to fetch from server, using local storage', e);
+            }
+            return false;
+        }
+
+        // ==================== ЗАГРУЗКА ИЗ STORAGE ====================
+        function loadUserFromStorage() {
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
                 const data = JSON.parse(saved);
@@ -1795,11 +1829,9 @@
                 user.name = tg.initDataUnsafe.user.first_name || 'Пользователь';
                 user.id = tg.initDataUnsafe.user.id;
             }
-            updateUI();
-            loadAvatar();
         }
 
-        // ==================== СОХРАНЕНИЕ ДАННЫХ ====================
+        // ==================== СОХРАНЕНИЕ В STORAGE ====================
         function saveUser() {
             localStorage.setItem('yomubot_user', JSON.stringify(user));
         }
@@ -1808,7 +1840,6 @@
         function loadAvatar() {
             const name = user.name;
             const initial = name.charAt(0).toUpperCase();
-            // Используем сервис ui-avatars.com для генерации аватарки с инициалами
             const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=128`;
             document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('userAvatar').textContent = '';
@@ -1817,8 +1848,12 @@
         }
 
         // ==================== INIT ====================
-        function init() {
-            loadUser();
+        async function init() {
+            // Сначала пытаемся загрузить с сервера
+            const serverOk = await fetchUserFromServer();
+            if (!serverOk) {
+                loadUserFromStorage();
+            }
 
             // Update daily quest
             const today = new Date().toDateString();
@@ -1830,6 +1865,7 @@
             user.quests.login = 1;
             saveUser();
             updateUI();
+            loadAvatar();
 
             // Hide loading
             setTimeout(() => {
@@ -1866,7 +1902,6 @@
 
         function getRank(xp) {
             if (typeof RANKS === 'undefined') {
-                // Если RANKS не определён (например, не загрузился data.js), используем заглушку
                 return {min: 0, name: 'Новичок', badge: '🥚', frame: 1};
             }
             let rank = RANKS[0];
