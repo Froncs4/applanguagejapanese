@@ -21,44 +21,35 @@
             overflow-x: hidden;
         }
 
-        .container {
-            padding: 16px;
-            max-width: 100%;
-        }
-
         /* ========== HEADER ========== */
         .header {
             text-align: center;
-            padding: 20px 16px 16px;
+            padding: 24px 16px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border-radius: 0 0 24px 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .header p {
             font-size: 14px;
             opacity: 0.9;
+            margin-bottom: 20px;
         }
 
-        /* ========== TABS (Alphabet) ========== */
-        .tabs-container {
-            margin-top: 16px;
-        }
-
+        /* ========== TABS ========== */
         .tabs {
             display: flex;
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.2);
             border-radius: 12px;
             padding: 4px;
-            margin-bottom: 16px;
         }
 
         .tab {
@@ -66,7 +57,7 @@
             padding: 12px 16px;
             border: none;
             background: transparent;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255,255,255,0.8);
             font-size: 15px;
             font-weight: 600;
             border-radius: 10px;
@@ -80,12 +71,46 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
+        /* ========== CONTAINER ========== */
+        .container {
+            padding: 0 16px 16px;
+        }
+
+        /* ========== ACTION BUTTONS ========== */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px 12px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .action-btn:active {
+            transform: scale(0.97);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
         /* ========== KANA GRID ========== */
         .kana-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 8px;
-            padding: 0 4px;
         }
 
         .kana-card {
@@ -99,20 +124,16 @@
             cursor: pointer;
             transition: all 0.2s ease;
             border: 2px solid transparent;
-            padding: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         .kana-card:active {
             transform: scale(0.95);
-        }
-
-        .kana-card.selected {
             border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
         }
 
         .kana-card .char {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 500;
             line-height: 1.2;
         }
@@ -123,19 +144,20 @@
             margin-top: 2px;
         }
 
-        /* ========== CARD DETAIL MODAL ========== */
+        /* ========== MODAL ========== */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
             padding: 20px;
+            backdrop-filter: blur(5px);
         }
 
         .modal-overlay.show {
@@ -144,24 +166,24 @@
 
         .modal-content {
             background: var(--tg-theme-bg-color, #fff);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 32px 24px;
             text-align: center;
-            max-width: 320px;
+            max-width: 340px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
         }
 
         .modal-char {
-            font-size: 80px;
-            margin-bottom: 16px;
+            font-size: 90px;
+            margin-bottom: 12px;
             line-height: 1;
         }
 
         .modal-reading {
-            font-size: 32px;
+            font-size: 36px;
             color: #667eea;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 8px;
         }
 
@@ -169,6 +191,7 @@
             font-size: 16px;
             color: var(--tg-theme-hint-color, #999);
             margin-bottom: 24px;
+            line-height: 1.4;
         }
 
         .modal-buttons {
@@ -178,12 +201,12 @@
 
         .modal-btn {
             flex: 1;
-            padding: 14px;
+            padding: 16px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 24px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.2s ease;
         }
 
         .modal-btn:active {
@@ -195,17 +218,41 @@
             color: white;
         }
 
+        .modal-btn.gif {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
         .modal-btn.close {
             background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            flex: 0.5;
+        }
+
+        /* GIF Container in Modal */
+        .modal-gif {
+            margin: 16px 0;
+            border-radius: 16px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .modal-gif.show {
+            display: block;
+        }
+
+        .modal-gif img {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
         }
 
         /* ========== SWIPE MODE ========== */
         .swipe-container {
             display: none;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             padding: 20px;
-            padding-top: 30px;
         }
 
         .swipe-container.active {
@@ -214,38 +261,38 @@
 
         .swipe-header {
             text-align: center;
-            margin-bottom: 24px;
-            padding-top: 10px;
+            padding-top: 20px;
+            margin-bottom: 20px;
         }
 
         .swipe-header h2 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
-            color: var(--tg-theme-text-color, #000);
-            margin-bottom: 10px;
+            color: white;
+            margin-bottom: 16px;
         }
 
         .swipe-progress {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #999);
+            gap: 12px;
+            font-size: 16px;
+            color: rgba(255,255,255,0.8);
         }
 
         .progress-bar {
-            width: 120px;
-            height: 6px;
-            background: var(--tg-theme-secondary-bg-color, #e0e0e0);
-            border-radius: 3px;
+            width: 140px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 3px;
+            background: linear-gradient(90deg, #667eea, #f093fb);
+            border-radius: 4px;
             transition: width 0.3s ease;
         }
 
@@ -255,16 +302,16 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            margin: 20px 0;
+            min-height: 400px;
         }
 
         .swipe-card {
             position: absolute;
-            width: 280px;
-            height: 380px;
-            background: linear-gradient(145deg, #ffffff, #f5f5f5);
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            width: 300px;
+            height: 420px;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -280,20 +327,21 @@
         }
 
         .swipe-card .card-char {
-            font-size: 120px;
+            font-size: 140px;
+            color: #1a1a2e;
             margin-bottom: 20px;
             line-height: 1;
         }
 
         .swipe-card .card-question {
             font-size: 18px;
-            color: var(--tg-theme-hint-color, #999);
+            color: #999;
         }
 
         .swipe-card .card-answer {
-            font-size: 36px;
+            font-size: 42px;
             color: #667eea;
-            font-weight: 600;
+            font-weight: 700;
             opacity: 0;
             transition: opacity 0.2s;
         }
@@ -317,36 +365,29 @@
         }
 
         .indicator {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 700;
+            font-size: 16px;
             opacity: 0;
             transition: opacity 0.2s;
         }
 
         .indicator.know {
-            background: #4ade80;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
             color: white;
         }
 
         .indicator.dont-know {
-            background: #f87171;
+            background: linear-gradient(135deg, #f87171, #ef4444);
             color: white;
         }
 
         .swipe-hint {
             text-align: center;
-            padding: 20px;
-            color: var(--tg-theme-hint-color, #999);
-            font-size: 14px;
-        }
-
-        .swipe-hint span {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
+            padding: 24px;
+            color: rgba(255,255,255,0.6);
+            font-size: 15px;
         }
 
         /* ========== QUIZ MODE ========== */
@@ -354,6 +395,7 @@
             display: none;
             flex-direction: column;
             min-height: 100vh;
+            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             padding: 20px;
         }
 
@@ -363,20 +405,22 @@
 
         .quiz-header {
             text-align: center;
-            margin-bottom: 30px;
             padding-top: 20px;
+            margin-bottom: 24px;
         }
 
         .quiz-header h2 {
-            font-size: 20px;
-            margin-bottom: 12px;
+            font-size: 22px;
+            color: white;
+            margin-bottom: 16px;
         }
 
         .quiz-score {
             display: flex;
             justify-content: center;
-            gap: 24px;
-            font-size: 16px;
+            gap: 30px;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .quiz-score .correct {
@@ -389,55 +433,57 @@
 
         .quiz-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 24px;
-            padding: 40px;
+            border-radius: 28px;
+            padding: 50px 40px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.4);
         }
 
         .quiz-card .char {
-            font-size: 100px;
+            font-size: 120px;
             color: white;
             line-height: 1;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         .quiz-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 14px;
         }
 
         .quiz-option {
-            padding: 18px;
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            border: 2px solid transparent;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 500;
+            padding: 20px;
+            background: rgba(255,255,255,0.95);
+            border: 3px solid transparent;
+            border-radius: 18px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a2e;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .quiz-option:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
 
         .quiz-option.correct {
-            background: #4ade80;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
             color: white;
             border-color: #22c55e;
         }
 
         .quiz-option.wrong {
-            background: #f87171;
+            background: linear-gradient(135deg, #f87171, #ef4444);
             color: white;
             border-color: #ef4444;
         }
 
         .quiz-option.disabled {
             pointer-events: none;
-            opacity: 0.6;
         }
 
         /* ========== GRAMMAR MODE ========== */
@@ -445,6 +491,7 @@
             display: none;
             flex-direction: column;
             min-height: 100vh;
+            background: linear-gradient(180deg, #232526 0%, #414345 100%);
             padding: 20px;
         }
 
@@ -454,59 +501,68 @@
 
         .grammar-header {
             text-align: center;
-            margin-bottom: 24px;
             padding-top: 20px;
+            margin-bottom: 24px;
         }
 
         .grammar-header h2 {
-            font-size: 22px;
+            font-size: 24px;
+            color: white;
             margin-bottom: 8px;
         }
 
+        .grammar-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+        }
+
         .grammar-card {
-            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
-            border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 20px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 24px;
+            padding: 30px 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         .grammar-sentence {
-            font-size: 28px;
+            font-size: 32px;
             text-align: center;
             line-height: 1.6;
             margin-bottom: 16px;
+            color: #1a1a2e;
         }
 
         .grammar-blank {
             display: inline-block;
-            min-width: 60px;
-            border-bottom: 3px solid #667eea;
+            min-width: 50px;
+            border-bottom: 4px solid #667eea;
             margin: 0 4px;
         }
 
         .grammar-translation {
             text-align: center;
-            color: var(--tg-theme-hint-color, #999);
-            font-size: 16px;
+            color: #666;
+            font-size: 18px;
         }
 
         .grammar-options {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
         }
 
         .grammar-option {
-            padding: 14px 28px;
+            padding: 16px 32px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 25px;
-            font-size: 20px;
-            font-weight: 500;
+            border-radius: 30px;
+            font-size: 24px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
 
         .grammar-option:active {
@@ -514,11 +570,11 @@
         }
 
         .grammar-option.correct {
-            background: #4ade80;
+            background: linear-gradient(135deg, #4ade80, #22c55e);
         }
 
         .grammar-option.wrong {
-            background: #f87171;
+            background: linear-gradient(135deg, #f87171, #ef4444);
         }
 
         /* ========== RESULTS ========== */
@@ -528,6 +584,7 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             padding: 20px;
             text-align: center;
         }
@@ -537,39 +594,54 @@
         }
 
         .results-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
+            font-size: 100px;
+            margin-bottom: 24px;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         .results-title {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
+            color: white;
             margin-bottom: 12px;
         }
 
         .results-score {
-            font-size: 48px;
+            font-size: 56px;
             font-weight: 800;
-            color: #667eea;
+            background: linear-gradient(90deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 8px;
         }
 
         .results-subtitle {
-            font-size: 16px;
-            color: var(--tg-theme-hint-color, #999);
-            margin-bottom: 30px;
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 40px;
         }
 
         .results-btn {
-            padding: 16px 48px;
+            padding: 18px 60px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 30px;
-            font-size: 18px;
+            border-radius: 35px;
+            font-size: 20px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .results-btn:active {
+            transform: scale(0.97);
         }
 
         /* ========== LOADING ========== */
@@ -578,12 +650,13 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--tg-theme-secondary-bg-color, #f0f0f0);
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255,255,255,0.1);
             border-top-color: #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -593,27 +666,9 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Hide all modes by default */
-        .alphabet-container,
-        .swipe-container,
-        .quiz-container,
-        .grammar-container,
-        .results-container {
-            display: none;
-        }
-
-        .alphabet-container.active,
-        .swipe-container.active,
-        .quiz-container.active,
-        .grammar-container.active,
-        .results-container.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .alphabet-container.active {
-            display: block;
-        }
+        /* Hide modes by default */
+        .alphabet-container { display: none; }
+        .alphabet-container.active { display: block; }
     </style>
 </head>
 <body>
@@ -627,17 +682,19 @@
         <div class="header">
             <h1>🎌 Японская Азбука</h1>
             <p>Нажми на символ для изучения</p>
-            
-            <!-- TABS MOVED INSIDE HEADER WITH MARGIN -->
-            <div class="tabs-container">
-                <div class="tabs">
-                    <button class="tab active" data-tab="hiragana">Хирагана</button>
-                    <button class="tab" data-tab="katakana">Катакана</button>
-                </div>
+            <div class="tabs">
+                <button class="tab active" data-tab="hiragana">Хирагана</button>
+                <button class="tab" data-tab="katakana">Катакана</button>
             </div>
         </div>
 
         <div class="container">
+            <!-- Action Buttons for Tests -->
+            <div class="action-buttons">
+                <button class="action-btn" onclick="startQuickTest()">📝 Быстрый тест</button>
+                <button class="action-btn secondary" onclick="startFullTest()">🎯 Полный тест</button>
+            </div>
+            
             <div class="kana-grid" id="kanaGrid"></div>
         </div>
     </div>
@@ -657,27 +714,24 @@
         <div class="swipe-cards-area" id="swipeArea">
             <div class="swipe-card" id="swipeCard">
                 <div class="swipe-indicators">
-                    <div class="indicator dont-know">Не знаю 👎</div>
-                    <div class="indicator know">Знаю 👍</div>
+                    <div class="indicator dont-know">👎 Учить</div>
+                    <div class="indicator know">👍 Знаю</div>
                 </div>
                 <div class="card-char">あ</div>
-                <div class="card-question">Нажми чтобы увидеть ответ</div>
+                <div class="card-question">Нажми чтобы увидеть</div>
                 <div class="card-answer">a</div>
             </div>
         </div>
 
         <div class="swipe-hint">
-            <span>👈 Не знаю &nbsp;&nbsp;|&nbsp;&nbsp; Знаю 👉</span>
+            ← Свайп влево: Учить &nbsp;|&nbsp; Свайп вправо: Знаю →
         </div>
     </div>
 
     <!-- QUIZ MODE -->
     <div class="quiz-container" id="quizMode">
         <div class="quiz-header">
-            <h2>🎯 Тест</h2>
-            <div class="quiz-progress">
-                <span id="quizCount">1 / 5</span>
-            </div>
+            <h2>🎯 Тест на знание</h2>
             <div class="quiz-score">
                 <span class="correct">✓ <span id="correctCount">0</span></span>
                 <span class="wrong">✗ <span id="wrongCount">0</span></span>
@@ -695,9 +749,7 @@
     <div class="grammar-container" id="grammarMode">
         <div class="grammar-header">
             <h2>📖 Грамматика N5</h2>
-            <div class="quiz-progress">
-                <span id="grammarCount">1 / 5</span>
-            </div>
+            <p>Вставьте правильную частицу</p>
         </div>
 
         <div class="grammar-card">
@@ -716,7 +768,7 @@
         <div class="results-title" id="resultsTitle">Отлично!</div>
         <div class="results-score" id="resultsScore">5 / 5</div>
         <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
-        <button class="results-btn" onclick="sendResults()">Завершить</button>
+        <button class="results-btn" onclick="sendResults()">✨ Завершить</button>
     </div>
 
     <!-- MODAL -->
@@ -725,8 +777,15 @@
             <div class="modal-char" id="modalChar">あ</div>
             <div class="modal-reading" id="modalReading">a</div>
             <div class="modal-hint" id="modalHint">Подсказка</div>
+            
+            <!-- GIF Container -->
+            <div class="modal-gif" id="modalGif">
+                <img id="gifImage" src="" alt="Stroke order">
+            </div>
+            
             <div class="modal-buttons">
                 <button class="modal-btn sound" onclick="playSound()">🔊</button>
+                <button class="modal-btn gif" onclick="showStrokeGif()">✍️</button>
                 <button class="modal-btn close" onclick="closeModal()">✕</button>
             </div>
         </div>
@@ -800,7 +859,7 @@
             {char: 'ケ', reading: 'ke', hint: 'Кетчуп'},
             {char: 'コ', reading: 'ko', hint: 'Коробка'},
             {char: 'サ', reading: 'sa', hint: 'Сабля'},
-            {char: 'シ', reading: 'shi', hint: 'Широкая улыбка'},
+            {char: 'シ', reading: 'shi', hint: 'Улыбка'},
             {char: 'ス', reading: 'su', hint: 'Сундук'},
             {char: 'セ', reading: 'se', hint: 'Сэндвич'},
             {char: 'ソ', reading: 'so', hint: 'Сок'},
@@ -810,7 +869,7 @@
             {char: 'テ', reading: 'te', hint: 'Телевизор'},
             {char: 'ト', reading: 'to', hint: 'Торт'},
             {char: 'ナ', reading: 'na', hint: 'Нож'},
-            {char: 'ニ', reading: 'ni', hint: 'Ни (два)'},
+            {char: 'ニ', reading: 'ni', hint: 'Два'},
             {char: 'ヌ', reading: 'nu', hint: 'Нудл'},
             {char: 'ネ', reading: 'ne', hint: 'Нэт'},
             {char: 'ノ', reading: 'no', hint: 'Нос'},
@@ -820,7 +879,7 @@
             {char: 'ヘ', reading: 'he', hint: 'Хэй'},
             {char: 'ホ', reading: 'ho', hint: 'Хор'},
             {char: 'マ', reading: 'ma', hint: 'Мама'},
-            {char: 'ミ', reading: 'mi', hint: 'Ми (три)'},
+            {char: 'ミ', reading: 'mi', hint: 'Три'},
             {char: 'ム', reading: 'mu', hint: 'Му'},
             {char: 'メ', reading: 'me', hint: 'Мэч'},
             {char: 'モ', reading: 'mo', hint: 'Море'},
@@ -834,7 +893,7 @@
             {char: 'ロ', reading: 'ro', hint: 'Рот'},
             {char: 'ワ', reading: 'wa', hint: 'Ваза'},
             {char: 'ヲ', reading: 'wo', hint: 'Вок'},
-            {char: 'ン', reading: 'n', hint: 'Н (смайлик)'}
+            {char: 'ン', reading: 'n', hint: 'Смайлик'}
         ];
 
         const GRAMMAR_N5 = [
@@ -856,6 +915,7 @@
         let swipeStartX = 0;
         let swipeCurrentX = 0;
         let isDragging = false;
+        let currentModalChar = null;
 
         // ==================== ROUTING ====================
         function init() {
@@ -913,29 +973,134 @@
 
         function showKanaDetail(idx) {
             const item = currentData[idx];
+            currentModalChar = item;
+            
             document.getElementById('modalChar').textContent = item.char;
             document.getElementById('modalReading').textContent = item.reading;
             document.getElementById('modalHint').textContent = item.hint;
+            document.getElementById('modalGif').classList.remove('show');
             document.getElementById('modal').classList.add('show');
+            
             try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
+            document.getElementById('modalGif').classList.remove('show');
+            currentModalChar = null;
         }
 
         function playSound() {
-            const char = document.getElementById('modalChar').textContent;
-            const utterance = new SpeechSynthesisUtterance(char);
-            utterance.lang = 'ja-JP';
-            speechSynthesis.speak(utterance);
+            if (!currentModalChar) return;
+            
+            const char = currentModalChar.char;
+            
+            // Try Web Speech API
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(char);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 0.8;
+                
+                // Find Japanese voice
+                const voices = speechSynthesis.getVoices();
+                const japaneseVoice = voices.find(v => v.lang.startsWith('ja'));
+                if (japaneseVoice) {
+                    utterance.voice = japaneseVoice;
+                }
+                
+                speechSynthesis.speak(utterance);
+            }
+            
             try { tg.HapticFeedback.impactOccurred('medium'); } catch(e) {}
+        }
+
+        // Load voices
+        if ('speechSynthesis' in window) {
+            speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+        }
+
+        function showStrokeGif() {
+            if (!currentModalChar) return;
+            
+            const char = currentModalChar.char;
+            const reading = currentModalChar.reading;
+            const gifContainer = document.getElementById('modalGif');
+            const gifImage = document.getElementById('gifImage');
+            
+            // Generate GIF URL
+            const hexCode = char.charCodeAt(0).toString(16).padStart(5, '0');
+            
+            // Try different sources
+            const urls = [
+                `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hexCode}.gif`,
+                `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hexCode}.gif`
+            ];
+            
+            // For hiragana/katakana try Wikimedia
+            if (currentTab === 'hiragana') {
+                urls.unshift(`https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Hiragana_${reading}_stroke_order_animation.gif/120px-Hiragana_${reading}_stroke_order_animation.gif`);
+            } else {
+                urls.unshift(`https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Katakana_${reading}_stroke_order_animation.gif/120px-Katakana_${reading}_stroke_order_animation.gif`);
+            }
+            
+            // Try to load
+            let loaded = false;
+            
+            function tryLoad(index) {
+                if (index >= urls.length) {
+                    gifContainer.innerHTML = '<p style="color:#999;font-size:14px;">GIF недоступен</p>';
+                    gifContainer.classList.add('show');
+                    return;
+                }
+                
+                const img = new Image();
+                img.onload = () => {
+                    if (!loaded) {
+                        loaded = true;
+                        gifImage.src = urls[index];
+                        gifContainer.classList.add('show');
+                    }
+                };
+                img.onerror = () => tryLoad(index + 1);
+                img.src = urls[index];
+            }
+            
+            tryLoad(0);
+            try { tg.HapticFeedback.impactOccurred('light'); } catch(e) {}
         }
 
         // Close modal on overlay click
         document.getElementById('modal').addEventListener('click', (e) => {
             if (e.target.id === 'modal') closeModal();
         });
+
+        // Quick test from alphabet mode
+        function startQuickTest() {
+            hideAllModes();
+            currentIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            quizItems = shuffleArray([...currentData]).slice(0, 5);
+            document.getElementById('quizMode').classList.add('active');
+            currentMode = 'quiz';
+            renderQuizQuestion();
+        }
+
+        function startFullTest() {
+            hideAllModes();
+            currentIndex = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            quizItems = shuffleArray([...currentData]).slice(0, 15);
+            document.getElementById('quizMode').classList.add('active');
+            currentMode = 'quiz';
+            renderQuizQuestion();
+        }
+
+        function hideAllModes() {
+            document.querySelectorAll('.alphabet-container, .swipe-container, .quiz-container, .grammar-container, .results-container')
+                .forEach(el => el.classList.remove('active'));
+        }
 
         // ==================== SWIPE MODE ====================
         function startSwipeMode() {
@@ -944,7 +1109,6 @@
             correctCount = 0;
             wrongCount = 0;
 
-            // Mix hiragana and katakana
             const allKana = [...HIRAGANA, ...KATAKANA];
             quizItems = shuffleArray(allKana).slice(0, 10);
 
@@ -971,27 +1135,22 @@
             document.getElementById('swipeCount').textContent = `${currentIndex + 1} / ${quizItems.length}`;
             document.getElementById('swipeProgress').style.width = `${(currentIndex / quizItems.length) * 100}%`;
 
-            // Reset indicators
             document.querySelectorAll('.indicator').forEach(ind => ind.style.opacity = '0');
         }
 
         function setupSwipeGestures() {
             const card = document.getElementById('swipeCard');
-            const area = document.getElementById('swipeArea');
 
-            // Show answer on tap
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
                 if (!isDragging) {
                     card.classList.toggle('show-answer');
                 }
             });
 
-            // Touch events
             card.addEventListener('touchstart', handleTouchStart, {passive: true});
             card.addEventListener('touchmove', handleTouchMove, {passive: false});
             card.addEventListener('touchend', handleTouchEnd);
 
-            // Mouse events for desktop
             card.addEventListener('mousedown', handleMouseDown);
             document.addEventListener('mousemove', handleMouseMove);
             document.addEventListener('mouseup', handleMouseUp);
@@ -1042,7 +1201,6 @@
             const rotation = diff * 0.1;
             card.style.transform = `translateX(${diff}px) rotate(${rotation}deg)`;
 
-            // Show indicators
             const knowInd = document.querySelector('.indicator.know');
             const dontKnowInd = document.querySelector('.indicator.dont-know');
 
@@ -1063,10 +1221,7 @@
             const card = document.getElementById('swipeCard');
 
             if (Math.abs(diff) > 100) {
-                // Swipe completed
-                const direction = diff > 0 ? 'right' : 'left';
-
-                if (direction === 'right') {
+                if (diff > 0) {
                     correctCount++;
                     card.style.transform = 'translateX(500px) rotate(30deg)';
                 } else {
@@ -1082,7 +1237,6 @@
                     renderSwipeCard();
                 }, 300);
             } else {
-                // Return to center
                 card.style.transform = 'translateX(0) rotate(0deg)';
                 document.querySelectorAll('.indicator').forEach(ind => ind.style.opacity = '0');
             }
@@ -1110,20 +1264,16 @@
 
             const item = quizItems[currentIndex];
             document.getElementById('quizChar').textContent = item.char;
-            document.getElementById('quizCount').textContent = `${currentIndex + 1} / ${quizItems.length}`;
             document.getElementById('correctCount').textContent = correctCount;
             document.getElementById('wrongCount').textContent = wrongCount;
 
-            // Generate options
             const allReadings = [...new Set([...HIRAGANA, ...KATAKANA].map(k => k.reading))];
             const wrongOptions = shuffleArray(allReadings.filter(r => r !== item.reading)).slice(0, 3);
             const options = shuffleArray([item.reading, ...wrongOptions]);
 
-            const optionsHtml = options.map(opt => `
+            document.getElementById('quizOptions').innerHTML = options.map(opt => `
                 <button class="quiz-option" onclick="checkAnswer('${opt}', '${item.reading}')">${opt}</button>
             `).join('');
-
-            document.getElementById('quizOptions').innerHTML = optionsHtml;
         }
 
         function checkAnswer(selected, correct) {
@@ -1173,13 +1323,10 @@
             const item = quizItems[currentIndex];
             document.getElementById('grammarSentence').innerHTML = item.sentence.replace('___', '<span class="grammar-blank"></span>');
             document.getElementById('grammarTranslation').textContent = item.translation;
-            document.getElementById('grammarCount').textContent = `${currentIndex + 1} / ${quizItems.length}`;
 
-            const optionsHtml = item.options.map(opt => `
+            document.getElementById('grammarOptions').innerHTML = item.options.map(opt => `
                 <button class="grammar-option" onclick="checkGrammar('${opt}', '${item.answer}')">${opt}</button>
             `).join('');
-
-            document.getElementById('grammarOptions').innerHTML = optionsHtml;
         }
 
         function checkGrammar(selected, correct) {
@@ -1193,7 +1340,6 @@
                 }
             });
 
-            // Fill in the blank
             document.querySelector('.grammar-blank').textContent = correct;
 
             if (selected === correct) {
@@ -1212,10 +1358,7 @@
 
         // ==================== RESULTS ====================
         function showResults() {
-            // Hide all modes
-            document.querySelectorAll('.alphabet-container, .swipe-container, .quiz-container, .grammar-container')
-                .forEach(el => el.classList.remove('active'));
-
+            hideAllModes();
             document.getElementById('resultsMode').classList.add('active');
 
             const total = quizItems.length;
