@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TeleLingo Premium Web</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- ПОДКЛЮЧАЕМ БИБЛИОТЕКУ КОНФЕТТИ ДЛЯ АНИМАЦИЙ! -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; overflow: hidden; }
@@ -20,9 +19,10 @@
         .tab-btn { flex: 1; padding: 10px; text-align: center; font-weight: bold; cursor: pointer; transition: 0.3s; color: #94a3b8; }
         .main-tabs .tab-btn { border-radius: 10px; }
         .main-tabs .tab-btn.active { background: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.4); }
-        .sub-tabs .tab-btn { font-size: 14px; padding: 8px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .sub-tabs .tab-btn { font-size: 13px; padding: 8px 5px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
         .sub-tabs .tab-btn.active { color: white; border-bottom: 2px solid #10b981; }
         .alphabet-container { width: 100%; max-width: 360px; overflow-y: auto; padding-bottom: 40px; display: flex; flex-direction: column; gap: 20px; scrollbar-width: none; }
+        
         .row-group { background: rgba(255,255,255,0.05); border-radius: 20px; padding: 15px; animation: slideUp 0.4s ease-out;}
         .row-title { font-size: 16px; font-weight: bold; color: #cbd5e1; margin-bottom: 15px; margin-left: 5px; border-left: 3px solid #10b981; padding-left: 10px;}
         .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
@@ -30,6 +30,10 @@
         .kana-cell:active { transform: scale(0.9); background: #e2e8f0; }
         .kana-char { font-size: 26px; font-weight: 900; margin-bottom: 2px; }
         .kana-romaji { font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase; }
+
+        .test-menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 350px; }
+        .test-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 20px 10px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .test-btn:active { transform: scale(0.95); background: rgba(255,255,255,0.2); }
 
         /* Всплывающее окно (Модалка) */
         #modal-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; }
@@ -73,12 +77,9 @@
         .spin-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 20px 60px; border-radius: 30px; font-size: 26px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 25px rgba(245,158,11,0.5); transition: 0.2s;}
         .spin-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #b45309; }
 
-        /* === СВАЙПЫ (ИСПРАВЛЕНО) === */
+        /* === СВАЙПЫ === */
         #swipe-mode { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        
-        /* ПУЛЬСИРУЮЩАЯ ПОДСКАЗКА НАД КАРТОЧКАМИ */
         .swipe-hint-top { font-size: 18px; font-weight: bold; color: #fcd34d; margin-bottom: 20px; animation: pulseHint 2s infinite; text-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 10; }
-        
         .card-stack { position: relative; width: 300px; height: 400px; perspective: 1000px; }
         .swipe-card { position: absolute; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; transform-style: preserve-3d; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: grab; user-select: none; }
         .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 30px; padding: 20px; box-sizing: border-box; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
@@ -95,7 +96,6 @@
         #parallax-bg { position: absolute; top: -5%; left: -5%; width: 110%; height: 110%; background-image: url('https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1200&auto=format&fit=crop'); background-size: cover; background-position: center; z-index: -2; filter: brightness(0.7) contrast(1.1); }
         .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%); z-index: -1; }
         
-        /* Анимации */
         @keyframes float { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-25px);} }
         @keyframes popIn { 0% {transform: scale(0.8); opacity: 0;} 100% {transform: scale(1); opacity: 1;} }
         @keyframes slideUp { 0% {transform: translateY(30px); opacity: 0;} 100% {transform: translateY(0); opacity: 1;} }
@@ -117,6 +117,7 @@
         <div class="sub-tabs">
             <div class="tab-btn active" id="sub-groups" onclick="switchSubTab('groups')">По группам</div>
             <div class="tab-btn" id="sub-all" onclick="switchSubTab('all')">Все символы</div>
+            <div class="tab-btn" id="sub-tests" onclick="switchSubTab('tests')">🎯 ТЕСТЫ</div>
         </div>
         <div class="alphabet-container" id="alphabet-container"></div>
     </div>
@@ -126,7 +127,7 @@
         <div class="modal-card">
             <div class="modal-close" onclick="closeModal()">✕</div>
             <div class="modal-symbol" id="mod-sym">あ</div>
-            <img class="modal-gif" id="mod-gif" src="" alt="gif">
+            <img class="modal-gif" id="mod-gif" src="" alt="Ожидание GIF...">
             <div class="modal-romaji" id="mod-rom">a</div>
             <div class="modal-hint" id="mod-hint">Буква А с завитком</div>
             <div class="modal-actions">
@@ -141,7 +142,7 @@
 
     <!-- СВАЙПЫ -->
     <div id="swipe-mode" class="hidden">
-        <div class="swipe-hint-top">Нажми, чтобы узнать перевод 👆</div>
+        <div class="swipe-hint-top">Нажми для перевода 👆</div>
         <div class="card-stack" id="card-stack"></div>
     </div>
 
@@ -200,10 +201,12 @@
         let currentIndex = 0, score = 0;
         let currentModalChar = "", currentModalRomaji = "";
 
+        // Прямое и надежное воспроизведение звука
         function playAudio(text) {
             if (!text) return;
             const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=ja&client=tw-ob`;
-            new Audio(url).play().catch(e => console.log(e));
+            const a = new Audio(url);
+            a.play().catch(e => console.log("Audio play blocked", e));
         }
 
         function generateQuestions(mode, azbuka, group) {
@@ -220,10 +223,8 @@
                         targetGroups.forEach(g => g.i.forEach(i => allRomaji.push(i.r)));
                         let opts = shuffle(allRomaji.filter(r => r !== correct)).slice(0, 3);
                         opts.push(correct);
-                        return { t: "word", q: item.k, a: shuffle(opts), c: shuffle(opts).indexOf(correct) }; // FIX: правильный индекс
+                        return { t: "word", q: item.k, a: shuffle(opts), c: shuffle(opts).indexOf(correct) }; 
                     });
-                    
-                    // Жесткая фиксация правильного индекса для Азбуки
                     items.forEach(i => { i.c = i.a.indexOf(targetGroup.i.find(x => x.k === i.q).r) });
                     items = shuffle(items);
                 }
@@ -272,7 +273,7 @@
         };
 
         // ==========================================
-        // РЕЖИМ 1: УМНАЯ АЗБУКА 
+        // РЕЖИМ 1: УМНАЯ АЗБУКА
         // ==========================================
         let currentAlphaType = 'hira';
         let currentViewMode = 'groups'; 
@@ -295,6 +296,7 @@
             currentViewMode = viewMode;
             document.getElementById('sub-all').classList.remove('active');
             document.getElementById('sub-groups').classList.remove('active');
+            document.getElementById('sub-tests').classList.remove('active');
             document.getElementById(`sub-${viewMode}`).classList.add('active');
             renderKana();
         }
@@ -309,7 +311,7 @@
                 grid.className = 'kana-grid';
                 groups.forEach(group => { group.i.forEach(item => { grid.appendChild(createKanaCell(item)); }); });
                 container.appendChild(grid);
-            } else {
+            } else if (currentViewMode === 'groups') {
                 groups.forEach(group => {
                     const rowBlock = document.createElement('div');
                     rowBlock.className = 'row-group';
@@ -324,6 +326,23 @@
                     rowBlock.appendChild(grid);
                     container.appendChild(rowBlock);
                 });
+            } else {
+                const testGrid = document.createElement('div');
+                testGrid.className = 'test-menu-grid';
+                groups.forEach(group => {
+                    const btn = document.createElement('button');
+                    btn.className = 'test-btn';
+                    btn.innerText = `Тест: ${group.t}`;
+                    btn.onclick = () => {
+                        try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
+                        appData.mode = "alphatest";
+                        appData.items = generateQuestions("alphatest", currentAlphaType, group.id);
+                        document.getElementById('alphabet-mode').classList.add('hidden');
+                        initQuizMode();
+                    };
+                    testGrid.appendChild(btn);
+                });
+                container.appendChild(testGrid);
             }
         }
 
@@ -347,23 +366,36 @@
             document.getElementById('mod-sym').style.display = "block";
             document.getElementById('mod-gif').style.display = "none";
             document.getElementById('modal-overlay').classList.add('active');
-            playAudio(char); 
         }
 
         function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
-        function playModalAudio() { playAudio(currentModalChar); try { tg.HapticFeedback.impactOccurred("light"); } catch(e){} }
+        
+        function playModalAudio() { 
+            try { tg.HapticFeedback.impactOccurred("light"); } catch(e){}
+            playAudio(currentModalChar); 
+        }
 
         function toggleGif() {
             try { tg.HapticFeedback.impactOccurred("medium"); } catch(e){}
             const sym = document.getElementById('mod-sym');
             const gif = document.getElementById('mod-gif');
+            
             if (gif.style.display === "none") {
                 sym.style.display = "none";
                 gif.style.display = "block";
+                
                 let prefix = currentAlphaType === 'hira' ? 'Hiragana' : 'Katakana';
                 let r = currentModalRomaji.toLowerCase();
                 if (r === 'shi') r = 'si'; if (r === 'chi') r = 'ti'; if (r === 'tsu') r = 'tu'; if (r === 'fu') r = 'hu';
-                gif.src = `https://commons.wikimedia.org/wiki/Special:FilePath/${prefix}_${r}_stroke_order_animation.gif`;
+                
+                // Исправленные ссылки на Википедию
+                let gifUrl = `https://upload.wikimedia.org/wikipedia/commons/1/1b/${prefix}_${r}_stroke_order_animation.gif`;
+                gif.src = gifUrl;
+                
+                // Если картинка не найдена по первому варианту, пробуем второй вариант
+                gif.onerror = function() {
+                    gif.src = `https://upload.wikimedia.org/wikipedia/commons/e/ec/${prefix}_letter_${r}_stroke_order_animation.gif`;
+                }
             } else {
                 sym.style.display = "block";
                 gif.style.display = "none";
@@ -407,9 +439,7 @@
         }
         
         function showResults() {
-            // Фейерверк при завершении!
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            
             document.querySelectorAll('.hidden').forEach(el => el.classList.add('hidden'));
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('result-desc').innerText = `Счет: ${score} из ${appData.items.length}`;
@@ -431,11 +461,8 @@
             const item = appData.items[currentIndex];
             document.getElementById('progress-bar').style.width = ((currentIndex / appData.items.length) * 100) + "%";
             
-            // Анимация вылета карточки
             const qCard = document.getElementById('q-card');
-            qCard.style.animation = 'none';
-            qCard.offsetHeight; // триггер рефлоу
-            qCard.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            qCard.style.animation = 'none'; qCard.offsetHeight; qCard.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             
             if (item.t === "grammar") {
                 document.getElementById('symbol-display').innerHTML = item.q.replace("___", `<span class="blank-slot" id="grammar-blank"></span>`);
@@ -479,41 +506,25 @@
         }
         
         function flipCard(card, event) {
-            // Если это был свайп (мышкой водили), не переворачиваем!
             if (event && event.type === "click" && card.dataset.dragging === "true") return;
-            
             if (card.style.transform.includes('rotateY(180deg)')) card.style.transform = 'rotateY(0deg)';
             else { card.style.transform = 'rotateY(180deg)'; try { tg.HapticFeedback.impactOccurred("light"); } catch(e){} }
         }
         
         function setupCardPhysics(card) {
             let startX = 0, currentX = 0, isDragging = false;
-            
-            const onStart = (e) => { 
-                isDragging = true; 
-                card.dataset.dragging = "false"; // Сбрасываем флаг драга
-                startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; 
-                card.style.transition = 'none'; 
-            };
+            const onStart = (e) => { isDragging = true; card.dataset.dragging = "false"; startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX; card.style.transition = 'none'; };
             const onMove = (e) => { 
                 if (!isDragging) return; 
                 currentX = (e.type.includes('mouse') ? e.pageX : e.touches[0].pageX) - startX; 
-                
-                // Если мы сдвинули больше чем на 15 пикселей, считаем это свайпом, а не кликом
-                if (Math.abs(currentX) > 15) {
-                    card.dataset.dragging = "true";
-                }
-                
+                if (Math.abs(currentX) > 20) card.dataset.dragging = "true";
                 const isFlipped = card.style.transform.includes('rotateY'); 
                 card.style.transform = `translate(${currentX}px, ${Math.abs(currentX)*0.1}px) rotate(${currentX*0.1}deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; 
             };
             const onEnd = () => {
                 isDragging = false; card.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                 if (currentX > 100) swipeCard('right'); else if (currentX < -100) swipeCard('left');
-                else { 
-                    const isFlipped = card.style.transform.includes('rotateY'); 
-                    card.style.transform = `translate(0px, 0px) rotate(0deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; 
-                }
+                else { const isFlipped = card.style.transform.includes('rotateY'); card.style.transform = `translate(0px, 0px) rotate(0deg) ${isFlipped ? 'rotateY(180deg)' : ''}`; }
             };
             card.addEventListener('mousedown', onStart); document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onEnd);
             card.addEventListener('touchstart', onStart, {passive: true}); document.addEventListener('touchmove', onMove, {passive: true}); document.addEventListener('touchend', onEnd);
