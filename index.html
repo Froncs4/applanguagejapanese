@@ -919,6 +919,8 @@
         .modal-gif img {
             max-width: 150px;
             border-radius: 12px;
+            background: white; /* Чтобы черные линии было видно */
+            padding: 5px;
         }
 
         .modal-buttons {
@@ -1928,7 +1930,6 @@
         // ==================== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====================
         async function fetchUserFromServer() {
             try {
-                // ДОБАВЛЕН ЗАГОЛОВОК ngrok-skip-browser-warning
                 const response = await fetch(`${API_BASE}/api/user`, {
                     headers: { 
                         'X-Telegram-Init-Data': tg.initData || `user_id=12345`,
@@ -2055,9 +2056,20 @@
         }
 
         function setAvatar() {
-            const name = user.name;
-            const initial = name.charAt(0).toUpperCase();
-            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=128`;
+            // === ИСПОЛЬЗУЕМ АВАТАР ИЗ ТЕЛЕГРАММА ===
+            const tgUser = tg.initDataUnsafe?.user;
+            let avatarUrl = '';
+            
+            if (tgUser && tgUser.photo_url) {
+                // Если Telegram отдал фото профиля
+                avatarUrl = tgUser.photo_url;
+            } else {
+                // Если фото скрыто приватностью, берем инициалы
+                const name = user.name || 'Пользователь';
+                const initial = name.charAt(0).toUpperCase();
+                avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=128`;
+            }
+
             document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('userAvatar').textContent = '';
             document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
@@ -2174,6 +2186,7 @@
                 const rank = index + 1;
                 const name = p.name || 'Ученик';
                 const initial = name.charAt(0).toUpperCase();
+                // В лидерборде оставляем инициалы, так как грузить 20 аватарок из тг слишком тяжело
                 const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
                 html += `
                     <div class="leaderboard-item">
@@ -2280,7 +2293,7 @@
             if (data.length) openModal(data[0], 'kanji');
         }
 
-        // ==================== МОДАЛЬНОЕ ОКНО ====================
+        // ==================== МОДАЛЬНОЕ ОКНО И GIF ====================
         function openModal(item, type = 'kana') {
             modalData = item;
             document.getElementById('modalChar').textContent = item.char || item.word || '';
@@ -2332,32 +2345,53 @@
             }
         }
 
+        // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ GIF ===
         function showGif() {
             if (!modalData) return;
             const char = modalData.char || modalData.word;
             const container = document.getElementById('modalGif');
+            
+            // Если это слово (больше 1 символа), отключаем GIF
+            if (char.length > 1) {
+                container.innerHTML = '<span style="color:#f87171; font-size: 14px;">Анимация доступна только для 1 символа</span>';
+                container.classList.add('show');
+                return;
+            }
+
             container.innerHTML = '<span style="color:#999">Загрузка...</span>';
             container.classList.add('show');
-            const hex = char.charCodeAt(0).toString(16).padStart(5, '0');
+            
+            const hex4 = char.charCodeAt(0).toString(16).toLowerCase();
+            const hex5 = hex4.padStart(5, '0'); // Для Кандзи иногда нужен 5-значный код
+            
             const urls = [
-                `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex}.gif`,
-                `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex}.gif`,
-                `https://raw.githubusercontent.com/parsimonhi/animCJK/master/kanji/${hex}.gif`,
-                `https://raw.githubusercontent.com/alkuzad/kanji-images/master/kanji/${hex}.gif`,
-                `https://raw.githubusercontent.com/abeyuya/stroke-order/master/public/characters/${char}.gif`,
-                `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex}.gif`
+                `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex5}.gif`,
+                `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex4}.gif`,
+                `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex4}.gif`
             ];
+
+            // Для Азбуки добавляем прямые ссылки из Wikipedia по чтению (самый надежный источник)
+            if (modalData.reading) {
+                let r = modalData.reading.split(' ')[0].toLowerCase();
+                r = r.replace('shi','si').replace('chi','ti').replace('tsu','tu').replace('fu','hu');
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_${r}_stroke_order_animation.gif`);
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_${r}_stroke_order_animation.gif`);
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_letter_${r}_stroke_order_animation.gif`);
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_letter_${r}_stroke_order_animation.gif`);
+            }
+
             let loaded = false;
             function tryLoad(i) {
                 if (i >= urls.length || loaded) {
-                    if (!loaded) container.innerHTML = '<span style="color:#f87171">Недоступно</span>';
+                    if (!loaded) container.innerHTML = '<span style="color:#f87171">Анимация не найдена</span>';
                     return;
                 }
                 const img = new Image();
                 img.onload = () => {
                     if (!loaded) {
                         loaded = true;
-                        container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px">`;
+                        // Белый фон чтобы черные линии было видно при черной теме телефона
+                        container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px; background:white; padding:5px;">`;
                     }
                 };
                 img.onerror = () => tryLoad(i + 1);
