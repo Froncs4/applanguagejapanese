@@ -1713,19 +1713,38 @@
         }
 
 async function fetchLeaderboard() {
+    const container = document.getElementById('leaderboardList');
+    if (!container) return;
+    
+    // Показываем загрузку
+    container.innerHTML = '<div style="text-align: center; padding: 30px;">Загрузка...</div>';
+    
     try {
         const response = await fetch(`${API_BASE}/api/leaderboard`, {
+            method: 'GET',
             headers: {
                 'X-Telegram-Init-Data': tg.initData
             }
         });
-        if (!response.ok) throw new Error('Ошибка');
-        const data = await response.json();
-        if (data.success) {
-            renderLeaderboard(data.players);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status}`);
         }
-    } catch (e) {
-        console.error(e);
+        
+        const data = await response.json();
+        
+        if (data.success && Array.isArray(data.players)) {
+            if (data.players.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 30px;">Рейтинг пока пуст</div>';
+            } else {
+                renderLeaderboard(data.players);
+            }
+        } else {
+            container.innerHTML = '<div style="text-align: center; padding: 30px;">Нет данных</div>';
+        }
+    } catch (error) {
+        console.error('Leaderboard fetch error:', error);
+        container.innerHTML = '<div style="text-align: center; padding: 30px;">Ошибка загрузки</div>';
     }
 }
 
@@ -2407,4 +2426,5 @@ async function fetchLeaderboard() {
     </script>
 </body>
 </html>
+
 
