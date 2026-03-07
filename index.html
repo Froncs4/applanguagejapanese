@@ -40,6 +40,17 @@
             padding-bottom: 80px;
         }
 
+        /* GIF Фон */
+        .app-bg-layer {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2; background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 0.5s ease, background-image 0.5s ease;
+        }
+        .app-bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; background: var(--bg); opacity: 0.85;
+        }
+
         .japanese {
             font-family: 'Noto Sans JP', sans-serif;
         }
@@ -654,6 +665,11 @@
 
         .achievement {
             text-align: center;
+            cursor: pointer;
+        }
+        
+        .achievement:active {
+            transform: scale(0.9);
         }
 
         .achievement-icon {
@@ -845,6 +861,12 @@
             left: 23px;
         }
 
+        /* Темы */
+        .bg-picker { display: flex; gap: 10px; overflow-x: auto; padding: 10px 16px; margin: 0 -16px; scrollbar-width: none;}
+        .bg-picker::-webkit-scrollbar { display: none; }
+        .bg-option { width: 80px; height: 120px; border-radius: 12px; border: 3px solid transparent; background-size: cover; background-position: center; flex-shrink: 0; cursor: pointer; transition: 0.2s;}
+        .bg-option.active { border-color: var(--primary); transform: scale(1.05); }
+
         /* ========== MODAL ========== */
         .modal {
             position: fixed;
@@ -873,12 +895,19 @@
             max-width: 320px;
             width: 100%;
             animation: modalIn 0.25s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         @keyframes modalIn {
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
+
+        .modal-counter { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: var(--text-hint); display: none;}
+        
+        @keyframes slideHint { 0% { transform: translateX(0); } 50% { transform: translateX(5px); } 100% { transform: translateX(0); } }
+        .modal-swipe-hint { position: absolute; top: 15px; right: 15px; font-size: 18px; opacity: 0.5; display: none; animation: slideHint 2s infinite;}
 
         .modal-char {
             font-size: 80px;
@@ -1502,6 +1531,9 @@
     </style>
 </head>
 <body>
+    <div class="app-bg-layer" id="appBgLayer"></div>
+    <div class="app-bg-overlay"></div>
+
     <!-- Loading -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
@@ -1708,6 +1740,16 @@
         </div>
         <div class="settings-content">
             <div class="settings-group">
+                <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
+                    <div class="settings-left">
+                        <span class="settings-icon">🎨</span>
+                        <span class="settings-label">Тема оформления (Фон)</span>
+                    </div>
+                </div>
+                <div class="bg-picker" id="bgPicker"></div>
+            </div>
+            
+            <div class="settings-group">
                 <div class="settings-item" onclick="toggleSetting('sound')">
                     <div class="settings-left">
                         <span class="settings-icon">🔊</span>
@@ -1742,9 +1784,12 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal (теперь с поддержкой свайпов в изучении) -->
     <div class="modal" id="modal">
-        <div class="modal-box">
+        <div class="modal-box" id="modalBox">
+            <div class="modal-counter" id="modalCounter" style="display:none; position:absolute; top:15px; left:15px; background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:12px; color:var(--text-hint);">1/10</div>
+            <div class="modal-swipe-hint" id="modalSwipeHint" style="display:none; position:absolute; top:15px; right:15px; font-size:18px; opacity:0.5;">↔️</div>
+            
             <div class="modal-char japanese" id="modalChar">あ</div>
             <div class="modal-reading" id="modalReading">a</div>
             <div class="modal-meaning" id="modalMeaning"></div>
@@ -1754,7 +1799,7 @@
             </div>
             <div class="modal-buttons">
                 <button class="modal-btn sound" onclick="playSound()">🔊</button>
-                <button class="modal-btn stroke" onclick="showGif()">✍️</button>
+                <button class="modal-btn stroke" id="modalStrokeBtn" onclick="showGif()">✍️</button>
                 <button class="modal-btn close" onclick="closeModal()">✕</button>
             </div>
         </div>
@@ -1863,25 +1908,13 @@
         tg.expand();
         tg.ready();
 
-        // ==================== ВАЖНО: АДРЕС NGROK ====================
-        // Т.к. твой index.html лежит на GitHub, ему нужно знать, куда отправлять запросы
-        // Вставь сюда свой ngrok URL, например: 'https://e6b7-84-245-12-1.ngrok-free.app'
-        const API_BASE = 'https://endless-max-jowly.ngrok-free.dev';
-        
-        console.log('Current API_BASE:', API_BASE);
+        const API_BASE = 'https://endless-max-jowly.ngrok-free.dev'; // Замените на ваш актуальный ngrok
 
         // ==================== СОСТОЯНИЕ ====================
         let user = {
-            id: null,
-            name: 'Пользователь',
-            xp: 0,
-            streak: 0,
-            cardsLearned: 0,
-            settings: { sound: true, vibration: true },
-            lastDaily: null,
-            perfectTests: 0,
-            quests: {},
-            questsDate: null
+            id: null, name: 'Пользователь', xp: 0, streak: 0, cardsLearned: 0,
+            settings: { sound: true, vibration: true, bg: 'default' },
+            lastDaily: null, perfectTests: 0, quests: {}, questsDate: null
         };
 
         let currentScreen = 'home';
@@ -1891,18 +1924,65 @@
 
         let quiz = { items: [], index: 0, correct: 0, wrong: 0, type: 'mixed' };
         let swipe = { items: [], index: 0, correct: 0, wrong: 0 };
+        
+        let currentStudyList = [];
+        let currentStudyIndex = 0;
 
-        // ==================== КОНСТАНТЫ ====================
-        const ACHIEVEMENTS = [
-            {id: 'first', name: 'Первый шаг', icon: '👶', check: u => u.cardsLearned >= 1},
-            {id: 'streak3', name: 'Огонёк', icon: '🔥', check: u => u.streak >= 3},
-            {id: 'streak7', name: 'Пламя', icon: '🔥', check: u => u.streak >= 7},
-            {id: 'cards50', name: 'Полиглот', icon: '📚', check: u => u.cardsLearned >= 50},
-            {id: 'cards100', name: 'Мастер', icon: '🎓', check: u => u.cardsLearned >= 100},
-            {id: 'xp1000', name: 'Тысячник', icon: '⭐', check: u => u.xp >= 1000},
-            {id: 'xp5000', name: 'Звезда', icon: '🌟', check: u => u.xp >= 5000},
-            {id: 'perfect', name: 'Идеально', icon: '💯', check: u => u.perfectTests >= 1}
+        // ==================== ТЕМЫ ФОНОВ ====================
+        const BACKGROUNDS = [
+            { id: 'default', name: 'Тёмный', url: '' },
+            { id: 'sakura', name: 'Сакура', url: 'https://i.pinimg.com/originals/3f/8a/be/3f8abeb43aeb6850d5e54d68246a48be.gif' },
+            { id: 'tokyo', name: 'Токио', url: 'https://i.pinimg.com/originals/a0/ba/01/a0ba0175b22b6dfcb77cc7283626156e.gif' },
+            { id: 'rain', name: 'Дождь', url: 'https://i.pinimg.com/originals/c8/f5/63/c8f5630d71a17960fc060fb4d015c717.gif' },
+            { id: 'fuji', name: 'Фудзи', url: 'https://i.pinimg.com/originals/e8/30/1f/e8301f251d184ebdb81a95e263309aab.gif' },
+            { id: 'lofi', name: 'Комната', url: 'https://i.pinimg.com/originals/bb/65/59/bb6559d3e58b871cffbd5eb2e00b52a4.gif' }
         ];
+
+        function applyBackground(bgId) {
+            const bgLayer = document.getElementById('appBgLayer');
+            const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
+            if (bg.url) {
+                bgLayer.style.backgroundImage = `url('${bg.url}')`;
+                bgLayer.style.opacity = '0.25'; 
+            } else {
+                bgLayer.style.opacity = '0';
+            }
+            if (user.settings) user.settings.bg = bgId;
+            saveUser();
+            renderBgPicker();
+        }
+
+        function renderBgPicker() {
+            const picker = document.getElementById('bgPicker');
+            if(!picker) return;
+            picker.innerHTML = BACKGROUNDS.map(bg => `
+                <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
+                     style="background-image: url('${bg.url || 'https://via.placeholder.com/80x120/1a1a2e/ffffff?text=Тёмный'}');"
+                     onclick="applyBackground('${bg.id}'); haptic('light');">
+                </div>
+            `).join('');
+        }
+
+        // ==================== 50+ ДОСТИЖЕНИЙ ====================
+        const ACHIEVEMENTS = [];
+        
+        // Опыт
+        const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
+        const xpNames = ["Первый шаг", "Ученик", "Искатель", "Странник", "Кохай", "Сэмпай", "Мечник", "Самурай", "Ронин", "Мастер", "Сенсей", "Шихан", "Даймё", "Сёгун", "Ками"];
+        xpMilestones.forEach((xp, i) => ACHIEVEMENTS.push({ id: `xp_${i}`, name: xpNames[i], icon: '🌟', desc: `Набери ${xp} XP.`, check: u => u.xp >= xp }));
+
+        // Серия дней
+        const strMilestones = [3, 7, 10, 14, 21, 30, 50, 60, 90, 100, 150, 180, 200, 250, 300, 365, 500];
+        strMilestones.forEach(d => ACHIEVEMENTS.push({ id: `str_${d}`, name: `${d} Дней`, icon: '🔥', desc: `Поддерживай серию ${d} дней.`, check: u => u.streak >= d }));
+
+        // Карточки
+        const cardMilestones = [10, 20, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000];
+        cardMilestones.forEach(c => ACHIEVEMENTS.push({ id: `crd_${c}`, name: `Словарь ${c}`, icon: '📚', desc: `Изучи ${c} карточек.`, check: u => u.cardsLearned >= c }));
+
+        // Идеальные тесты
+        const testMilestones = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250];
+        testMilestones.forEach(t => ACHIEVEMENTS.push({ id: `pt_${t}`, name: `Снайпер ${t}`, icon: '🎯', desc: `Пройди ${t} тестов без ошибок.`, check: u => (u.perfectTests || 0) >= t }));
+
 
         const DAILY_QUESTS = [
             {id: 'cards10', name: 'Изучить 10 карточек', target: 10, xp: 30, icon: '📚'},
@@ -1911,14 +1991,9 @@
         ];
 
         const WHEEL_PRIZES = [
-            {value: 10, color: '#e74c3c'},
-            {value: 25, color: '#9b59b6'},
-            {value: 50, color: '#3498db'},
-            {value: 100, color: '#2ecc71'},
-            {value: 15, color: '#e67e22'},
-            {value: 75, color: '#1abc9c'},
-            {value: 30, color: '#f39c12'},
-            {value: 150, color: '#e91e63'}
+            {value: 10, color: '#e74c3c'}, {value: 25, color: '#9b59b6'}, {value: 50, color: '#3498db'},
+            {value: 100, color: '#2ecc71'}, {value: 15, color: '#e67e22'}, {value: 75, color: '#1abc9c'},
+            {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
         // ==================== ФУНКЦИИ ОТПРАВКИ ====================
@@ -1963,16 +2038,10 @@
             try {
                 const response = await fetch(`${API_BASE}/api/leaderboard`, {
                     method: 'GET',
-                    headers: {
-                        'X-Telegram-Init-Data': tg.initData,
-                        'ngrok-skip-browser-warning': 'true'
-                    }
+                    headers: { 'X-Telegram-Init-Data': tg.initData, 'ngrok-skip-browser-warning': 'true' }
                 });
                 
-                if (!response.ok) {
-                    throw new Error(`HTTP ошибка ${response.status}`);
-                }
-                
+                if (!response.ok) throw new Error(`HTTP ошибка ${response.status}`);
                 const data = await response.json();
                 
                 if (data.success && Array.isArray(data.players)) {
@@ -1993,10 +2062,7 @@
         async function fetchUserStats() {
             try {
                 const response = await fetch(`${API_BASE}/api/user/stats`, {
-                    headers: { 
-                        'X-Telegram-Init-Data': tg.initData,
-                        'ngrok-skip-browser-warning': 'true'
-                    }
+                    headers: { 'X-Telegram-Init-Data': tg.initData, 'ngrok-skip-browser-warning': 'true' }
                 });
                 if (!response.ok) throw new Error('Failed to fetch stats');
                 const data = await response.json();
@@ -2014,12 +2080,9 @@
 
             const byType = stats.by_type || {};
             const sections = [
-                { id: 'hiragana', name: 'Хирагана', total: 46 },
-                { id: 'katakana', name: 'Катакана', total: 46 },
-                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 },
-                { id: 'words_n5', name: 'Слова N5', total: 40 },
-                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 },
-                { id: 'words_n4', name: 'Слова N4', total: 16 }
+                { id: 'hiragana', name: 'Хирагана', total: 46 }, { id: 'katakana', name: 'Катакана', total: 46 },
+                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 }, { id: 'words_n5', name: 'Слова N5', total: 40 },
+                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 }, { id: 'words_n4', name: 'Слова N4', total: 16 }
             ];
             let progressHtml = '';
             sections.forEach(sec => {
@@ -2044,6 +2107,7 @@
             if (saved) {
                 const data = JSON.parse(saved);
                 user = {...user, ...data};
+                if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default' };
             }
             if (tg.initDataUnsafe?.user) {
                 user.name = tg.initDataUnsafe.user.first_name || 'Пользователь';
@@ -2056,20 +2120,15 @@
         }
 
         function setAvatar() {
-            // === ИСПОЛЬЗУЕМ АВАТАР ИЗ ТЕЛЕГРАММА ===
             const tgUser = tg.initDataUnsafe?.user;
             let avatarUrl = '';
-            
             if (tgUser && tgUser.photo_url) {
-                // Если Telegram отдал фото профиля
                 avatarUrl = tgUser.photo_url;
             } else {
-                // Если фото скрыто приватностью, берем инициалы
                 const name = user.name || 'Пользователь';
                 const initial = name.charAt(0).toUpperCase();
                 avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=128`;
             }
-
             document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('userAvatar').textContent = '';
             document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
@@ -2093,23 +2152,18 @@
                     const data = await response.json();
                     if (data.success) {
                         user.name = trimmed;
-                        saveUser();
-                        updateUI();
-                        setAvatar();
+                        saveUser(); updateUI(); setAvatar();
                         alert('Имя изменено!');
-                    } else {
-                        alert('Ошибка при смене имени');
-                    }
-                } catch (e) {
-                    console.error(e);
-                    alert('Ошибка соединения с сервером');
-                }
+                    } else { alert('Ошибка при смене имени'); }
+                } catch (e) { console.error(e); alert('Ошибка соединения с сервером'); }
             }
         }
 
         async function init() {
             const serverOk = await fetchUserFromServer();
             if (!serverOk) loadUserFromStorage();
+            
+            applyBackground(user.settings.bg || 'default');
 
             const today = new Date().toDateString();
             if (!user.questsDate || user.questsDate !== today) {
@@ -2135,10 +2189,12 @@
             if (navBtn) navBtn.classList.add('active');
             document.getElementById(screen + 'Screen').classList.add('active');
             currentScreen = screen;
+            
             if (screen === 'alphabet') renderAlphabet();
             if (screen === 'study') renderStudy(param);
             if (screen === 'profile') renderProfile();
             if (screen === 'leaderboard') fetchLeaderboard();
+            if (screen === 'settings') renderBgPicker();
             haptic('light');
         }
 
@@ -2185,13 +2241,12 @@
             players.forEach((p, index) => {
                 const rank = index + 1;
                 const name = p.name || 'Ученик';
-                const initial = name.charAt(0).toUpperCase();
-                // В лидерборде оставляем инициалы, так как грузить 20 аватарок из тг слишком тяжело
-                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
+                // Аватарка теперь грузится через ваш бэкенд, добавляем timestamp чтобы обновлялась
+                const avatarUrl = `${API_BASE}/api/avatar/${p.id}?t=${Math.floor(Date.now() / 3600000)}`;
                 html += `
                     <div class="leaderboard-item">
                         <div class="leaderboard-rank">#${rank}</div>
-                        <div class="leaderboard-avatar" style="background-image: url(${avatarUrl}); background-size: cover;"></div>
+                        <div class="leaderboard-avatar" style="background-image: url('${avatarUrl}'); background-size: cover;"></div>
                         <div class="leaderboard-info">
                             <div class="leaderboard-name">${name}</div>
                             <div class="leaderboard-details">
@@ -2252,14 +2307,14 @@
 
         function openKanaModal(index) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            openModal(rows.flatMap(r => r.chars)[index]);
+            openModal(rows.flatMap(r => r.chars)[index], 'kana');
         }
         function openKanaModalFromRow(rowIndex, charIndex) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            openModal(rows[rowIndex].chars[charIndex]);
+            openModal(rows[rowIndex].chars[charIndex], 'kana');
         }
 
-        // ==================== УЧЁБА ====================
+        // ==================== УЧЁБА (СО СВАЙПАМИ) ====================
         function renderStudy(category = null) {
             if (typeof KANJI_N5 === 'undefined' || typeof KANJI_N4 === 'undefined' || typeof KANJI_N3 === 'undefined' || typeof WORDS_N5 === 'undefined') return;
             const categories = [
@@ -2290,26 +2345,112 @@
             else if (id === 'kanji_n4') data = KANJI_N4;
             else if (id === 'kanji_n3') data = KANJI_N3;
             else if (id === 'words_n5') data = WORDS_N5;
-            if (data.length) openModal(data[0], 'kanji');
+            
+            if (data.length) {
+                currentStudyList = data;
+                currentStudyIndex = 0;
+                openModal(currentStudyList[currentStudyIndex], 'study');
+            }
         }
 
-        // ==================== МОДАЛЬНОЕ ОКНО И GIF ====================
-        function openModal(item, type = 'kana') {
+        // ==================== МОДАЛЬНОЕ ОКНО И GIF (УМНЫЙ СВАЙП) ====================
+        function openModal(item, type = 'kana', swipeAnim = null) {
             modalData = item;
-            document.getElementById('modalChar').textContent = item.char || item.word || '';
-            document.getElementById('modalReading').textContent = item.reading || '';
-            document.getElementById('modalMeaning').textContent = item.meaning || '';
-            document.getElementById('modalMeaning').style.display = item.meaning ? 'block' : 'none';
-            document.getElementById('modalHint').textContent = item.hint || '';
-            document.getElementById('modalGif').classList.remove('show');
+            const charEl = document.getElementById('modalChar');
+            
+            // Анимация перед сменой контента
+            if (swipeAnim === 'left') {
+                charEl.style.transform = 'translateX(30px)';
+                charEl.style.opacity = '0';
+            } else if (swipeAnim === 'right') {
+                charEl.style.transform = 'translateX(-30px)';
+                charEl.style.opacity = '0';
+            }
+
+            setTimeout(() => {
+                const textVal = item.char || item.word || '';
+                charEl.textContent = textVal;
+                document.getElementById('modalReading').textContent = item.reading || '';
+                document.getElementById('modalMeaning').textContent = item.meaning || '';
+                document.getElementById('modalMeaning').style.display = item.meaning ? 'block' : 'none';
+                document.getElementById('modalHint').textContent = item.hint || '';
+                document.getElementById('modalGif').classList.remove('show');
+                
+                // Скрываем кнопку GIF для слов, так как она работает только на 1 символ
+                if (textVal.length > 1) {
+                    document.getElementById('modalStrokeBtn').style.display = 'none';
+                } else {
+                    document.getElementById('modalStrokeBtn').style.display = 'block';
+                }
+
+                // Логика счетчика и подсказки свайпа
+                if (type === 'study' && currentStudyList.length > 0) {
+                    document.getElementById('modalCounter').style.display = 'block';
+                    document.getElementById('modalSwipeHint').style.display = 'block';
+                    document.getElementById('modalCounter').textContent = `${currentStudyIndex + 1} / ${currentStudyList.length}`;
+                } else {
+                    document.getElementById('modalCounter').style.display = 'none';
+                    document.getElementById('modalSwipeHint').style.display = 'none';
+                }
+
+                // Возврат карточки на место
+                if (swipeAnim) {
+                    charEl.style.transform = 'translateX(0)';
+                    charEl.style.opacity = '1';
+                    charEl.style.transition = 'all 0.2s ease-out';
+                } else {
+                    charEl.style.transition = 'none';
+                    charEl.style.transform = 'none';
+                    charEl.style.opacity = '1';
+                }
+            }, swipeAnim ? 150 : 0);
+
             document.getElementById('modal').classList.add('show');
-            haptic('light');
+            if (!swipeAnim) haptic('light');
         }
 
         function closeModal() {
             document.getElementById('modal').classList.remove('show');
             modalData = null;
+            currentStudyList = []; // Очищаем список при закрытии
         }
+
+        // --- ЛОГИКА СВАЙПА (TOUCH EVENTS) ---
+        let touchStartX = 0;
+        const modalBox = document.getElementById('modalBox');
+        
+        modalBox.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        modalBox.addEventListener('touchend', e => {
+            if (!currentStudyList || currentStudyList.length === 0) return; // Свайпы работают только в списках
+            
+            let touchEndX = e.changedTouches[0].screenX;
+            let diff = touchStartX - touchEndX;
+
+            if (diff > 50) {
+                // Свайп влево -> Следующая карточка
+                if (currentStudyIndex < currentStudyList.length - 1) {
+                    currentStudyIndex++;
+                    openModal(currentStudyList[currentStudyIndex], 'study', 'left');
+                    haptic('light');
+                } else {
+                    haptic('error'); // Конец списка
+                }
+            } else if (diff < -50) {
+                // Свайп вправо -> Предыдущая карточка
+                if (currentStudyIndex > 0) {
+                    currentStudyIndex--;
+                    openModal(currentStudyList[currentStudyIndex], 'study', 'right');
+                    haptic('light');
+                } else {
+                    haptic('error'); // Начало списка
+                }
+            }
+        }, {passive: true});
+
+        // ------------------------------------
 
         async function playSound() {
             if (!modalData) return;
@@ -2328,10 +2469,7 @@
             }
             try {
                 const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
-                    headers: { 
-                        'X-Telegram-Init-Data': tg.initData,
-                        'ngrok-skip-browser-warning': 'true'
-                    }
+                    headers: { 'X-Telegram-Init-Data': tg.initData, 'ngrok-skip-browser-warning': 'true' }
                 });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const audioBlob = await response.blob();
@@ -2345,24 +2483,18 @@
             }
         }
 
-        // === ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ GIF ===
         function showGif() {
             if (!modalData) return;
             const char = modalData.char || modalData.word;
-            const container = document.getElementById('modalGif');
             
-            // Если это слово (больше 1 символа), отключаем GIF
-            if (char.length > 1) {
-                container.innerHTML = '<span style="color:#f87171; font-size: 14px;">Анимация доступна только для 1 символа</span>';
-                container.classList.add('show');
-                return;
-            }
+            if (char.length > 1) return; // Защита от случайного клика
 
+            const container = document.getElementById('modalGif');
             container.innerHTML = '<span style="color:#999">Загрузка...</span>';
             container.classList.add('show');
             
             const hex4 = char.charCodeAt(0).toString(16).toLowerCase();
-            const hex5 = hex4.padStart(5, '0'); // Для Кандзи иногда нужен 5-значный код
+            const hex5 = hex4.padStart(5, '0');
             
             const urls = [
                 `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex5}.gif`,
@@ -2370,7 +2502,6 @@
                 `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex4}.gif`
             ];
 
-            // Для Азбуки добавляем прямые ссылки из Wikipedia по чтению (самый надежный источник)
             if (modalData.reading) {
                 let r = modalData.reading.split(' ')[0].toLowerCase();
                 r = r.replace('shi','si').replace('chi','ti').replace('tsu','tu').replace('fu','hu');
@@ -2390,7 +2521,6 @@
                 img.onload = () => {
                     if (!loaded) {
                         loaded = true;
-                        // Белый фон чтобы черные линии было видно при черной теме телефона
                         container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px; background:white; padding:5px;">`;
                     }
                 };
@@ -2678,8 +2808,14 @@
             const grid = document.getElementById('achievementsGrid');
             grid.innerHTML = ACHIEVEMENTS.map(a => {
                 const unlocked = a.check(user);
-                return `<div class="achievement ${unlocked?'':'locked'}"><div class="achievement-icon">${a.icon}</div><div class="achievement-name">${a.name}</div></div>`;
+                return `<div class="achievement ${unlocked?'':'locked'}" onclick="showAchievementInfo('${a.name}', '${a.desc}', ${unlocked})"><div class="achievement-icon">${a.icon}</div><div class="achievement-name">${a.name}</div></div>`;
             }).join('');
+        }
+
+        function showAchievementInfo(name, desc, unlocked) {
+            haptic('light');
+            const status = unlocked ? "✅ ПОЛУЧЕНО" : "🔒 ЗАБЛОКИРОВАНО";
+            tg.showAlert(`${status}\n\n🏆 Достижение: ${name}\n📝 Задание: ${desc}`);
         }
 
         // ==================== НАСТРОЙКИ ====================
