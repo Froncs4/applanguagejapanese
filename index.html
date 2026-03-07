@@ -37,7 +37,7 @@
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
-            padding-bottom: 80px;
+            padding-bottom: 120px; /* Увеличен отступ снизу, чтобы контент не перекрывался меню */
         }
 
         /* GIF Фон */
@@ -62,27 +62,31 @@
 
         .japanese { font-family: 'Noto Sans JP', sans-serif; }
 
-        /* ========== BOTTOM NAV ========== */
+        /* ========== BOTTOM NAV (УСИЛЕННЫЕ СТИЛИ) ========== */
         .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: var(--bg);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            padding-bottom: calc(8px + env(safe-area-inset-bottom));
-            z-index: 100;
+            position: fixed !important;
+            bottom: 0 !important; 
+            left: 0 !important; 
+            right: 0 !important;
+            height: 70px;
+            background: var(--bg) !important;
+            border-top: 1px solid rgba(128,128,128,0.2) !important;
+            display: flex !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+            padding-bottom: env(safe-area-inset-bottom) !important;
+            z-index: 9999 !important; /* Гарантированно поверх всего */
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
         }
 
         .nav-item {
             display: flex; flex-direction: column; align-items: center;
             padding: 6px 14px; border: none; background: none;
-            color: var(--text-hint); font-size: 10px; cursor: pointer; transition: all 0.2s;
+            color: var(--text-hint); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s;
         }
 
-        .nav-item.active { color: var(--primary); }
-        .nav-item .icon { font-size: 22px; margin-bottom: 3px; }
+        .nav-item.active { color: var(--primary); transform: scale(1.05); }
+        .nav-item .icon { font-size: 24px; margin-bottom: 4px; }
 
         /* ========== SCREENS ========== */
         .screen { display: none; min-height: 100vh; }
@@ -197,7 +201,7 @@
         .category-bar-fill { height: 100%; background: var(--primary); border-radius: 3px; }
 
         /* ========== PROFILE SCREEN ========== */
-        .profile-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 30px 20px; text-align: center; color: white; position: relative; }
+        .profile-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 30px 20px; text-align: center; color: white; position: relative; border-radius: 0 0 20px 20px; margin-bottom: 15px;}
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 38px; background-size: cover; background-position: center; }
         .profile-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
         .profile-rank-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-size: 14px; }
@@ -261,7 +265,6 @@
             display: flex; align-items: center; justify-content: center;
         }
         .bg-option.active { border-color: var(--primary); transform: scale(1.05); }
-        .bg-option-text { font-size: 11px; font-weight: bold; color: white; text-shadow: 1px 1px 3px black; }
 
         /* ========== MODAL (ИЗУЧЕНИЕ КАРТОЧЕК С СВАЙПОМ) ========== */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; backdrop-filter: blur(5px); }
@@ -322,7 +325,8 @@
         .quiz-card { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 26px; padding: 45px 30px; text-align: center; margin-bottom: 28px; }
         .quiz-char { font-size: 90px; color: white; }
         .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .quiz-option { padding: 18px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 16px; font-size: 20px; font-weight: 600; color: white; cursor: pointer; }
+        .quiz-option { padding: 18px; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2); border-radius: 16px; font-size: 20px; font-weight: 600; color: white; cursor: pointer; transition: all 0.15s; }
+        .quiz-option:active { transform: scale(0.95); }
         .quiz-option.correct { background: var(--success); border-color: var(--success); }
         .quiz-option.wrong { background: var(--error); border-color: var(--error); }
 
@@ -352,12 +356,26 @@
         .wheel-result-xp { font-size: 42px; font-weight: 800; background: linear-gradient(90deg, var(--warning), var(--error)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .wheel-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; }
 
+        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 300; }
+        .loading-logo { font-size: 60px; margin-bottom: 16px; animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .loading-text { color: white; font-size: 18px; font-weight: 600; }
+        .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 18px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
+    <!-- Фоновые слои для GIF -->
     <div class="app-bg-layer" id="appBgLayer"></div>
     <div class="app-bg-overlay"></div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">🎌</div>
+        <div class="loading-text">YomuBot</div>
+        <div class="loading-spinner"></div>
+    </div>
 
     <!-- Home Screen -->
     <div class="screen active" id="homeScreen">
@@ -365,7 +383,7 @@
             <div class="user-row">
                 <div class="avatar" id="userAvatar">👤</div>
                 <div class="user-info">
-                    <h1 id="userName">Ученик</h1>
+                    <h1 id="userName">Загрузка...</h1>
                     <div class="user-rank">
                         <span id="userBadge">🥚</span>
                         <span id="userRankName">Новичок</span>
@@ -486,7 +504,6 @@
     <div class="screen" id="profileScreen">
         <div class="profile-header">
             <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
-            <!-- КНОПКА СМЕНЫ ИМЕНИ -->
             <button class="profile-edit-name" onclick="promptChangeName()">✏️</button>
             
             <div class="profile-avatar" id="profileAvatar">👤</div>
@@ -541,7 +558,7 @@
         </div>
 
         <div class="profile-section">
-            <div class="profile-section-title">🏆 Достижения (Нажми, чтобы узнать)</div>
+            <div class="profile-section-title">🏆 Достижения (Нажми)</div>
             <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
     </div>
@@ -575,7 +592,7 @@
                 <div class="color-picker" id="colorPicker"></div>
             </div>
 
-            <!-- Выбор фона (НАДЕЖНЫЕ GIF) -->
+            <!-- Выбор фона -->
             <div class="settings-group">
                 <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
                     <div class="settings-left">
@@ -707,6 +724,30 @@
         </div>
     </div>
 
+    <!-- УСИЛЕННЫЙ БЛОК НАВИГАЦИИ -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" onclick="goTo('home')">
+            <span class="icon">🏠</span>
+            <span>Главная</span>
+        </button>
+        <button class="nav-item" onclick="goTo('alphabet')">
+            <span class="icon">🔤</span>
+            <span>Азбука</span>
+        </button>
+        <button class="nav-item" onclick="goTo('study')">
+            <span class="icon">📚</span>
+            <span>Учить</span>
+        </button>
+        <button class="nav-item" onclick="goTo('profile')">
+            <span class="icon">👤</span>
+            <span>Профиль</span>
+        </button>
+        <button class="nav-item" onclick="goTo('leaderboard')">
+            <span class="icon">🏆</span>
+            <span>Рейтинг</span>
+        </button>
+    </nav>
+
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -714,8 +755,6 @@
 
         // ======= ВАЖНО: ВСТАВЬТЕ СЮДА СВОЙ NGROK =======
         const API_BASE = 'https://endless-max-jowly.ngrok-free.dev'; 
-        
-        // Передаем авторизацию
         const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
@@ -766,7 +805,7 @@
             `).join('');
         }
 
-        // ==================== 2. ТЕМЫ ФОНОВ (Официальные GIF Tenor) ====================
+        // ==================== 2. ТЕМЫ ФОНОВ (НАДЕЖНЫЕ GIF) ====================
         const BACKGROUNDS = [
             { id: 'default', name: 'Тёмный', url: '' },
             { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
@@ -796,7 +835,7 @@
             if(!picker) return;
             picker.innerHTML = BACKGROUNDS.map(bg => `
                 <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
-                     style="background-image: url('${bg.url || ''}');"
+                     style="background-image: url('${bg.url || ''}'); background-color: var(--bg-secondary);"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
                      ${!bg.url ? '<div style="color:white;font-size:11px;font-weight:bold;margin-top:50px;">Тёмный</div>' : ''}
                 </div>
@@ -836,6 +875,7 @@
             {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
+
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
         function sendResult(type, score) {
             try {
@@ -862,8 +902,8 @@
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
-                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ
-                    if (data.user.name && data.user.name !== 'User') {
+                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ЕСЛИ ОНО БЫЛО ИЗМЕНЕНО ЧЕРЕЗ /setname)
+                    if (data.user.name && data.user.name !== 'User' && data.user.name !== 'Test User') {
                         user.name = data.user.name;
                     }
                     return true;
@@ -946,9 +986,13 @@
                 });
                 if (!response.ok) throw new Error('Failed to fetch stats');
                 const data = await response.json();
-                if (data.success) renderProfileStats(data.stats);
+                if (data.success) {
+                    renderProfileStats(data.stats);
+                } else {
+                    throw new Error('API Error');
+                }
             } catch (e) { 
-                document.getElementById('progressDetails').innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px;">Ошибка загрузки статистики</div>`;
+                document.getElementById('progressDetails').innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px;">Ошибка загрузки (сервер недоступен)</div>`;
             }
         }
 
@@ -991,7 +1035,7 @@
                 if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
 
-            // ИСПРАВЛЕНИЕ БАГА ИМЕНИ
+            // ПРИНУДИТЕЛЬНО ИСПРАВЛЯЕМ ИМЯ ИЗ TELEGRAM
             if (!user.name || user.name === 'Test User') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
@@ -1042,6 +1086,8 @@
 
         async function init() {
             loadUserFromStorage();
+            
+            // Если сервер жив, обновим имя с него
             await fetchUserFromServer();
             
             applyBackground(user.settings.bg || 'default');
@@ -1057,6 +1103,10 @@
             saveUser();
             updateUI();
             setAvatar();
+
+            // Показываем нижнюю навигацию жестко (failsafe)
+            const bNav = document.getElementById('bottomNav');
+            if(bNav) bNav.classList.remove('hidden');
 
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
@@ -1386,6 +1436,8 @@
             document.getElementById('profileXp').textContent = user.xp;
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
+            
+            // Если вкладка профиля активна - обновляем детальную стату
             fetchUserStats();
 
             const grid = document.getElementById('achievementsGrid');
@@ -1453,13 +1505,15 @@
 
         function showQuizScreen() {
             document.getElementById('quizScreen').classList.add('show');
-            document.getElementById('bottomNav').classList.add('hidden');
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.classList.add('hidden');
         }
 
         function hideQuizScreen() {
             document.getElementById('quizScreen').classList.remove('show');
             document.getElementById('resultsScreen').classList.remove('show');
-            document.getElementById('bottomNav').classList.remove('hidden');
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.classList.remove('hidden');
         }
 
         function renderQuizQuestion() {
@@ -1518,7 +1572,8 @@
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             swipe = { items: shuffle(allKana).slice(0,10), index:0, correct:0, wrong:0 };
             document.getElementById('swipeScreen').classList.add('show');
-            document.getElementById('bottomNav').classList.add('hidden');
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.classList.add('hidden');
             renderSwipeCard();
         }
 
@@ -1598,7 +1653,8 @@
 
         function openWheel() {
             document.getElementById('wheelScreen').classList.add('show');
-            document.getElementById('bottomNav').classList.add('hidden');
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.classList.add('hidden');
             document.getElementById('wheelResult').classList.remove('show');
             if (user.lastDaily === new Date().toDateString()) {
                 document.getElementById('wheelSpinBtn').disabled = true;
@@ -1609,7 +1665,11 @@
             }
         }
 
-        function closeWheel() { document.getElementById('wheelScreen').classList.remove('show'); document.getElementById('bottomNav').classList.remove('hidden'); }
+        function closeWheel() { 
+            document.getElementById('wheelScreen').classList.remove('show'); 
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.classList.remove('hidden'); 
+        }
 
         let wheelRotation = 0;
         function spinWheel() {
