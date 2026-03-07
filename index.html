@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Переменные для смены цвета */
+            /* Переменные для смены цвета (меняются через JS) */
             --primary: #667eea;
             --secondary: #764ba2;
             --accent: #f093fb;
@@ -37,45 +37,34 @@
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
-            padding-bottom: 120px; /* Увеличен отступ снизу, чтобы контент не перекрывался меню */
+            padding-bottom: 120px; 
         }
 
         /* GIF Фон */
         .app-bg-layer {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -2;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 0.5s ease, background-image 0.5s ease;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2; background-size: cover; background-position: center;
+            opacity: 0; transition: opacity 0.5s ease, background-image 0.5s ease;
         }
         
         .app-bg-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            background: var(--bg);
-            opacity: 0.85; /* Затемнение, чтобы текст был читаем */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; background: var(--bg); opacity: 0.85; 
             transition: background-color 0.5s;
         }
 
         .japanese { font-family: 'Noto Sans JP', sans-serif; }
 
-        /* ========== BOTTOM NAV (УСИЛЕННЫЕ СТИЛИ) ========== */
+        /* ========== BOTTOM NAV ========== */
         .bottom-nav {
             position: fixed !important;
-            bottom: 0 !important; 
-            left: 0 !important; 
-            right: 0 !important;
+            bottom: 0 !important; left: 0 !important; right: 0 !important;
             height: 70px;
             background: var(--bg) !important;
             border-top: 1px solid rgba(128,128,128,0.2) !important;
-            display: flex !important;
-            justify-content: space-around !important;
-            align-items: center !important;
+            display: flex !important; justify-content: space-around !important; align-items: center !important;
             padding-bottom: env(safe-area-inset-bottom) !important;
-            z-index: 9999 !important; /* Гарантированно поверх всего */
+            z-index: 9999 !important; 
             box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
         }
 
@@ -356,26 +345,12 @@
         .wheel-result-xp { font-size: 42px; font-weight: 800; background: linear-gradient(90deg, var(--warning), var(--error)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .wheel-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; }
 
-        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 300; }
-        .loading-logo { font-size: 60px; margin-bottom: 16px; animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .loading-text { color: white; font-size: 18px; font-weight: 600; }
-        .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 18px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <!-- Фоновые слои для GIF -->
     <div class="app-bg-layer" id="appBgLayer"></div>
     <div class="app-bg-overlay"></div>
-
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">🎌</div>
-        <div class="loading-text">YomuBot</div>
-        <div class="loading-spinner"></div>
-    </div>
 
     <!-- Home Screen -->
     <div class="screen active" id="homeScreen">
@@ -383,7 +358,7 @@
             <div class="user-row">
                 <div class="avatar" id="userAvatar">👤</div>
                 <div class="user-info">
-                    <h1 id="userName">Загрузка...</h1>
+                    <h1 id="userName">Ученик</h1>
                     <div class="user-rank">
                         <span id="userBadge">🥚</span>
                         <span id="userRankName">Новичок</span>
@@ -531,7 +506,6 @@
 
         <div class="profile-section">
             <div class="profile-section-title">📊 Прогресс по разделам</div>
-            <!-- Сюда подгружается подробная статистика -->
             <div id="progressDetails" style="margin-bottom: 20px;">
                 <div style="text-align: center; color: var(--text-hint); font-size: 14px;">Загрузка статистики...</div>
             </div>
@@ -581,7 +555,6 @@
         </div>
         <div class="settings-content">
             
-            <!-- Выбор цвета интерфейса -->
             <div class="settings-group">
                 <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
                     <div class="settings-left">
@@ -592,7 +565,6 @@
                 <div class="color-picker" id="colorPicker"></div>
             </div>
 
-            <!-- Выбор фона -->
             <div class="settings-group">
                 <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
                     <div class="settings-left">
@@ -805,14 +777,14 @@
             `).join('');
         }
 
-        // ==================== 2. ТЕМЫ ФОНОВ (НАДЕЖНЫЕ GIF) ====================
+        // ==================== 2. ТЕМЫ ФОНОВ (Официальные GIF Giphy) ====================
         const BACKGROUNDS = [
             { id: 'default', name: 'Тёмный', url: '' },
-            { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
-            { id: 'city', name: 'Кибер Сити', url: 'https://media.tenor.com/P5Wl2dCIf8kAAAAC/cyberpunk-city.gif' },
-            { id: 'rain', name: 'Дождь', url: 'https://media.tenor.com/8QzD2xQ-L0QAAAAC/rain-aesthetic.gif' },
-            { id: 'sunset', name: 'Закат', url: 'https://media.tenor.com/w1jUIt7wI7oAAAAC/sunset-pixel.gif' },
-            { id: 'forest', name: 'Лес', url: 'https://media.tenor.com/2Xy-C23R13YAAAAC/pixel-art.gif' }
+            { id: 'sakura', name: 'Сакура', url: 'https://media1.giphy.com/media/xT9IgzoZoXyxeKU7Oo/giphy.gif' },
+            { id: 'city', name: 'Кибер Сити', url: 'https://media3.giphy.com/media/P5Wl2dCIf8k/giphy.gif' },
+            { id: 'rain', name: 'Дождь', url: 'https://media1.giphy.com/media/Il9f7ZhytEiI0/giphy.gif' },
+            { id: 'sunset', name: 'Закат', url: 'https://media3.giphy.com/media/w1jUIt7wI7o/giphy.gif' },
+            { id: 'forest', name: 'Лес', url: 'https://media1.giphy.com/media/2XyC23R13Y/giphy.gif' }
         ];
 
         function applyBackground(bgId) {
@@ -837,12 +809,12 @@
                 <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
                      style="background-image: url('${bg.url || ''}'); background-color: var(--bg-secondary);"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
-                     ${!bg.url ? '<div style="color:white;font-size:11px;font-weight:bold;margin-top:50px;">Тёмный</div>' : ''}
+                     <div style="background: rgba(0,0,0,0.6); padding: 4px; border-radius: 6px; font-size: 11px; color: white;">${bg.name}</div>
                 </div>
             `).join('');
         }
 
-        // ==================== 3. ДОСТИЖЕНИЯ (57 ШТУК с иконками) ====================
+        // ==================== 3. ДОСТИЖЕНИЯ (57 ШТУК) ====================
         const ACHIEVEMENTS = [];
         
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
@@ -862,7 +834,6 @@
         const testIcons = ['🥉','🥈','🥇','🏅','🏆','🏵️','🎗️','🎫','🎟️','👑'];
         testMilestones.forEach((t, i) => ACHIEVEMENTS.push({ id: `pt_${t}`, name: `Снайпер ${t}`, icon: testIcons[i], desc: `Пройди ${t} тестов без ошибок.`, check: u => (u.perfectTests || 0) >= t }));
 
-
         const DAILY_QUESTS = [
             {id: 'cards10', name: 'Изучить 10 карточек', target: 10, xp: 30, icon: '📚'},
             {id: 'test', name: 'Пройти тест', target: 1, xp: 20, icon: '✅'},
@@ -875,7 +846,6 @@
             {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
-
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
         function sendResult(type, score) {
             try {
@@ -883,9 +853,7 @@
                     const data = { type, score, initData: AUTH_HEADER };
                     tg.sendData(JSON.stringify(data));
                 }
-            } catch (e) {
-                console.warn("sendData работает только внутри Telegram");
-            }
+            } catch (e) { console.warn("sendData работает только внутри Telegram"); }
         }
 
         async function fetchUserFromServer() {
@@ -902,8 +870,8 @@
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
-                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ЕСЛИ ОНО БЫЛО ИЗМЕНЕНО ЧЕРЕЗ /setname)
-                    if (data.user.name && data.user.name !== 'User' && data.user.name !== 'Test User') {
+                    // ЕСЛИ БАЗА ДАННЫХ ВЕРНУЛА ХОРОШЕЕ ИМЯ - БЕРЕМ ЕГО
+                    if (data.user.name && data.user.name !== 'User' && data.user.name !== 'Test User' && data.user.name !== 'Пользователь') {
                         user.name = data.user.name;
                     }
                     return true;
@@ -911,7 +879,6 @@
             } catch (e) { return false; }
         }
 
-        // БЕЗОПАСНАЯ ЗАГРУЗКА АВАТАРОК (ОБХОД NGROK)
         async function loadAvatarBlob(userId, elementId) {
             try {
                 const response = await fetch(`${API_BASE}/api/avatar/${userId}`, {
@@ -939,7 +906,6 @@
                     method: 'GET',
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
-                
                 if (!response.ok) throw new Error(`HTTP ошибка ${response.status}`);
                 const data = await response.json();
                 
@@ -964,14 +930,8 @@
                             </div>
                         </div>`;
                     });
-                    
                     container.innerHTML = html;
-
-                    // Скачиваем аватарки безопасно через BLOB
-                    data.players.forEach((p, index) => {
-                        loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
-                    });
-
+                    data.players.forEach((p, index) => loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`));
                 } else {
                     container.innerHTML = '<div style="text-align: center;">Нет данных</div>';
                 }
@@ -989,10 +949,12 @@
                 if (data.success) {
                     renderProfileStats(data.stats);
                 } else {
-                    throw new Error('API Error');
+                    throw new Error('No success flag');
                 }
             } catch (e) { 
-                document.getElementById('progressDetails').innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px;">Ошибка загрузки (сервер недоступен)</div>`;
+                // Не стираем блок, просто пишем аккуратную ошибку внизу
+                const container = document.getElementById('progressDetails');
+                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px;">Ошибка получения (сервер спит)</div>`;
             }
         }
 
@@ -1026,7 +988,6 @@
             document.getElementById('progressDetails').innerHTML = progressHtml;
         }
 
-        // ==================== ЛОГИКА ПОЛЬЗОВАТЕЛЯ ====================
         function loadUserFromStorage() {
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
@@ -1035,8 +996,8 @@
                 if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
 
-            // ПРИНУДИТЕЛЬНО ИСПРАВЛЯЕМ ИМЯ ИЗ TELEGRAM
-            if (!user.name || user.name === 'Test User') {
+            // ПРИНУДИТЕЛЬНО БЕРЕМ ИМЯ ИЗ ТЕЛЕГРАМА (если оно сломалось)
+            if (!user.name || user.name === 'Test User' || user.name === 'Пользователь') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
                 } else {
@@ -1104,10 +1065,6 @@
             updateUI();
             setAvatar();
 
-            // Показываем нижнюю навигацию жестко (failsafe)
-            const bNav = document.getElementById('bottomNav');
-            if(bNav) bNav.classList.remove('hidden');
-
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 createWheel();
@@ -1131,21 +1088,27 @@
         }
 
         function updateUI() {
-            const rank = typeof RANKS !== 'undefined' ? (RANKS.find(r => user.xp < r.min) || RANKS[RANKS.length-1]) : {name:'Новичок', badge:'🥚'};
+            // ПРАВИЛЬНЫЙ ПОДСЧЕТ РАНГА (чтобы при 10к был Мастер)
+            let rank = {name:'Новичок', badge:'🥚'};
+            if (typeof RANKS !== 'undefined') {
+                for (let r of RANKS) {
+                    if (user.xp >= r.min) rank = r;
+                }
+            }
+
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
             document.getElementById('userStreak').textContent = user.streak;
             document.getElementById('userCards').textContent = user.cardsLearned;
             document.getElementById('userBadge').textContent = rank.badge;
             document.getElementById('userRankName').textContent = rank.name;
-            renderQuests();
-        }
+            
+            const profileBadge = document.getElementById('profileBadge');
+            const profileRankName = document.getElementById('profileRankName');
+            if (profileBadge) profileBadge.textContent = rank.badge;
+            if (profileRankName) profileRankName.textContent = rank.name;
 
-        function getRank(xp) {
-            if (typeof RANKS === 'undefined') return {min:0, name:'Новичок', badge:'🥚', frame:1};
-            let rank = RANKS[0];
-            for (const r of RANKS) if (xp >= r.min) rank = r;
-            return rank;
+            renderQuests();
         }
 
         function renderQuests() {
@@ -1505,15 +1468,11 @@
 
         function showQuizScreen() {
             document.getElementById('quizScreen').classList.add('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.add('hidden');
         }
 
         function hideQuizScreen() {
             document.getElementById('quizScreen').classList.remove('show');
             document.getElementById('resultsScreen').classList.remove('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.remove('hidden');
         }
 
         function renderQuizQuestion() {
@@ -1572,8 +1531,6 @@
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             swipe = { items: shuffle(allKana).slice(0,10), index:0, correct:0, wrong:0 };
             document.getElementById('swipeScreen').classList.add('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.add('hidden');
             renderSwipeCard();
         }
 
@@ -1653,8 +1610,6 @@
 
         function openWheel() {
             document.getElementById('wheelScreen').classList.add('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.add('hidden');
             document.getElementById('wheelResult').classList.remove('show');
             if (user.lastDaily === new Date().toDateString()) {
                 document.getElementById('wheelSpinBtn').disabled = true;
@@ -1667,8 +1622,6 @@
 
         function closeWheel() { 
             document.getElementById('wheelScreen').classList.remove('show'); 
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.remove('hidden'); 
         }
 
         let wheelRotation = 0;
