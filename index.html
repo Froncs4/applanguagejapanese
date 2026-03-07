@@ -203,8 +203,6 @@
         .profile-rank-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-size: 14px; }
         
         .profile-settings-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; color: white; cursor: pointer; }
-        
-        /* 🔥 КНОПКА СМЕНЫ ИМЕНИ ВЕРНУЛАСЬ! 🔥 */
         .profile-edit-name { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; color: white; cursor: pointer; }
 
         .profile-stats { display: flex; justify-content: space-around; padding: 20px; background: var(--bg-secondary); margin: -20px 16px 0; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); position: relative; border: 1px solid rgba(255,255,255,0.05);}
@@ -256,8 +254,14 @@
 
         .bg-picker { display: flex; gap: 10px; overflow-x: auto; padding: 10px 16px; margin: 0 -16px; scrollbar-width: none;}
         .bg-picker::-webkit-scrollbar { display: none; }
-        .bg-option { width: 80px; height: 120px; border-radius: 12px; border: 3px solid transparent; background-size: cover; background-position: center; flex-shrink: 0; cursor: pointer; transition: 0.2s;}
+        .bg-option { 
+            width: 80px; height: 120px; border-radius: 12px; border: 3px solid transparent; 
+            background-size: cover; background-position: center; flex-shrink: 0; cursor: pointer; 
+            transition: 0.2s; background-color: var(--bg-secondary); 
+            display: flex; align-items: center; justify-content: center;
+        }
         .bg-option.active { border-color: var(--primary); transform: scale(1.05); }
+        .bg-option-text { font-size: 11px; font-weight: bold; color: white; text-shadow: 1px 1px 3px black; }
 
         /* ========== MODAL (ИЗУЧЕНИЕ КАРТОЧЕК С СВАЙПОМ) ========== */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; backdrop-filter: blur(5px); }
@@ -482,7 +486,7 @@
     <div class="screen" id="profileScreen">
         <div class="profile-header">
             <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
-            <!-- 🔥 КНОПКА СМЕНЫ ИМЕНИ ВЕРНУЛАСЬ! 🔥 -->
+            <!-- КНОПКА СМЕНЫ ИМЕНИ -->
             <button class="profile-edit-name" onclick="promptChangeName()">✏️</button>
             
             <div class="profile-avatar" id="profileAvatar">👤</div>
@@ -571,7 +575,7 @@
                 <div class="color-picker" id="colorPicker"></div>
             </div>
 
-            <!-- Выбор фона -->
+            <!-- Выбор фона (НАДЕЖНЫЕ GIF) -->
             <div class="settings-group">
                 <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
                     <div class="settings-left">
@@ -703,30 +707,6 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav" id="bottomNav">
-        <button class="nav-item active" onclick="goTo('home')">
-            <span class="icon">🏠</span>
-            <span>Главная</span>
-        </button>
-        <button class="nav-item" onclick="goTo('alphabet')">
-            <span class="icon">🔤</span>
-            <span>Азбука</span>
-        </button>
-        <button class="nav-item" onclick="goTo('study')">
-            <span class="icon">📚</span>
-            <span>Учить</span>
-        </button>
-        <button class="nav-item" onclick="goTo('profile')">
-            <span class="icon">👤</span>
-            <span>Профиль</span>
-        </button>
-        <button class="nav-item" onclick="goTo('leaderboard')">
-            <span class="icon">🏆</span>
-            <span>Рейтинг</span>
-        </button>
-    </nav>
-
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
@@ -734,6 +714,8 @@
 
         // ======= ВАЖНО: ВСТАВЬТЕ СЮДА СВОЙ NGROK =======
         const API_BASE = 'https://endless-max-jowly.ngrok-free.dev'; 
+        
+        // Передаем авторизацию
         const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
@@ -784,7 +766,7 @@
             `).join('');
         }
 
-        // ==================== 2. ТЕМЫ ФОНОВ (НАДЕЖНЫЕ GIF) ====================
+        // ==================== 2. ТЕМЫ ФОНОВ (Официальные GIF Tenor) ====================
         const BACKGROUNDS = [
             { id: 'default', name: 'Тёмный', url: '' },
             { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
@@ -814,8 +796,9 @@
             if(!picker) return;
             picker.innerHTML = BACKGROUNDS.map(bg => `
                 <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
-                     style="background-image: url('${bg.url || 'https://via.placeholder.com/80x120/1a1a2e/ffffff?text=Тёмный'}');"
+                     style="background-image: url('${bg.url || ''}');"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
+                     ${!bg.url ? '<div style="color:white;font-size:11px;font-weight:bold;margin-top:50px;">Тёмный</div>' : ''}
                 </div>
             `).join('');
         }
@@ -853,7 +836,6 @@
             {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
-
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
         function sendResult(type, score) {
             try {
@@ -880,8 +862,10 @@
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
-                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (если оно было изменено), если нет - из ТГ
-                    user.name = data.user.name;
+                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ
+                    if (data.user.name && data.user.name !== 'User') {
+                        user.name = data.user.name;
+                    }
                     return true;
                 }
             } catch (e) { return false; }
@@ -1007,8 +991,8 @@
                 if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
 
-            // ПРИНУДИТЕЛЬНО ИСПРАВЛЯЕМ ИМЯ, ЕСЛИ ОНО СЛЕТЕЛО ИЗ-ЗА БРАУЗЕРА
-            if (user.name === 'Test User' || !user.name) {
+            // ИСПРАВЛЕНИЕ БАГА ИМЕНИ
+            if (!user.name || user.name === 'Test User') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
                 } else {
