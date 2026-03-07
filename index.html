@@ -1861,8 +1861,12 @@
         tg.expand();
         tg.ready();
 
-        // ==================== ВАШ АДРЕС (ЗАМЕНИТЕ, ЕСЛИ НУЖНО) ====================
+        // ==================== ВАЖНО: АДРЕС NGROK ====================
+        // Т.к. твой index.html лежит на GitHub, ему нужно знать, куда отправлять запросы
+        // Вставь сюда свой ngrok URL, например: 'https://e6b7-84-245-12-1.ngrok-free.app'
         const API_BASE = 'https://endless-max-jowly.ngrok-free.dev';
+        
+        console.log('Current API_BASE:', API_BASE);
 
         // ==================== СОСТОЯНИЕ ====================
         let user = {
@@ -1924,18 +1928,12 @@
         // ==================== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====================
         async function fetchUserFromServer() {
             try {
-                // Отладка - проверяем initData
-                console.log('Telegram initData:', tg.initData);
-                console.log('Telegram initDataUnsafe:', tg.initDataUnsafe);
-                
-                // Пробуем получить initData из URL параметров (для теста)
-                const urlParams = new URLSearchParams(window.location.search);
-                const testUserId = urlParams.get('user_id') || '12345'; // тестовый ID
-                
+                // ДОБАВЛЕН ЗАГОЛОВОК ngrok-skip-browser-warning
                 const response = await fetch(`${API_BASE}/api/user`, {
                     headers: { 
-                        'X-Telegram-Init-Data': tg.initData || `user_id=${testUserId}`,
-                        'User-Agent': 'Mozilla/5.0'
+                        'X-Telegram-Init-Data': tg.initData || `user_id=12345`,
+                        'User-Agent': 'Mozilla/5.0',
+                        'ngrok-skip-browser-warning': 'true'
                     }
                 });
                 if (!response.ok) throw new Error('Server error');
@@ -2697,5 +2695,3 @@
     </script>
 </body>
 </html>
-
-
