@@ -1862,7 +1862,7 @@
         tg.ready();
 
         // ==================== ВАШ АДРЕС (ЗАМЕНИТЕ, ЕСЛИ НУЖНО) ====================
-        const API_BASE = ' https://endless-max-jowly.ngrok-free.dev';
+        const API_BASE = 'https://endless-max-jowly.ngrok-free.dev';
 
         // ==================== СОСТОЯНИЕ ====================
         let user = {
@@ -1924,9 +1924,17 @@
         // ==================== ЗАГРУЗКА ДАННЫХ С СЕРВЕРА ====================
         async function fetchUserFromServer() {
             try {
+                // Отладка - проверяем initData
+                console.log('Telegram initData:', tg.initData);
+                console.log('Telegram initDataUnsafe:', tg.initDataUnsafe);
+                
+                // Пробуем получить initData из URL параметров (для теста)
+                const urlParams = new URLSearchParams(window.location.search);
+                const testUserId = urlParams.get('user_id') || '12345'; // тестовый ID
+                
                 const response = await fetch(`${API_BASE}/api/user`, {
                     headers: { 
-                        'X-Telegram-Init-Data': tg.initData,
+                        'X-Telegram-Init-Data': tg.initData || `user_id=${testUserId}`,
                         'User-Agent': 'Mozilla/5.0'
                     }
                 });
@@ -2689,6 +2697,5 @@
     </script>
 </body>
 </html>
-
 
 
