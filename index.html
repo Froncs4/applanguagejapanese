@@ -1716,10 +1716,17 @@ async function fetchLeaderboard() {
     const container = document.getElementById('leaderboardList');
     if (!container) return;
     
-    // Показываем загрузку
     container.innerHTML = '<div style="text-align: center; padding: 30px;">Загрузка...</div>';
     
+    // Проверяем, есть ли initData (работает ли в Telegram)
+    if (!tg.initData) {
+        container.innerHTML = '<div style="text-align: center; padding: 30px;">Ошибка: приложение должно быть открыто в Telegram</div>';
+        return;
+    }
+    
     try {
+        console.log('Запрашиваем рейтинг с сервера:', `${API_BASE}/api/leaderboard`);
+        
         const response = await fetch(`${API_BASE}/api/leaderboard`, {
             method: 'GET',
             headers: {
@@ -1728,10 +1735,11 @@ async function fetchLeaderboard() {
         });
         
         if (!response.ok) {
-            throw new Error(`HTTP error ${response.status}`);
+            throw new Error(`HTTP ошибка ${response.status}: ${response.statusText}`);
         }
         
         const data = await response.json();
+        console.log('Ответ от сервера:', data);
         
         if (data.success && Array.isArray(data.players)) {
             if (data.players.length === 0) {
@@ -1740,11 +1748,11 @@ async function fetchLeaderboard() {
                 renderLeaderboard(data.players);
             }
         } else {
-            container.innerHTML = '<div style="text-align: center; padding: 30px;">Нет данных</div>';
+            container.innerHTML = '<div style="text-align: center; padding: 30px;">Ошибка: неверный формат данных</div>';
         }
     } catch (error) {
-        console.error('Leaderboard fetch error:', error);
-        container.innerHTML = '<div style="text-align: center; padding: 30px;">Ошибка загрузки</div>';
+        console.error('Ошибка при загрузке рейтинга:', error);
+        container.innerHTML = `<div style="text-align: center; padding: 30px;">Ошибка загрузки: ${error.message}</div>`;
     }
 }
 
@@ -2426,5 +2434,6 @@ async function fetchLeaderboard() {
     </script>
 </body>
 </html>
+
 
 
