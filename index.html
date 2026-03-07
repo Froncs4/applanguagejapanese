@@ -1927,7 +1927,7 @@
                 const response = await fetch(`${API_BASE}/api/user`, {
                     headers: { 
                         'X-Telegram-Init-Data': tg.initData,
-                        'ngrok-skip-browser-warning': 'true'
+                        'User-Agent': 'Mozilla/5.0'
                     }
                 });
                 if (!response.ok) throw new Error('Server error');
@@ -2689,3 +2689,4 @@
     </script>
 </body>
 </html>
+
