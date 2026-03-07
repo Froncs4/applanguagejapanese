@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Базовые цвета (будут меняться через JS) */
+            /* Переменные для смены цвета */
             --primary: #667eea;
             --secondary: #764ba2;
             --accent: #f093fb;
@@ -24,37 +24,63 @@
             --text-hint: var(--tg-theme-hint-color, #999999);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg); color: var(--text);
-            min-height: 100vh; overflow-x: hidden; padding-bottom: 80px;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
         }
 
         /* GIF Фон */
         .app-bg-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
-            background-size: cover; background-position: center;
-            opacity: 0; transition: opacity 0.5s ease, background-image 0.5s ease;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.5s ease, background-image 0.5s ease;
         }
+        
         .app-bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: var(--bg); opacity: 0.85; transition: background-color 0.5s;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            background: var(--bg);
+            opacity: 0.85; /* Затемнение, чтобы текст был читаем */
+            transition: background-color 0.5s;
         }
 
         .japanese { font-family: 'Noto Sans JP', sans-serif; }
 
         /* ========== BOTTOM NAV ========== */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg);
-            border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-around;
-            padding: 8px 0; padding-bottom: calc(8px + env(safe-area-inset-bottom)); z-index: 100;
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--bg);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            z-index: 100;
         }
+
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; padding: 6px 14px;
-            border: none; background: none; color: var(--text-hint); font-size: 10px; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 6px 14px; border: none; background: none;
+            color: var(--text-hint); font-size: 10px; cursor: pointer; transition: all 0.2s;
         }
+
         .nav-item.active { color: var(--primary); }
         .nav-item .icon { font-size: 22px; margin-bottom: 3px; }
 
@@ -66,35 +92,50 @@
         /* ========== HOME SCREEN ========== */
         .home-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 24px 20px 28px; border-radius: 0 0 28px 28px; color: white; margin-bottom: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); transition: background 0.5s;
+            padding: 24px 20px 28px;
+            border-radius: 0 0 28px 28px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: background 0.5s;
         }
+
         .user-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
         .avatar {
-            width: 56px; height: 56px; border-radius: 50%; background: rgba(255,255,255,0.2);
-            display: flex; align-items: center; justify-content: center; font-size: 26px;
-            background-size: cover; background-position: center;
+            width: 56px; height: 56px; border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; background-size: cover; background-position: center;
         }
+
         .user-info h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
         .user-rank { display: flex; align-items: center; gap: 6px; font-size: 13px; opacity: 0.9; }
+
         .stats-row { display: flex; gap: 10px; }
         .stat-box { flex: 1; background: rgba(255,255,255,0.15); border-radius: 14px; padding: 12px; text-align: center; backdrop-filter: blur(5px); }
         .stat-value { font-size: 22px; font-weight: 700; }
         .stat-label { font-size: 11px; opacity: 0.85; }
 
         .section { padding: 0 16px; margin-bottom: 24px; }
-        .section-title { font-size: 17px; font-weight: 700; margin-bottom: 12px; padding-left: 4px; }
+        .section-title { font-size: 17px; font-weight: 700; margin-bottom: 12px; padding-left: 4px; color: var(--primary); }
 
+        /* ========== MENU GRID ========== */
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .menu-card {
             background: rgba(255,255,255,0.05); border-radius: 18px; padding: 18px 14px;
-            text-align: center; cursor: pointer; transition: all 0.2s; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+            text-align: center; cursor: pointer; transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
         }
         .menu-card:active { transform: scale(0.97); border-color: var(--primary); background: rgba(255,255,255,0.1); }
         .menu-card .card-icon { font-size: 32px; margin-bottom: 8px; }
         .menu-card .card-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
         .menu-card .card-subtitle { font-size: 11px; color: var(--text-hint); }
-        .menu-card.wide { grid-column: span 2; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; }
+        
+        .menu-card.wide {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; border: none;
+        }
         .menu-card.wide .card-subtitle { color: rgba(255,255,255,0.8); }
 
         /* ========== DAILY QUESTS ========== */
@@ -104,7 +145,7 @@
         .quest-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
         .quest-bar { height: 6px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden; }
         .quest-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 3px; transition: width 0.3s; }
-        .quest-reward { font-size: 13px; font-weight: 600; color: var(--warning); }
+        .quest-reward { font-size: 13px; font-weight: 600; color: var(--primary); }
         .quest-item.done { opacity: 0.5; }
         .quest-item.done .quest-reward { color: var(--success); }
 
@@ -117,17 +158,30 @@
         .view-toggle { display: flex; background: rgba(255,255,255,0.2); border-radius: 10px; padding: 3px; }
         .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
         .view-btn.active { background: white; color: var(--primary); }
+        
         .alphabet-content { padding: 16px; }
         .test-buttons { display: flex; gap: 10px; margin-bottom: 16px; }
         .test-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; color: white; }
         .test-btn.primary { background: linear-gradient(135deg, var(--primary), var(--accent)); }
-        .test-btn.secondary { background: rgba(255,255,255,0.1); }
+        .test-btn.secondary { background: rgba(255,255,255,0.1); border: 1px solid var(--primary); color: var(--text); }
 
         .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
         .kana-cell { aspect-ratio: 1; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s; border: 1px solid rgba(255,255,255,0.05);}
         .kana-cell:active { transform: scale(0.95); background: var(--primary); color: white; }
         .kana-cell .char { font-size: 24px; font-weight: 500; }
         .kana-cell .reading { font-size: 10px; color: var(--text-hint); margin-top: 2px; }
+
+        .kana-row { margin-bottom: 18px; }
+        .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .row-title { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .row-test-btn { padding: 6px 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        
+        .row-cards { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+        .row-cards::-webkit-scrollbar { display: none; }
+        .row-card { min-width: 60px; height: 75px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+        .row-card:active { background: var(--primary); color: white; }
+        .row-card .char { font-size: 26px; }
+        .row-card .reading { font-size: 11px; color: var(--text-hint); }
 
         /* ========== STUDY SCREEN ========== */
         .study-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 20px 16px; color: white; border-radius: 0 0 20px 20px;}
@@ -140,22 +194,26 @@
         .category-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
         .category-desc { font-size: 12px; color: var(--text-hint); margin-bottom: 8px; }
         .category-bar { height: 5px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden; }
-        .category-bar-fill { height: 100%; background: var(--success); border-radius: 3px; }
+        .category-bar-fill { height: 100%; background: var(--primary); border-radius: 3px; }
 
         /* ========== PROFILE SCREEN ========== */
         .profile-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 30px 20px; text-align: center; color: white; position: relative; }
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); margin: 0 auto 14px; display: flex; align-items: center; justify-content: center; font-size: 38px; background-size: cover; background-position: center; }
         .profile-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
         .profile-rank-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-size: 14px; }
+        
         .profile-settings-btn { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; color: white; cursor: pointer; }
+        
+        /* 🔥 КНОПКА СМЕНЫ ИМЕНИ ВЕРНУЛАСЬ! 🔥 */
+        .profile-edit-name { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; color: white; cursor: pointer; }
 
-        .profile-stats { display: flex; justify-content: space-around; padding: 20px; background: var(--bg-secondary); margin: -20px 16px 0; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); position: relative; }
+        .profile-stats { display: flex; justify-content: space-around; padding: 20px; background: var(--bg-secondary); margin: -20px 16px 0; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); position: relative; border: 1px solid rgba(255,255,255,0.05);}
         .profile-stat { text-align: center; }
         .profile-stat-value { font-size: 26px; font-weight: 700; color: var(--primary); }
         .profile-stat-label { font-size: 11px; color: var(--text-hint); }
 
         .profile-section { padding: 20px 16px; }
-        .profile-section-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+        .profile-section-title { font-size: 17px; font-weight: 700; margin-bottom: 14px; color: var(--primary); }
 
         .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .achievement { text-align: center; cursor: pointer; transition: 0.1s;}
@@ -173,23 +231,24 @@
         .leaderboard-info { flex: 1; }
         .leaderboard-name { font-weight: 600; font-size: 16px; }
         .leaderboard-details { display: flex; gap: 12px; font-size: 12px; color: var(--text-hint); }
-        .leaderboard-xp { font-weight: 700; color: var(--warning); }
+        .leaderboard-xp { font-weight: 700; color: var(--primary); }
         .leaderboard-streak { color: var(--error); }
 
         /* ========== SETTINGS SCREEN ========== */
-        .settings-header { padding: 20px 16px; background: rgba(255,255,255,0.05); }
+        .settings-header { padding: 20px 16px; background: rgba(255,255,255,0.05); border-radius: 0 0 20px 20px; margin-bottom: 15px;}
         .settings-content { padding: 16px; }
         .settings-group { background: rgba(255,255,255,0.05); border-radius: 18px; overflow: hidden; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05); }
         .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
         .settings-item:last-child { border-bottom: none; }
         .settings-left { display: flex; align-items: center; gap: 12px; }
         .settings-icon { font-size: 20px; }
+        
         .toggle { width: 48px; height: 28px; background: rgba(0,0,0,0.2); border-radius: 14px; position: relative; cursor: pointer; transition: all 0.2s; }
         .toggle.active { background: var(--primary); }
         .toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: all 0.2s; }
         .toggle.active::after { left: 23px; }
 
-        /* Карусель ТЕМ И ЦВЕТОВ */
+        /* Карусель ЦВЕТОВ И ТЕМ */
         .color-picker { display: flex; gap: 12px; overflow-x: auto; padding: 10px 16px; margin: 0 -16px; scrollbar-width: none;}
         .color-picker::-webkit-scrollbar { display: none; }
         .color-circle { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; cursor: pointer; border: 3px solid transparent; transition: 0.2s;}
@@ -203,7 +262,7 @@
         /* ========== MODAL (ИЗУЧЕНИЕ КАРТОЧЕК С СВАЙПОМ) ========== */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; backdrop-filter: blur(5px); }
         .modal.show { display: flex; }
-        .modal-box { background: var(--bg); border-radius: 24px; padding: 28px 22px; text-align: center; max-width: 320px; width: 100%; position: relative; overflow: hidden; }
+        .modal-box { background: var(--bg); border-radius: 24px; padding: 28px 22px; text-align: center; max-width: 320px; width: 100%; position: relative; overflow: hidden; border: 1px solid var(--primary);}
         
         .modal-counter { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: var(--text-hint); display: none;}
         .modal-swipe-hint { position: absolute; top: 15px; right: 15px; font-size: 18px; opacity: 0.5; display: none; animation: slideHint 2s infinite;}
@@ -244,6 +303,9 @@
         .indicator.learn { background: var(--error); color: white; }
         .swipe-buttons { display: flex; justify-content: center; gap: 30px; padding: 20px; }
         .swipe-btn { width: 64px; height: 64px; border-radius: 50%; border: none; font-size: 28px; cursor: pointer; background: rgba(255,255,255,0.1); color: white; }
+        .swipe-btn.no { border: 2px solid var(--error); }
+        .swipe-btn.reveal { border: 2px solid var(--warning); }
+        .swipe-btn.yes { border: 2px solid var(--success); }
 
         /* ========== QUIZ & RESULTS ========== */
         .quiz-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, var(--bg) 0%, var(--bg-secondary) 100%); display: none; flex-direction: column; z-index: 150; padding: 20px; }
@@ -263,7 +325,7 @@
         .results-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 150; padding: 20px; text-align: center; }
         .results-screen.show { display: flex; }
         .results-icon { font-size: 90px; margin-bottom: 20px; }
-        .results-title { font-size: 30px; font-weight: 700; margin-bottom: 10px; }
+        .results-title { font-size: 30px; font-weight: 700; margin-bottom: 10px; color: var(--primary); }
         .results-score { font-size: 52px; font-weight: 800; background: linear-gradient(90deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
         .results-xp { font-size: 22px; color: var(--warning); font-weight: 600; margin-bottom: 8px; }
         .results-subtitle { font-size: 16px; color: var(--text-hint); margin-bottom: 36px; }
@@ -278,12 +340,12 @@
         .wheel-subtitle { color: var(--text-hint); font-size: 14px; margin-bottom: 30px; }
         .wheel-container { position: relative; width: 280px; height: 280px; margin-bottom: 30px; }
         .wheel { width: 100%; height: 100%; border-radius: 50%; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 40px var(--primary); }
-        .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 30px solid #ffd200; z-index: 10; }
-        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: var(--bg-secondary); border-radius: 50%; border: 3px solid #ffd200; display: flex; align-items: center; justify-content: center; font-size: 22px; z-index: 5; }
+        .wheel-pointer { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 30px solid var(--warning); z-index: 10; }
+        .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: var(--bg-secondary); border-radius: 50%; border: 3px solid var(--warning); display: flex; align-items: center; justify-content: center; font-size: 22px; z-index: 5; }
         .wheel-spin-btn { padding: 16px 50px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; border-radius: 30px; font-size: 18px; font-weight: 700; color: white; cursor: pointer; }
         .wheel-result { margin-top: 24px; padding: 18px 30px; background: rgba(255,255,255,0.1); border-radius: 18px; display: none; text-align: center; }
         .wheel-result.show { display: block; }
-        .wheel-result-xp { font-size: 42px; font-weight: 800; background: linear-gradient(90deg, #ffd200, #ff6b6b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .wheel-result-xp { font-size: 42px; font-weight: 800; background: linear-gradient(90deg, var(--warning), var(--error)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .wheel-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; }
 
         .hidden { display: none !important; }
@@ -299,7 +361,7 @@
             <div class="user-row">
                 <div class="avatar" id="userAvatar">👤</div>
                 <div class="user-info">
-                    <h1 id="userName">Загрузка...</h1>
+                    <h1 id="userName">Ученик</h1>
                     <div class="user-rank">
                         <span id="userBadge">🥚</span>
                         <span id="userRankName">Новичок</span>
@@ -420,6 +482,9 @@
     <div class="screen" id="profileScreen">
         <div class="profile-header">
             <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
+            <!-- 🔥 КНОПКА СМЕНЫ ИМЕНИ ВЕРНУЛАСЬ! 🔥 -->
+            <button class="profile-edit-name" onclick="promptChangeName()">✏️</button>
+            
             <div class="profile-avatar" id="profileAvatar">👤</div>
             <div class="profile-name" id="profileName">Пользователь</div>
             <div class="profile-rank-badge">
@@ -427,6 +492,7 @@
                 <span id="profileRankName">Новичок</span>
             </div>
         </div>
+        
         <div class="profile-stats">
             <div class="profile-stat">
                 <div class="profile-stat-value" id="profileXp">0</div>
@@ -444,23 +510,27 @@
 
         <div class="profile-section">
             <div class="profile-section-title">📊 Прогресс по разделам</div>
-            <div id="progressDetails" style="margin-bottom: 20px;"></div>
+            <!-- Сюда подгружается подробная статистика -->
+            <div id="progressDetails" style="margin-bottom: 20px;">
+                <div style="text-align: center; color: var(--text-hint); font-size: 14px;">Загрузка статистики...</div>
+            </div>
+            
             <div class="profile-section-title">🎯 Дополнительно</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                 <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileBestStreak">0</div>
+                    <div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div>
                     <div class="stat-label">Лучшая серия</div>
                 </div>
                 <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileAccuracy">0%</div>
+                    <div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div>
                     <div class="stat-label">Точность</div>
                 </div>
                 <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileBlitz">0</div>
+                    <div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div>
                     <div class="stat-label">Лучший блиц</div>
                 </div>
                 <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileVoice">0</div>
+                    <div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div>
                     <div class="stat-label">Голосовых</div>
                 </div>
             </div>
@@ -528,6 +598,7 @@
                     <div class="toggle active" id="vibrationToggle"></div>
                 </div>
             </div>
+            
             <div class="settings-group">
                 <div class="settings-item" onclick="tg.close()">
                     <div class="settings-left">
@@ -663,7 +734,7 @@
 
         // ======= ВАЖНО: ВСТАВЬТЕ СЮДА СВОЙ NGROK =======
         const API_BASE = 'https://endless-max-jowly.ngrok-free.dev'; 
-        const AUTH_HEADER = tg.initData;
+        const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
             id: null, name: 'Ученик', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
@@ -716,11 +787,11 @@
         // ==================== 2. ТЕМЫ ФОНОВ (НАДЕЖНЫЕ GIF) ====================
         const BACKGROUNDS = [
             { id: 'default', name: 'Тёмный', url: '' },
-            { id: 'sakura', name: 'Сакура', url: 'https://i.imgur.com/vH9Z1xP.gif' },
-            { id: 'city', name: 'Кибер Сити', url: 'https://i.imgur.com/GCRd3zP.gif' },
-            { id: 'rain', name: 'Дождь', url: 'https://i.imgur.com/L8oP1W3.gif' },
-            { id: 'sunset', name: 'Закат', url: 'https://i.imgur.com/7Y1G9j5.gif' },
-            { id: 'forest', name: 'Лес', url: 'https://i.imgur.com/CpHM49m.gif' }
+            { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
+            { id: 'city', name: 'Кибер Сити', url: 'https://media.tenor.com/P5Wl2dCIf8kAAAAC/cyberpunk-city.gif' },
+            { id: 'rain', name: 'Дождь', url: 'https://media.tenor.com/8QzD2xQ-L0QAAAAC/rain-aesthetic.gif' },
+            { id: 'sunset', name: 'Закат', url: 'https://media.tenor.com/w1jUIt7wI7oAAAAC/sunset-pixel.gif' },
+            { id: 'forest', name: 'Лес', url: 'https://media.tenor.com/2Xy-C23R13YAAAAC/pixel-art.gif' }
         ];
 
         function applyBackground(bgId) {
@@ -786,7 +857,7 @@
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
         function sendResult(type, score) {
             try {
-                if (AUTH_HEADER) {
+                if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
                     const data = { type, score, initData: AUTH_HEADER };
                     tg.sendData(JSON.stringify(data));
                 }
@@ -808,6 +879,9 @@
                     user.xp = data.user.xp;
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
+                    
+                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (если оно было изменено), если нет - из ТГ
+                    user.name = data.user.name;
                     return true;
                 }
             } catch (e) { return false; }
@@ -889,7 +963,9 @@
                 if (!response.ok) throw new Error('Failed to fetch stats');
                 const data = await response.json();
                 if (data.success) renderProfileStats(data.stats);
-            } catch (e) { console.warn(e); }
+            } catch (e) { 
+                document.getElementById('progressDetails').innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px;">Ошибка загрузки статистики</div>`;
+            }
         }
 
         function renderProfileStats(stats) {
@@ -913,7 +989,7 @@
                         <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
                             <span>${sec.name}</span><span>${learned}/${sec.total} (${percent}%)</span>
                         </div>
-                        <div style="height:6px; background:var(--bg-secondary); border-radius:3px;">
+                        <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:3px;">
                             <div style="height:100%; width:${percent}%; background:var(--primary); border-radius:3px;"></div>
                         </div>
                     </div>
@@ -926,16 +1002,18 @@
         function loadUserFromStorage() {
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
-                user = {...user, ...JSON.parse(saved)};
+                const data = JSON.parse(saved);
+                user = {...user, ...data};
                 if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
 
-            // ПРИНУДИТЕЛЬНО БЕРЕМ ИМЯ ИЗ TELEGRAM (Убивает баг "Test User")
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                user.id = tg.initDataUnsafe.user.id;
-                user.name = tg.initDataUnsafe.user.first_name;
-            } else if (user.name === 'Test User') {
-                user.name = 'Ученик'; // Заглушка для браузера ПК
+            // ПРИНУДИТЕЛЬНО ИСПРАВЛЯЕМ ИМЯ, ЕСЛИ ОНО СЛЕТЕЛО ИЗ-ЗА БРАУЗЕРА
+            if (user.name === 'Test User' || !user.name) {
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    user.name = tg.initDataUnsafe.user.first_name;
+                } else {
+                    user.name = 'Ученик';
+                }
             }
         }
 
@@ -956,6 +1034,26 @@
             document.getElementById('userAvatar').textContent = '';
             document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('profileAvatar').textContent = '';
+        }
+
+        async function promptChangeName() {
+            const newName = prompt('Введите новое имя (макс. 15 символов):', user.name);
+            if (newName && newName.trim()) {
+                const trimmed = newName.trim().slice(0, 15);
+                try {
+                    const response = await fetch(`${API_BASE}/api/setname`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' },
+                        body: JSON.stringify({ name: trimmed })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        user.name = trimmed;
+                        saveUser(); updateUI(); setAvatar();
+                        alert('Имя успешно изменено!');
+                    } else { alert('Ошибка при смене имени'); }
+                } catch (e) { console.error(e); alert('Ошибка соединения с сервером'); }
+            }
         }
 
         async function init() {
