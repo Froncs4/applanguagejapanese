@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Базовые цвета (меняются через JS) */
+            /* Базовые цвета (будут меняться через JS) */
             --primary: #667eea;
             --secondary: #764ba2;
             --accent: #f093fb;
@@ -18,201 +18,1012 @@
             --success: #4ade80;
             --error: #f87171;
             --warning: #fbbf24;
-            --bg: #0f0f16; /* Темная подложка */
-            --text: #ffffff;
-            --text-hint: rgba(255,255,255,0.6);
+            
+            --bg: var(--tg-theme-bg-color, #131320);
+            --bg-secondary: var(--tg-theme-secondary-bg-color, #1e1e2e);
+            --text: var(--tg-theme-text-color, #ffffff);
+            --text-hint: rgba(255, 255, 255, 0.6);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg); color: var(--text);
-            min-height: 100vh; overflow-x: hidden; padding-bottom: 120px;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 120px;
         }
 
-        /* ========== GIF ФОН И ЗАТЕМНЕНИЕ ========== */
+        .hidden {
+            display: none !important;
+        }
+
+        .japanese {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        /* ========== ФОНЫ И ЭФФЕКТЫ ========== */
         .app-bg-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
-            background-size: cover; background-position: center; opacity: 0; transition: opacity 0.5s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
+        
         .app-bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            /* Плавное затемнение: сверху светлее, снизу темнее */
-            background: linear-gradient(to bottom, rgba(15,15,22,0.6) 0%, rgba(15,15,22,0.9) 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(to bottom, rgba(19, 19, 32, 0.85) 0%, rgba(19, 19, 32, 0.5) 100%);
         }
 
-        .japanese { font-family: 'Noto Sans JP', sans-serif; }
-
-        /* ========== GLASSMORPHISM (СТЕКЛО) ========== */
-        .glass-panel {
-            background: rgba(30, 30, 45, 0.4); /* Полупрозрачный фон */
-            backdrop-filter: blur(16px); /* Сильное размытие */
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08); /* Тонкий блик по краям */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Объемная тень */
-        }
-
-        /* Шапки экранов */
-        .glass-header {
-            background: rgba(20, 20, 30, 0.5);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 30px 20px 25px; border-radius: 0 0 35px 35px;
-            color: white; margin-bottom: 25px; text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative; overflow: hidden;
-        }
-        
-        /* Неоновый отсвет сверху шапки в цвет выбранной темы */
-        .glass-header::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at top, var(--primary) 0%, transparent 50%);
-            opacity: 0.15; z-index: -1; pointer-events: none;
-        }
-
-        /* ========== НАВИГАЦИЯ ========== */
+        /* ========== НИЖНЯЯ НАВИГАЦИЯ ========== */
         .bottom-nav {
-            position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-            height: 75px; 
-            background: rgba(20, 20, 30, 0.75) !important;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.08) !important;
-            display: flex !important; justify-content: space-around !important; align-items: center !important;
-            padding-bottom: env(safe-area-inset-bottom) !important; z-index: 9999 !important; 
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75px;
+            background: rgba(30, 30, 46, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 9999;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
         }
+
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; padding: 6px 14px;
-            border: none; background: none; color: var(--text-hint); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 14px;
+            border: none;
+            background: none;
+            color: var(--text-hint);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 15px rgba(var(--primary), 0.5); }
-        .nav-item .icon { font-size: 24px; margin-bottom: 4px; transition: 0.2s; }
 
-        /* Экраны */
-        .screen { display: none; min-height: 100vh; }
-        .screen.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* ========== ЭЛЕМЕНТЫ ПРОФИЛЯ ========== */
-        .user-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; text-align: left; }
-        .avatar { 
-            width: 64px; height: 64px; border-radius: 50%; 
-            background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; 
-            font-size: 28px; background-size: cover; background-position: center; 
-            border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(var(--primary), 0.3);
+        .nav-item.active {
+            color: var(--primary);
+            transform: scale(1.1);
+            text-shadow: 0 0 15px var(--primary);
         }
-        .user-info h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
-        .user-rank { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); font-weight: 700; background: rgba(var(--primary), 0.1); padding: 4px 10px; border-radius: 12px; display: inline-flex;}
 
-        .stats-row { display: flex; gap: 12px; }
-        .stat-box { 
-            flex: 1; padding: 14px 10px; text-align: center; border-radius: 18px; 
-            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); 
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+        .nav-item .icon {
+            font-size: 24px;
+            margin-bottom: 4px;
         }
-        .stat-value { font-size: 20px; font-weight: 900; color: white; margin-bottom: 2px;}
-        .stat-label { font-size: 11px; color: var(--text-hint); font-weight: 500;}
 
-        .section { padding: 0 16px; margin-bottom: 28px; }
-        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; padding-left: 4px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-
-        /* ========== КАРТОЧКИ (МЕНЮ И УЧЕБА) ========== */
-        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-        .menu-card, .category-card {
-            background: rgba(30, 30, 45, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-radius: 22px; padding: 20px 16px; text-align: center; cursor: pointer; transition: 0.2s;
-            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        /* ========== ЭКРАНЫ ========== */
+        .screen {
+            display: none;
+            min-height: 100vh;
         }
-        .category-card { display: flex; text-align: left; align-items: center; gap: 16px; padding: 18px;}
-        
-        .menu-card:active, .category-card:active { transform: scale(0.96); border-color: var(--primary); background: rgba(0,0,0,0.5); }
-        
-        .menu-card .card-icon { font-size: 38px; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
-        .menu-card .card-title { font-size: 15px; font-weight: 800; margin-bottom: 4px; color: white; }
-        .menu-card .card-subtitle { font-size: 12px; color: var(--text-hint); font-weight: 500;}
-        
-        /* Широкая карточка с акцентом */
-        .menu-card.wide { grid-column: span 2; border-left: 4px solid var(--primary); display: flex; align-items: center; text-align: left; gap: 20px; padding: 20px;}
-        .menu-card.wide .card-icon { margin-bottom: 0; font-size: 45px;}
-        .menu-card.wide .card-title { color: var(--primary); font-size: 18px; margin-bottom: 6px;}
 
-        /* ========== DAILY QUESTS ========== */
-        .quest-item { 
-            background: rgba(30, 30, 45, 0.4); backdrop-filter: blur(12px); border-radius: 18px; 
-            padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; 
-            border: 1px solid rgba(255,255,255,0.08);
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s;
         }
-        .quest-icon { font-size: 28px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 14px;}
-        .quest-info { flex: 1; }
-        .quest-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: white;}
-        .quest-bar { height: 8px; background: rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
-        .quest-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px; transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 10px var(--primary);}
-        .quest-reward { font-size: 15px; font-weight: 800; color: var(--primary); }
-        .quest-item.done { opacity: 0.6; border-color: var(--success); }
-        .quest-item.done .quest-reward { color: var(--success); }
 
-        /* ========== АЗБУКА И КНОПКИ ========== */
-        .tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: 14px; padding: 5px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);}
-        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-hint); font-size: 15px; font-weight: 700; border-radius: 10px; transition: 0.2s;}
-        .tab-btn.active { background: rgba(255,255,255,0.1); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        
-        .test-buttons { display: flex; gap: 12px; margin-bottom: 20px; }
-        .test-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 15px; font-weight: 800; cursor: pointer; color: white; transition: 0.2s;}
-        .test-btn.primary { background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 5px 20px rgba(var(--primary), 0.4); }
-        .test-btn.secondary { background: rgba(30, 30, 45, 0.6); backdrop-filter: blur(10px); border: 1px solid var(--primary); color: white; }
-        .test-btn:active { transform: scale(0.95); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-        .kana-cell { background: rgba(30, 30, 45, 0.4); backdrop-filter: blur(10px); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; border: 1px solid rgba(255,255,255,0.08); padding: 14px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
-        .kana-cell:active { background: var(--primary); transform: scale(0.92); border-color: var(--accent);}
-        .kana-cell .char { font-size: 28px; font-weight: 700; color: white; }
-        .kana-cell .reading { font-size: 12px; color: var(--text-hint); margin-top: 4px; font-weight: 600;}
+        /* ========== СТЕКЛЯННЫЕ ШАПКИ ========== */
+        .glass-header {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 25px 20px;
+            border-radius: 0 0 30px 30px;
+            color: white;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at top, var(--primary) 0%, transparent 60%);
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* ========== ПРОФИЛЬ ПОЛЬЗОВАТЕЛЯ ========== */
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--primary);
+        }
+
+        .user-info h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .user-rank {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-box {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 2px;
+        }
+
+        .section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding-left: 4px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ========== КАРТОЧКИ (МЕНЮ) ========== */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .menu-card {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-card:active {
+            transform: scale(0.95);
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .menu-card .card-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+        }
+
+        .menu-card .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .menu-card .card-subtitle {
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+
+        .menu-card.wide {
+            grid-column: span 2;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            text-align: left;
+            gap: 15px;
+        }
+
+        .menu-card.wide .card-icon {
+            margin-bottom: 0;
+            font-size: 40px;
+        }
+
+        .menu-card.wide .card-title {
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        /* ========== ЕЖЕДНЕВНЫЕ ЗАДАНИЯ ========== */
+        .quest-item {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .quest-icon {
+            font-size: 28px;
+        }
+
+        .quest-info {
+            flex: 1;
+        }
+
+        .quest-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .quest-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .quest-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .quest-reward {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .quest-item.done {
+            opacity: 0.5;
+            border-color: var(--success);
+        }
+
+        .quest-item.done .quest-reward {
+            color: var(--success);
+        }
+
+        /* ========== АЗБУКА ========== */
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-hint);
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 3px;
+        }
+
+        .view-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-hint);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .view-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--primary);
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .test-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .test-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .test-btn.secondary {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--primary);
+        }
+
+        .kana-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .kana-cell {
+            aspect-ratio: 1;
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .kana-cell:active {
+            background: var(--primary);
+            transform: scale(0.92);
+        }
+
+        .kana-cell .char {
+            font-size: 26px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .kana-cell .reading {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 4px;
+        }
+
+        .kana-row {
+            margin-bottom: 18px;
+        }
+
+        .row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .row-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .row-test-btn {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .row-cards {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+        }
+
+        .row-cards::-webkit-scrollbar {
+            display: none;
+        }
+
+        .row-card {
+            min-width: 60px;
+            height: 75px;
+            background: rgba(30, 30, 46, 0.7);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .row-card:active {
+            background: var(--primary);
+        }
+
+        .row-card .char {
+            font-size: 26px;
+            color: white;
+        }
+
+        .row-card .reading {
+            font-size: 11px;
+            color: var(--text-hint);
+        }
+
+        /* ========== УЧЕБА (КАТЕГОРИИ) ========== */
+        .category-card {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-card:active {
+            transform: scale(0.98);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .category-icon {
+            font-size: 36px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+        }
+
+        .category-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .category-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .category-desc {
+            font-size: 12px;
+            color: var(--text-hint);
+            margin-bottom: 8px;
+        }
+
+        .category-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .category-arrow {
+            font-size: 24px;
+            color: var(--text-hint);
+        }
+
+        /* ========== ПРОФИЛЬ ========== */
+        .profile-btn {
+            position: absolute;
+            top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: rgba(30, 30, 46, 0.8);
+            backdrop-filter: blur(15px);
+            margin: -35px 16px 0;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 2;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .achievement {
+            text-align: center;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .achievement:active {
+            transform: scale(0.9);
+        }
+
+        .achievement-icon {
+            width: 54px;
+            height: 54px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            margin: 0 auto 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .achievement.locked .achievement-icon {
+            filter: grayscale(1);
+            opacity: 0.2;
+        }
+
+        .achievement-name {
+            font-size: 10px;
+            color: var(--text-hint);
+        }
+
+        /* ========== ЛИДЕРБОРД ========== */
+        .leaderboard-list {
+            padding: 0 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 14px;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .leaderboard-rank {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .leaderboard-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.1);
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--primary);
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+        }
+
+        .leaderboard-details {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+
+        .leaderboard-xp {
+            font-weight: 800;
+            color: var(--primary);
+        }
 
         /* ========== НАСТРОЙКИ ========== */
-        .settings-group { background: rgba(30,30,45,0.4); backdrop-filter: blur(12px); border-radius: 22px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 25px rgba(0,0,0,0.2);}
-        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .color-circle { width: 48px; height: 48px; border-radius: 50%; border: 3px solid transparent; flex-shrink: 0; transition: 0.2s; cursor: pointer;}
-        .color-circle.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 20px rgba(255,255,255,0.6);}
-        .bg-option { width: 90px; height: 140px; border-radius: 16px; background-size: cover; background-position: center; border: 2px solid transparent; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
-        .bg-option.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
-        
-        .toggle { width: 54px; height: 32px; background: rgba(0,0,0,0.5); border-radius: 16px; position: relative; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
-        .toggle.active { background: var(--primary); border-color: var(--accent); box-shadow: 0 0 15px var(--primary);}
-        .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 3px; left: 4px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .toggle.active::after { left: 24px; }
+        .settings-group {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
 
-        /* Лоадер */
-        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
-        .loading-logo { font-size: 70px; margin-bottom: 20px; animation: pulse 1.5s infinite ease-in-out; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));}
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-        .loading-spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-top: 25px; box-shadow: 0 0 15px var(--primary);}
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+        }
+
+        .color-picker, .bg-picker {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 10px 16px 20px;
+            margin: 0 -16px;
+            scrollbar-width: none;
+        }
+
+        .color-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            flex-shrink: 0;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .color-circle.active {
+            border-color: white;
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .bg-option {
+            width: 85px;
+            height: 130px;
+            border-radius: 14px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid transparent;
+            flex-shrink: 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
+            transition: 0.2s;
+            cursor: pointer;
+            background-color: rgba(30, 30, 46, 0.8);
+        }
+
+        .bg-option.active {
+            border-color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .toggle {
+            width: 50px;
+            height: 28px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 14px;
+            position: relative;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 3px;
+            transition: all 0.3s;
+        }
+
+        .toggle.active::after {
+            left: 23px;
+        }
+
+        /* ========== ВСПЛЫВАЮЩИЕ ОКНА (OVERLAYS) ========== */
+        .overlay-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-box {
+            background: rgba(30, 30, 46, 0.95);
+            border-radius: 28px;
+            padding: 30px 20px;
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            border: 1px solid var(--primary);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .quiz-card {
+            background: rgba(30, 30, 46, 0.9);
+            border: 2px solid var(--primary);
+            border-radius: 35px;
+            padding: 50px 20px;
+            text-align: center;
+            margin-bottom: 35px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .quiz-option {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .quiz-option.correct {
+            background: var(--success);
+            border-color: var(--success);
+            box-shadow: 0 0 15px var(--success);
+        }
+
+        .quiz-option.wrong {
+            background: var(--error);
+            border-color: var(--error);
+            box-shadow: 0 0 15px var(--error);
+        }
+
+        .swipe-card {
+            width: 100%;
+            max-width: 320px;
+            height: 420px;
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .swipe-btn {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            font-size: 32px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+
+        /* Загрузка */
+        .loading-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+        }
+
+        .loading-logo {
+            font-size: 70px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite ease-in-out;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .loading-spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            margin-top: 25px;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
+    <!-- Фоновые слои CSS -->
     <div class="app-bg-layer" id="appBgLayer"></div>
     <div class="app-bg-overlay"></div>
 
+    <!-- Загрузка -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
         <div style="color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px;">YomuBot</div>
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Главная -->
+    <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="screen active" id="homeScreen">
         <div class="glass-header">
             <div class="user-row">
                 <div class="avatar" id="userAvatar">👤</div>
                 <div>
                     <h1 id="userName">Загрузка...</h1>
-                    <div class="user-rank"><span id="userBadge">🥚</span> <span id="userRankName">Новичок</span></div>
+                    <div class="user-rank" style="background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                        <span id="userBadge">🥚</span> 
+                        <span id="userRankName">Новичок</span>
+                    </div>
                 </div>
             </div>
             <div class="stats-row">
-                <div class="stat-box"><div class="stat-value" id="userXp">0</div><div class="stat-label">XP</div></div>
-                <div class="stat-box"><div class="stat-value" id="userStreak">0</div><div class="stat-label">🔥 Серия</div></div>
-                <div class="stat-box"><div class="stat-value" id="userCards">0</div><div class="stat-label">Карточек</div></div>
+                <div class="stat-box">
+                    <div class="stat-value" id="userXp">0</div>
+                    <div class="stat-label">XP</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="userStreak">0</div>
+                    <div class="stat-label">🔥 Серия</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="userCards">0</div>
+                    <div class="stat-label">Карточек</div>
+                </div>
             </div>
         </div>
 
@@ -225,9 +1036,9 @@
             <div class="section-title">📚 Обучение</div>
             <div class="menu-grid">
                 <div class="menu-card wide" onclick="goTo('alphabet')">
-                    <div class="card-icon">🎌</div>
+                    <div class="card-icon" style="margin-bottom: 0; font-size: 45px;">🎌</div>
                     <div style="text-align: left;">
-                        <div class="card-title">Японская Азбука</div>
+                        <div class="card-title" style="font-size: 18px; color: var(--primary);">Японская Азбука</div>
                         <div class="card-subtitle">Хирагана и Катакана</div>
                     </div>
                 </div>
@@ -281,7 +1092,7 @@
         </div>
     </div>
 
-    <!-- Азбука -->
+    <!-- АЗБУКА -->
     <div class="screen" id="alphabetScreen">
         <div class="glass-header" style="padding-bottom: 15px;">
             <h2 style="margin-bottom: 20px; font-weight: 800; font-size: 26px;">🎌 Японская Азбука</h2>
@@ -304,64 +1115,90 @@
         </div>
     </div>
 
-    <!-- Изучение -->
+    <!-- ИЗУЧЕНИЕ КАТЕГОРИЙ -->
     <div class="screen" id="studyScreen">
-        <div class="glass-header"><h2 id="studyTitle" style="font-weight: 800; font-size: 26px;">📚 Изучение</h2></div>
-        <div class="section" style="display: flex; flex-direction: column; gap: 14px;" id="studyContent"></div>
+        <div class="glass-header">
+            <h2 id="studyTitle" style="font-weight: 800; font-size: 26px;">📚 Изучение</h2>
+        </div>
+        <div class="section" id="studyContent" style="display: flex; flex-direction: column; gap: 14px;"></div>
     </div>
 
-    <!-- Профиль -->
+    <!-- ПРОФИЛЬ -->
     <div class="screen" id="profileScreen">
         <div class="glass-header">
-            <button style="position:absolute; top:25px; right:20px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); width:44px; height:44px; border-radius:50%; color:white; font-size:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="goTo('settings')">⚙️</button>
-            <button style="position:absolute; top:25px; left:20px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); width:44px; height:44px; border-radius:50%; color:white; font-size:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="promptChangeName()">✏️</button>
+            <button class="profile-btn" style="right: 20px;" onclick="goTo('settings')">⚙️</button>
+            <button class="profile-btn" style="left: 20px;" onclick="promptChangeName()">✏️</button>
             
-            <div id="profileAvatar" class="avatar" style="margin: 0 auto 15px; width: 85px; height: 85px; font-size: 40px; border-width: 3px;">👤</div>
+            <div class="avatar" id="profileAvatar" style="margin: 0 auto 15px; width: 85px; height: 85px; font-size: 40px; border-width: 3px;">👤</div>
             <h1 id="profileName" style="font-size: 26px; font-weight: 800; margin-bottom: 8px;">Пользователь</h1>
-            <div class="user-rank" style="margin: 0 auto; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 6px 16px;">
+            
+            <div class="user-rank" style="margin: 0 auto; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 6px 16px; border-radius: 20px;">
                 <span id="profileBadge">🥚</span> <span id="profileRankName">Новичок</span>
             </div>
         </div>
         
-        <div class="stats-row" style="padding: 0 16px; margin-top: -35px; position: relative; z-index: 2;">
-            <div class="stat-box" style="background: rgba(20,20,30,0.9); backdrop-filter: blur(15px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);"><div class="stat-value" id="profileXp" style="color:var(--primary);">0</div><div class="stat-label">XP</div></div>
-            <div class="stat-box" style="background: rgba(20,20,30,0.9); backdrop-filter: blur(15px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);"><div class="stat-value" id="profileStreak" style="color:var(--primary);">0</div><div class="stat-label">Серия</div></div>
-            <div class="stat-box" style="background: rgba(20,20,30,0.9); backdrop-filter: blur(15px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);"><div class="stat-value" id="profileCards" style="color:var(--primary);">0</div><div class="stat-label">Карточек</div></div>
+        <div class="profile-stats">
+            <div style="text-align: center;">
+                <div class="stat-value" id="profileXp" style="color:var(--primary);">0</div>
+                <div class="stat-label">XP</div>
+            </div>
+            <div style="text-align: center;">
+                <div class="stat-value" id="profileStreak" style="color:var(--primary);">0</div>
+                <div class="stat-label">Серия</div>
+            </div>
+            <div style="text-align: center;">
+                <div class="stat-value" id="profileCards" style="color:var(--primary);">0</div>
+                <div class="stat-label">Карточек</div>
+            </div>
         </div>
 
         <div class="section" style="margin-top: 35px;">
             <div class="section-title">📊 Прогресс по разделам</div>
             <div id="progressDetails" style="margin-bottom: 25px;">
-                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 30px; background: rgba(30,30,45,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">Загрузка статистики...</div>
+                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 30px; background: rgba(30,30,46,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">Загрузка статистики...</div>
             </div>
             
             <div class="section-title">🎯 Дополнительно</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 25px;">
-                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div><div class="stat-label">Лучшая серия</div></div>
-                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div><div class="stat-label">Точность</div></div>
-                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div><div class="stat-label">Лучший блиц</div></div>
-                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div><div class="stat-label">Голосовых</div></div>
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Лучшая серия</div>
+                </div>
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div>
+                    <div class="stat-label">Точность</div>
+                </div>
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Лучший блиц</div>
+                </div>
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Голосовых</div>
+                </div>
             </div>
 
             <div class="section-title">🏆 Достижения (Нажми)</div>
-            <div id="achievementsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;"></div>
+            <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
     </div>
 
-    <!-- Рейтинг -->
+    <!-- РЕЙТИНГ -->
     <div class="screen" id="leaderboardScreen">
         <div class="glass-header">
             <h2 style="margin-bottom: 5px; font-weight: 800; font-size: 26px;">🏆 Рейтинг игроков</h2>
             <p style="color: var(--text-hint); font-size: 14px; font-weight: 500;">Топ-20 по опыту</p>
         </div>
-        <div class="section" id="leaderboardList" style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="leaderboard-list" id="leaderboardList">
             <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
 
-    <!-- Настройки -->
+    <!-- НАСТРОЙКИ -->
     <div class="screen" id="settingsScreen">
-        <div class="glass-header"><h2 style="font-weight: 800; font-size: 26px;">⚙️ Настройки</h2></div>
+        <div class="glass-header">
+            <h2 style="font-weight: 800; font-size: 26px;">⚙️ Настройки</h2>
+        </div>
         <div class="section">
             <div class="settings-group">
                 <div class="settings-item" style="border-bottom: none; padding-bottom: 10px;">
@@ -379,117 +1216,150 @@
             
             <div class="settings-group">
                 <div class="settings-item" onclick="toggleSetting('sound')">
-                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600;"><span style="font-size:22px;">🔊</span> Звуки</div>
+                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600; font-size: 16px; color: white;">
+                        <span style="font-size:22px;">🔊</span> Звуки
+                    </div>
                     <div class="toggle active" id="soundToggle"></div>
                 </div>
                 <div class="settings-item" onclick="toggleSetting('vibration')">
-                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600;"><span style="font-size:22px;">📳</span> Вибрация</div>
+                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600; font-size: 16px; color: white;">
+                        <span style="font-size:22px;">📳</span> Вибрация
+                    </div>
                     <div class="toggle active" id="vibrationToggle"></div>
                 </div>
             </div>
             
             <div class="settings-group">
                 <div class="settings-item" onclick="tg.close()">
-                    <div style="display:flex; align-items:center; gap:14px; font-weight:800; color: var(--error);"><span style="font-size:22px;">🚪</span> Закрыть приложение</div>
+                    <div style="display:flex; align-items:center; gap:14px; font-weight:800; color: var(--error);">
+                        <span style="font-size:22px;">🚪</span> Закрыть приложение
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА СО СТРОГИМ STYLE="DISPLAY: NONE" -->
+    <!-- ========================================== -->
+    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА (ЖЕСТКО СКРЫТЫ)    -->
+    <!-- ========================================== -->
     
-    <!-- Modal (Изучение карточек) -->
-    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(10px); z-index: 500; align-items: center; justify-content: center; padding: 20px;">
-        <div id="modalBox" style="background: rgba(30, 30, 46, 0.95); border-radius: 35px; padding: 40px 25px; width: 100%; max-width: 350px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative;">
+    <!-- МОДАЛКА КАРТОЧЕК -->
+    <div id="modal" class="overlay-screen" style="display: none;">
+        <div class="modal-box" id="modalBox">
             <div id="modalCounter" style="display: none; position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); padding: 6px 14px; border-radius: 14px; font-size: 13px; font-weight: 700; color: white;">1/10</div>
             <div id="modalSwipeHint" style="display: none; position: absolute; top: 20px; right: 20px; font-size: 20px; opacity: 0.5;">↔️</div>
             
-            <div id="modalChar" class="japanese" style="font-size: 90px; margin-bottom: 10px; color: white; transition: 0.2s; text-shadow: 0 4px 15px rgba(0,0,0,0.5);">あ</div>
-            <div id="modalReading" style="font-size: 34px; color: var(--primary); font-weight: 800; margin-bottom: 6px; text-shadow: 0 0 15px rgba(var(--primary), 0.3);">a</div>
-            <div id="modalMeaning" style="display: none; font-size: 18px; color: white; margin-bottom: 8px; font-weight: 500;"></div>
-            <div id="modalHint" style="margin-bottom: 25px; color: var(--text-hint); font-size: 14px;">Подсказка</div>
+            <div id="modalChar" class="japanese modal-char">あ</div>
+            <div id="modalReading" class="modal-reading">a</div>
+            <div id="modalMeaning" class="modal-meaning" style="display: none;"></div>
+            <div id="modalHint" class="modal-hint">Подсказка</div>
             
-            <div id="modalGif" style="display: none; margin: 15px 0; justify-content: center;"><img id="gifImage" src="" style="max-width:160px; border-radius:16px; background:white; padding:8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);"></div>
+            <div id="modalGif" class="modal-gif">
+                <img id="gifImage" src="">
+            </div>
             
-            <div style="display: flex; gap: 12px; margin-top: 20px;">
-                <button style="flex: 1; padding: 18px; border: 1px solid var(--primary); border-radius: 20px; font-size: 26px; cursor: pointer; color: white; background: rgba(0,0,0,0.3); transition: 0.2s;" onclick="playSound()">🔊</button>
-                <button id="modalStrokeBtn" style="flex: 1; padding: 18px; border: none; border-radius: 20px; font-size: 26px; cursor: pointer; color: white; background: var(--primary); box-shadow: 0 5px 15px rgba(var(--primary), 0.4); transition: 0.2s;" onclick="showGif()">✍️</button>
-                <button style="flex: 0.5; padding: 18px; border: none; border-radius: 20px; font-size: 26px; cursor: pointer; color: white; background: rgba(255,255,255,0.1); transition: 0.2s;" onclick="closeModal()">✕</button>
+            <div class="modal-buttons">
+                <button class="modal-btn" style="background: rgba(255,255,255,0.1); border: 1px solid var(--primary);" onclick="playSound()">🔊</button>
+                <button id="modalStrokeBtn" class="modal-btn" style="background: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.4);" onclick="showGif()">✍️</button>
+                <button class="modal-btn" style="background: rgba(255,255,255,0.1); flex: 0.5;" onclick="closeModal()">✕</button>
             </div>
         </div>
     </div>
 
-    <!-- Swipe Screen (Tinder) -->
-    <div id="swipeScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+    <!-- TINDER КАРТОЧКИ (СВАЙПЫ) -->
+    <div id="swipeScreen" class="overlay-screen" style="display: none;">
         <h2 style="color: white; margin-bottom: 20px; font-size: 28px; font-weight: 800;">🃏 Карточки</h2>
-        <div style="display: flex; align-items: center; gap: 14px; color: white; margin-bottom: 30px; width: 100%; max-width: 320px;">
+        
+        <div class="swipe-progress">
             <span id="swipeCount" style="font-weight: 700; font-size: 16px;">1 / 10</span>
-            <div style="flex:1; height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);"><div id="swipeProgress" style="height:100%; background:var(--primary); width:10%; box-shadow: 0 0 10px var(--primary); transition: width 0.3s;"></div></div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="swipeProgress" style="width: 10%; box-shadow: 0 0 10px var(--primary);"></div>
+            </div>
         </div>
         
-        <div id="swipeCard" style="width: 100%; max-width: 320px; height: 420px; background: rgba(30,30,46,0.9); border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: transform 0.3s, opacity 0.3s;">
-            <div style="position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between;">
-                <div class="indicator learn" style="padding: 8px 18px; background: var(--error); border-radius: 20px; font-weight: 800; opacity: 0; color: white; box-shadow: 0 4px 10px rgba(var(--error), 0.4);">👎 Учить</div>
-                <div class="indicator know" style="padding: 8px 18px; background: var(--success); border-radius: 20px; font-weight: 800; opacity: 0; color: white; box-shadow: 0 4px 10px rgba(var(--success), 0.4);">👍 Знаю</div>
+        <div class="swipe-card" id="swipeCard">
+            <div class="swipe-indicators">
+                <div class="indicator learn" style="background: var(--error); color: white;">👎 Учить</div>
+                <div class="indicator know" style="background: var(--success); color: white;">👍 Знаю</div>
             </div>
             <div class="japanese" id="swipeChar" style="font-size: 130px; margin-bottom: 15px; color: white; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">あ</div>
             <div id="swipeHint" style="color: var(--text-hint); font-size: 16px; font-weight: 500;">Нажми 👁 чтобы увидеть</div>
-            <div id="swipeAnswer" style="font-size: 40px; font-weight: 900; color: var(--primary); opacity: 0; text-shadow: 0 0 15px rgba(var(--primary), 0.4);">a</div>
+            <div id="swipeAnswer" style="font-size: 40px; font-weight: 900; color: var(--primary); opacity: 0; text-shadow: 0 0 15px rgba(0,0,0,0.8);">a</div>
         </div>
         
-        <div style="display: flex; gap: 35px; margin-top: 40px;">
-            <button style="width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--error); font-size: 32px; background: rgba(0,0,0,0.6); color: white; box-shadow: 0 5px 20px rgba(0,0,0,0.4); transition: 0.1s;" onclick="swipeNo()">👎</button>
-            <button style="width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--warning); font-size: 32px; background: rgba(0,0,0,0.6); color: white; box-shadow: 0 5px 20px rgba(0,0,0,0.4); transition: 0.1s;" onclick="swipeReveal()">👁</button>
-            <button style="width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--success); font-size: 32px; background: rgba(0,0,0,0.6); color: white; box-shadow: 0 5px 20px rgba(0,0,0,0.4); transition: 0.1s;" onclick="swipeYes()">👍</button>
+        <div class="swipe-buttons">
+            <button class="swipe-btn" style="border: 3px solid var(--error);" onclick="swipeNo()">👎</button>
+            <button class="swipe-btn" style="border: 3px solid var(--warning);" onclick="swipeReveal()">👁</button>
+            <button class="swipe-btn" style="border: 3px solid var(--success);" onclick="swipeYes()">👍</button>
         </div>
     </div>
 
-    <!-- Quiz Screen -->
-    <div id="quizScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+    <!-- КВИЗЫ -->
+    <div id="quizScreen" class="overlay-screen" style="display: none;">
         <h2 id="quizTitle" style="color: white; margin-bottom: 15px; font-size: 26px; font-weight: 800;">🎯 Тест</h2>
+        
         <div style="display: flex; gap: 40px; font-size: 22px; font-weight: 900; margin-bottom: 25px;">
-            <span style="color: var(--success); text-shadow: 0 0 10px rgba(var(--success), 0.5);">✓ <span id="quizCorrect">0</span></span>
-            <span style="color: var(--error); text-shadow: 0 0 10px rgba(var(--error), 0.5);">✗ <span id="quizWrong">0</span></span>
+            <span style="color: var(--success); text-shadow: 0 0 10px rgba(0,0,0,0.8);">✓ <span id="quizCorrect">0</span></span>
+            <span style="color: var(--error); text-shadow: 0 0 10px rgba(0,0,0,0.8);">✗ <span id="quizWrong">0</span></span>
         </div>
         
-        <div style="background: rgba(30,30,46,0.8); border: 2px solid var(--primary); border-radius: 35px; padding: 50px 20px; text-align: center; margin-bottom: 35px; width: 100%; max-width: 320px; box-shadow: 0 15px 40px rgba(0,0,0,0.5);">
+        <div class="quiz-card">
             <div id="quizChar" class="japanese" style="font-size: 100px; color: white; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">あ</div>
         </div>
         
-        <div id="quizOptions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 320px;"></div>
+        <div id="quizOptions" class="quiz-options"></div>
     </div>
 
-    <!-- Results Screen -->
-    <div id="resultsScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultsScreen" class="overlay-screen" style="display: none; text-align: center;">
         <div id="resultsIcon" style="font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🎉</div>
-        <h1 id="resultsTitle" style="color: var(--primary); margin-bottom: 10px; font-size: 36px; font-weight: 900; text-shadow: 0 0 20px rgba(var(--primary), 0.4);">Отлично!</h1>
+        <h1 id="resultsTitle" style="color: var(--primary); margin-bottom: 10px; font-size: 36px; font-weight: 900; text-shadow: 0 0 20px rgba(0,0,0,0.8);">Отлично!</h1>
         <div id="resultsScore" style="font-size: 55px; font-weight: 900; color: white; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">5 / 5</div>
-        <div id="resultsXp" style="font-size: 26px; color: var(--warning); font-weight: 800; margin-bottom: 10px; text-shadow: 0 0 15px rgba(var(--warning), 0.4);">+50 XP</div>
+        <div id="resultsXp" style="font-size: 26px; color: var(--warning); font-weight: 800; margin-bottom: 10px; text-shadow: 0 0 15px rgba(0,0,0,0.8);">+50 XP</div>
         <div id="resultsSubtitle" style="color: var(--text-hint); margin-bottom: 45px; font-size: 18px;">Так держать!</div>
         
-        <button style="width: 100%; max-width: 300px; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(var(--primary), 0.4); transition: 0.2s;" onclick="finishQuiz()">✨ Забрать награду</button>
+        <button style="width: 100%; max-width: 300px; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: 0.2s;" onclick="finishQuiz()">✨ Забрать награду</button>
         <button style="width: 100%; max-width: 300px; padding: 20px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; transition: 0.2s;" onclick="retryQuiz()">🔄 Ещё раз</button>
     </div>
 
-    <!-- Wheel Screen -->
-    <div id="wheelScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-        <button style="position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px; transition: 0.2s;" onclick="closeWheel()">✕</button>
-        <h2 style="color: var(--primary); font-size: 32px; font-weight: 900; margin-bottom: 10px; text-shadow: 0 0 20px rgba(var(--primary), 0.5);">🎡 РУЛЕТКА</h2>
+    <!-- РУЛЕТКА -->
+    <div id="wheelScreen" class="overlay-screen" style="display: none;">
+        <button style="position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px; transition: 0.2s; cursor: pointer;" onclick="closeWheel()">✕</button>
+        <h2 style="color: var(--primary); font-size: 32px; font-weight: 900; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,0,0,0.8);">🎡 РУЛЕТКА</h2>
         <p style="color: var(--text-hint); margin-bottom: 40px; font-size: 16px;">Испытай свою удачу!</p>
         
         <div style="position: relative; width: 320px; height: 320px; margin-bottom: 50px;">
             <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--warning); z-index: 10; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));"></div>
-            <svg id="wheel" viewBox="0 0 100 100" style="width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 50px rgba(var(--primary), 0.5); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);"></svg>
+            <svg id="wheel" viewBox="0 0 100 100" style="width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 50px rgba(0,0,0,0.5); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);"></svg>
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 66px; height: 66px; background: rgba(30,30,46,0.9); border: 4px solid var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🎯</div>
         </div>
         
-        <button id="wheelSpinBtn" style="padding: 20px 70px; background: var(--primary); border: none; border-radius: 35px; color: white; font-size: 22px; font-weight: 900; box-shadow: 0 10px 30px rgba(var(--primary), 0.5); transition: 0.2s;" onclick="spinWheel()">🎲 КРУТИТЬ</button>
+        <button id="wheelSpinBtn" style="padding: 20px 70px; background: var(--primary); border: none; border-radius: 35px; color: white; font-size: 22px; font-weight: 900; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.2s; cursor: pointer;" onclick="spinWheel()">🎲 КРУТИТЬ</button>
         
         <div id="wheelResult" style="display: none; margin-top: 35px; padding: 25px 45px; background: rgba(255,255,255,0.1); border-radius: 24px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.4);">
-            <div id="wheelResultXp" style="font-size: 50px; font-weight: 900; color: var(--warning); margin-bottom: 8px; text-shadow: 0 0 15px rgba(var(--warning), 0.4);">+100 XP</div>
+            <div id="wheelResultXp" style="font-size: 50px; font-weight: 900; color: var(--warning); margin-bottom: 8px; text-shadow: 0 0 15px rgba(0,0,0,0.8);">+100 XP</div>
             <div style="color: white; font-size: 16px; font-weight: 600;">Награда зачислена!</div>
         </div>
     </div>
+
+    <!-- УСИЛЕННЫЙ БЛОК НАВИГАЦИИ -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" onclick="goTo('home')">
+            <span class="icon">🏠</span><span>Главная</span>
+        </button>
+        <button class="nav-item" onclick="goTo('alphabet')">
+            <span class="icon">🔤</span><span>Азбука</span>
+        </button>
+        <button class="nav-item" onclick="goTo('study')">
+            <span class="icon">📚</span><span>Учить</span>
+        </button>
+        <button class="nav-item" onclick="goTo('profile')">
+            <span class="icon">👤</span><span>Профиль</span>
+        </button>
+        <button class="nav-item" onclick="goTo('leaderboard')">
+            <span class="icon">🏆</span><span>Рейтинг</span>
+        </button>
+    </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -501,8 +1371,14 @@
         const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
-            id: null, name: 'Загрузка...', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
-            settings: { sound: true, vibration: true, bg: 'default', themeColor: 'purple' }
+            id: null, 
+            name: '', 
+            xp: 0, 
+            streak: 0, 
+            cardsLearned: 0, 
+            perfectTests: 0, 
+            quests: {},
+            settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }
         };
 
         let currentScreen = 'home';
@@ -515,7 +1391,7 @@
         let currentStudyList = [];
         let currentStudyIndex = 0;
 
-        // ==================== 1. ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
+        // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
         const PALETTES = [
             { id: 'purple', name: 'Фиолетовый', p: '#667eea', s: '#764ba2', a: '#f093fb' },
             { id: 'blue', name: 'Океан', p: '#4facfe', s: '#00f2fe', a: '#43e97b' },
@@ -524,11 +1400,6 @@
             { id: 'dark', name: 'Ночь', p: '#537895', s: '#09203f', a: '#141e30' },
             { id: 'orange', name: 'Огонь', p: '#ff0844', s: '#ffb199', a: '#f6d365' }
         ];
-
-        function hexToRgb(hex) {
-            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
-        }
 
         function applyPalette(paletteId) {
             const pal = PALETTES.find(p => p.id === paletteId) || PALETTES[0];
@@ -553,25 +1424,28 @@
             `).join('');
         }
 
-        // ==================== 2. ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
+        // ==================== ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
         const BACKGROUNDS = [
-            { id: 'default', name: 'Тёмный', url: '' },
-            { id: 'sakura', name: 'Сакура', url: 'sakura.gif' },
-            { id: 'city', name: 'Кибер Сити', url: 'city.gif' },
-            { id: 'rain', name: 'Дождь', url: 'rain.gif' },
-            { id: 'sunset', name: 'Закат', url: 'sunset.gif' },
-            { id: 'forest', name: 'Лес', url: 'forest.gif' }
+            { id: 'bg-dark', name: 'Тёмный', url: '' },
+            { id: 'bg-sakura', name: 'Сакура', url: 'sakura.gif' },
+            { id: 'bg-city', name: 'Кибер Сити', url: 'city.gif' },
+            { id: 'bg-rain', name: 'Дождь', url: 'rain.gif' },
+            { id: 'bg-sunset', name: 'Закат', url: 'sunset.gif' },
+            { id: 'bg-forest', name: 'Лес', url: 'forest.gif' }
         ];
 
         function applyBackground(bgId) {
             const bgLayer = document.getElementById('appBgLayer');
             const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
-            if (bg.url) {
+            
+            if (bg.url !== '') {
                 bgLayer.style.backgroundImage = `url('${bg.url}')`;
-                bgLayer.style.opacity = '0.35'; 
+                bgLayer.style.opacity = '0.4'; 
             } else {
+                bgLayer.style.backgroundImage = 'none';
                 bgLayer.style.opacity = '0';
             }
+            
             if (!user.settings) user.settings = {};
             user.settings.bg = bgId;
             saveUser();
@@ -582,33 +1456,69 @@
             const picker = document.getElementById('bgPicker');
             if(!picker) return;
             picker.innerHTML = BACKGROUNDS.map(bg => `
-                <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
-                     style="background-image: url('${bg.url || ''}'); background-color: var(--bg-secondary); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
+                <div class="bg-option ${(user.settings.bg || 'bg-dark') === bg.id ? 'active' : ''}" 
+                     style="background-image: url('${bg.url}'); background-color: rgba(255,255,255,0.05); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
                      <div style="background: rgba(0,0,0,0.8); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; text-align:center;">${bg.name}</div>
                 </div>
             `).join('');
         }
 
-        // ==================== 3. ДОСТИЖЕНИЯ (57 ШТУК с иконками) ====================
+        // ==================== ДОСТИЖЕНИЯ (57 ШТУК) ====================
         const ACHIEVEMENTS = [];
         
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
         const xpNames = ["Первый шаг", "Ученик", "Искатель", "Странник", "Кохай", "Сэмпай", "Мечник", "Самурай", "Ронин", "Мастер", "Сенсей", "Шихан", "Даймё", "Сёгун", "Ками"];
         const xpIcons = ['🌱','🌿','🌳','🌲','🍄','🐚','🐌','🦋','🐛','🐝','🐞','🐠','🐟','🐬','🐲'];
-        xpMilestones.forEach((xp, i) => ACHIEVEMENTS.push({ id: `xp_${i}`, name: xpNames[i], icon: xpIcons[i], desc: `Набери ${xp} XP.`, check: u => u.xp >= xp }));
+        
+        for (let i = 0; i < xpMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `xp_${i}`, 
+                name: xpNames[i], 
+                icon: xpIcons[i], 
+                desc: `Набери ${xpMilestones[i]} XP.`, 
+                check: (u) => u.xp >= xpMilestones[i] 
+            });
+        }
 
         const strMilestones = [3, 7, 10, 14, 21, 30, 50, 60, 90, 100, 150, 180, 200, 250, 300, 365, 500];
         const strIcons = ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛','🔥','💥','⚡','✨','💫'];
-        strMilestones.forEach((d, i) => ACHIEVEMENTS.push({ id: `str_${d}`, name: `${d} Дней`, icon: strIcons[i], desc: `Поддерживай серию ${d} дней.`, check: u => u.streak >= d }));
+        
+        for (let i = 0; i < strMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `str_${strMilestones[i]}`, 
+                name: `${strMilestones[i]} Дней`, 
+                icon: strIcons[i], 
+                desc: `Поддерживай серию ${strMilestones[i]} дней.`, 
+                check: (u) => u.streak >= strMilestones[i] 
+            });
+        }
 
         const cardMilestones = [10, 20, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000];
         const crdIcons = ['📝','📖','📄','📃','📑','📓','📔','📒','📕','📗','📘','📙','📚','📜','🗺️'];
-        cardMilestones.forEach((c, i) => ACHIEVEMENTS.push({ id: `crd_${c}`, name: `Словарь ${c}`, icon: crdIcons[i], desc: `Изучи ${c} карточек.`, check: u => u.cardsLearned >= c }));
+        
+        for (let i = 0; i < cardMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `crd_${cardMilestones[i]}`, 
+                name: `Словарь ${cardMilestones[i]}`, 
+                icon: crdIcons[i], 
+                desc: `Изучи ${cardMilestones[i]} карточек.`, 
+                check: (u) => u.cardsLearned >= cardMilestones[i] 
+            });
+        }
 
         const testMilestones = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250];
         const testIcons = ['🥉','🥈','🥇','🏅','🏆','🏵️','🎗️','🎫','🎟️','👑'];
-        testMilestones.forEach((t, i) => ACHIEVEMENTS.push({ id: `pt_${t}`, name: `Снайпер ${t}`, icon: testIcons[i], desc: `Пройди ${t} тестов без ошибок.`, check: u => (u.perfectTests || 0) >= t }));
+        
+        for (let i = 0; i < testMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `pt_${testMilestones[i]}`, 
+                name: `Снайпер ${testMilestones[i]}`, 
+                icon: testIcons[i], 
+                desc: `Пройди ${testMilestones[i]} тестов без ошибок.`, 
+                check: (u) => (u.perfectTests || 0) >= testMilestones[i] 
+            });
+        }
 
         const DAILY_QUESTS = [
             {id: 'cards10', name: 'Изучить 10 карточек', target: 10, xp: 30, icon: '📚'},
@@ -626,10 +1536,12 @@
         function sendResult(type, score) {
             try {
                 if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
-                    const data = { type, score, initData: AUTH_HEADER };
+                    const data = { type: type, score: score, initData: AUTH_HEADER };
                     tg.sendData(JSON.stringify(data));
                 }
-            } catch (e) { console.warn("sendData works only inside Telegram"); }
+            } catch (e) {
+                console.warn("sendData works only inside Telegram");
+            }
         }
 
         async function fetchUserFromServer() {
@@ -640,21 +1552,24 @@
                 });
                 if (!response.ok) throw new Error('Server error');
                 const data = await response.json();
+                
                 if (data.success) {
                     user.id = data.user.id;
                     user.xp = data.user.xp;
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
-                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ПРИОРИТЕТ ВЫШЕ ЧЕМ ТГ)
-                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User' && data.user.name !== 'User') {
+                    // Защита имени пользователя
+                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
                         user.name = data.user.name;
                     } else if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                         user.name = tg.initDataUnsafe.user.first_name;
                     }
                     return true;
                 }
-            } catch (e) { return false; }
+            } catch (e) { 
+                return false; 
+            }
         }
 
         async function loadAvatarBlob(userId, elementId) {
@@ -668,15 +1583,20 @@
                         const blob = await response.blob();
                         const url = URL.createObjectURL(blob);
                         const el = document.getElementById(elementId);
-                        if(el) el.style.backgroundImage = `url('${url}')`;
+                        if (el) {
+                            el.style.backgroundImage = `url('${url}')`;
+                        }
                     }
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn('Avatar download failed');
+            }
         }
 
         async function fetchLeaderboard() {
             const container = document.getElementById('leaderboardList');
             if (!container) return;
+            
             container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>';
             
             try {
@@ -690,12 +1610,14 @@
                 
                 if (data.success && Array.isArray(data.players) && data.players.length > 0) {
                     let html = '';
+                    
                     data.players.forEach((p, index) => {
                         const rank = index + 1;
                         let safeName = p.name;
-                        // ЖЕСТКИЙ ПЕРЕХВАТ "Test User" или "Х"
+                        
+                        // Жесткий перехват кривых имен
                         if (!safeName || safeName === 'Test User' || safeName === 'User' || safeName === 'Х') {
-                            safeName = `Ученик`;
+                            safeName = `Игрок ${p.id.toString().slice(-4)}`;
                         }
                         
                         const initial = safeName.charAt(0).toUpperCase();
@@ -718,7 +1640,7 @@
                     
                     container.innerHTML = html;
 
-                    // Скачиваем аватарки безопасно через BLOB
+                    // Асинхронно докачиваем реальные аватарки
                     data.players.forEach((p, index) => {
                         loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
                     });
@@ -726,25 +1648,33 @@
                 } else {
                     container.innerHTML = '<div style="text-align: center; color: var(--text-hint);">Нет данных</div>';
                 }
-            } catch (e) { container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; }
+            } catch (e) { 
+                container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; 
+            }
         }
 
         async function fetchUserStats() {
             if (!AUTH_HEADER) return;
+            
             const container = document.getElementById('progressDetails');
+            
             try {
                 const response = await fetch(`${API_BASE}/api/user/stats`, {
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
+                
                 if (!response.ok) throw new Error('Stats API Error');
                 const data = await response.json();
+                
                 if (data.success) {
                     renderProfileStats(data.stats);
                 } else {
                     throw new Error('No success flag');
                 }
             } catch (e) { 
-                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.<br>Проверьте работу сервера.</div>`;
+                if (container) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.<br>Проверьте работу сервера.</div>`;
+                }
             }
         }
 
@@ -756,18 +1686,25 @@
 
             const byType = stats.by_type || {};
             const sections = [
-                { id: 'hiragana', name: 'Хирагана', total: 46 }, { id: 'katakana', name: 'Катакана', total: 46 },
-                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 }, { id: 'words_n5', name: 'Слова N5', total: 40 },
-                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 }, { id: 'words_n4', name: 'Слова N4', total: 16 }
+                { id: 'hiragana', name: 'Хирагана', total: 46 }, 
+                { id: 'katakana', name: 'Катакана', total: 46 },
+                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 }, 
+                { id: 'words_n5', name: 'Слова N5', total: 40 },
+                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 }, 
+                { id: 'words_n4', name: 'Слова N4', total: 16 }
             ];
+            
             let progressHtml = '';
+            
             sections.forEach(sec => {
                 const learned = byType[sec.id] || 0;
                 const percent = Math.min(100, Math.round(learned / sec.total * 100));
+                
                 progressHtml += `
                     <div style="margin-bottom:12px;">
                         <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color: white;">
-                            <span>${sec.name}</span><span>${learned}/${sec.total} (<span style="color:var(--primary); font-weight:bold;">${percent}%</span>)</span>
+                            <span>${sec.name}</span>
+                            <span>${learned}/${sec.total} (<span style="color:var(--primary); font-weight:bold;">${percent}%</span>)</span>
                         </div>
                         <div style="height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
                             <div style="height:100%; width:${percent}%; background:var(--primary); border-radius:4px; box-shadow: 0 0 10px var(--primary);"></div>
@@ -775,6 +1712,7 @@
                     </div>
                 `;
             });
+            
             document.getElementById('progressDetails').innerHTML = progressHtml;
         }
 
@@ -782,11 +1720,13 @@
         function loadUserFromStorage() {
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
-                user = {...user, ...JSON.parse(saved)};
-                if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
+                user = { ...user, ...JSON.parse(saved) };
+                if (!user.settings) {
+                    user.settings = { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' };
+                }
             }
 
-            // ЖЕСТКИЙ ФОЛЛБЭК ИМЕНИ ИЗ ТЕЛЕГРАМА (если в памяти мусор)
+            // Фоллбэк имени из ТГ
             if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...' || user.name === 'User' || user.name === 'Х') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
@@ -809,6 +1749,7 @@
                 const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
                 avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff`;
             }
+            
             document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('userAvatar').textContent = '';
             document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
@@ -822,26 +1763,36 @@
                 try {
                     const response = await fetch(`${API_BASE}/api/setname`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' },
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'X-Telegram-Init-Data': AUTH_HEADER, 
+                            'ngrok-skip-browser-warning': 'true' 
+                        },
                         body: JSON.stringify({ name: trimmed })
                     });
                     const data = await response.json();
                     if (data.success) {
                         user.name = trimmed;
-                        saveUser(); updateUI(); setAvatar();
+                        saveUser(); 
+                        updateUI(); 
+                        setAvatar();
                         tg.showAlert('Имя успешно изменено!');
-                    } else { tg.showAlert('Ошибка при смене имени'); }
-                } catch (e) { console.error(e); tg.showAlert('Ошибка соединения с сервером'); }
+                    } else {
+                        tg.showAlert('Ошибка при смене имени');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    tg.showAlert('Ошибка соединения с сервером');
+                }
             }
         }
 
         async function init() {
             loadUserFromStorage();
             
-            // Если сервер жив, обновим данные с него
             await fetchUserFromServer();
             
-            applyBackground(user.settings.bg || 'default');
+            applyBackground(user.settings.bg || 'bg-dark');
             applyPalette(user.settings.themeColor || 'purple');
 
             const today = new Date().toDateString();
@@ -851,42 +1802,72 @@
             }
             if (!user.quests) user.quests = {};
             user.quests.login = 1;
+            
             saveUser();
             updateUI();
             setAvatar();
 
-            // Гарантируем, что нижняя панель видна
+            // Гарантируем, что панель навигации видна при старте
             const bNav = document.getElementById('bottomNav');
-            if(bNav) bNav.classList.remove('hidden');
+            if(bNav) bNav.style.display = 'flex';
 
             setTimeout(() => {
                 document.getElementById('loadingScreen').style.display = 'none';
-                createWheel();
             }, 800);
         }
 
         function goTo(screen, param = null) {
+            // Прячем все экраны
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Снимаем выделение со всех кнопок меню
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            // Выделяем нужную кнопку меню
             const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
             if (navBtn) navBtn.classList.add('active');
             
+            // Показываем нужный экран
             const screenEl = document.getElementById(screen + 'Screen');
             if(screenEl) screenEl.classList.add('active');
+            
             currentScreen = screen;
             
             if (screen === 'alphabet') renderAlphabet();
             if (screen === 'study') renderStudy(param);
             if (screen === 'profile') renderProfile();
             if (screen === 'leaderboard') fetchLeaderboard();
-            if (screen === 'settings') { renderBgPicker(); renderPalettePicker(); }
+            if (screen === 'settings') { 
+                renderBgPicker(); 
+                renderPalettePicker(); 
+            }
+            
             haptic('light');
         }
 
         function updateUI() {
-            let rank = {name:'Новичок', badge:'🥚'};
-            if (typeof RANKS !== 'undefined') {
-                for (let r of RANKS) { if (user.xp >= r.min) rank = r; }
+            const LOCAL_RANKS = [
+                {min: 0, name: 'Новичок', badge: '🥚'}, 
+                {min: 100, name: 'Ученик', badge: '🐣'},
+                {min: 500, name: 'Искатель', badge: '🔍'}, 
+                {min: 1000, name: 'Странник', badge: '🚶'},
+                {min: 1500, name: 'Кохай', badge: '🎒'}, 
+                {min: 2500, name: 'Сэмпай', badge: '🎓'},
+                {min: 4800, name: 'Мечник', badge: '⚔️'}, 
+                {min: 8000, name: 'Самурай', badge: '🥷'},
+                {min: 12000, name: 'Ронин', badge: '🏯'}, 
+                {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
+                {min: 25000, name: 'Сенсей', badge: '🧙'}, 
+                {min: 35000, name: 'Шихан', badge: '📜'},
+                {min: 50000, name: 'Даймё', badge: '👑'}, 
+                {min: 70000, name: 'Сёгун', badge: '🏰'},
+                {min: 100000, name: 'Император', badge: '👘'}, 
+                {min: 150000, name: 'Легенда', badge: '🐉'},
+                {min: 250000, name: 'Ками', badge: '⛩️'}
+            ];
+
+            let rank = LOCAL_RANKS[0];
+            for (let r of LOCAL_RANKS) { 
+                if (user.xp >= r.min) rank = r; 
             }
 
             document.getElementById('userName').textContent = user.name;
@@ -900,6 +1881,7 @@
             const profileBadge = document.getElementById('profileBadge');
             const profileRankName = document.getElementById('profileRankName');
             const profileName = document.getElementById('profileName');
+            
             if (profileBadge) profileBadge.textContent = rank.badge;
             if (profileRankName) profileRankName.textContent = rank.name;
             if (profileName) profileName.textContent = user.name;
@@ -909,21 +1891,32 @@
 
         function renderQuests() {
             const quests = user.quests || {};
-            document.getElementById('questsList').innerHTML = DAILY_QUESTS.map(q => {
+            let html = '';
+            
+            DAILY_QUESTS.forEach(q => {
                 const progress = quests[q.id] || 0;
                 const done = progress >= q.target;
                 const pct = Math.min(progress / q.target * 100, 100);
-                return `
-                    <div class="quest-item ${done ? 'done' : ''}">
-                        <div class="quest-icon">${q.icon}</div>
-                        <div class="quest-info">
-                            <div class="quest-title">${q.name}</div>
-                            <div class="quest-bar"><div class="quest-bar-fill" style="width:${pct}%"></div></div>
+                
+                let opacityClass = done ? 'opacity: 0.5; border-color: var(--success);' : '';
+                let rewardText = done ? '✓' : '+' + q.xp;
+                let rewardColor = done ? 'var(--success)' : 'var(--primary)';
+                
+                html += `
+                    <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 14px; border: 1px solid rgba(255, 255, 255, 0.08); ${opacityClass}">
+                        <div style="font-size: 28px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 14px;">${q.icon}</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: white;">${q.name}</div>
+                            <div style="height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px; width: ${pct}%; box-shadow: 0 0 10px var(--primary);"></div>
+                            </div>
                         </div>
-                        <div class="quest-reward">${done ? '✓' : '+' + q.xp}</div>
+                        <div style="font-size: 15px; font-weight: 800; color: ${rewardColor};">${rewardText}</div>
                     </div>
                 `;
-            }).join('');
+            });
+            
+            document.getElementById('questsList').innerHTML = html;
         }
 
         // ==================== АЛФАВИТ ====================
@@ -945,29 +1938,46 @@
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
+            
             if (alphabetView === 'grid') {
                 document.getElementById('alphabetGrid').style.display = 'grid';
                 document.getElementById('alphabetRows').style.display = 'none';
-                document.getElementById('alphabetGrid').innerHTML = allChars.map((c, i) => `
-                    <div class="kana-cell" onclick="openKanaModal(${i})">
-                        <div class="char japanese">${c.char}</div>
-                        <div class="reading">${c.reading}</div>
-                    </div>
-                `).join('');
+                
+                let html = '';
+                allChars.forEach((c, i) => {
+                    html += `
+                        <div class="kana-cell" onclick="openKanaModal(${i})">
+                            <div class="char japanese">${c.char}</div>
+                            <div class="reading">${c.reading}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById('alphabetGrid').innerHTML = html;
             } else {
                 document.getElementById('alphabetGrid').style.display = 'none';
                 document.getElementById('alphabetRows').style.display = 'block';
-                document.getElementById('alphabetRows').innerHTML = rows.map((row, ri) => `
-                    <div class="kana-row">
-                        <div class="row-header"><span class="row-title">${row.name}</span><button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button></div>
-                        <div class="row-cards">${row.chars.map((c, ci) => `
-                            <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
-                                <div class="char japanese">${c.char}</div>
-                                <div class="reading">${c.reading}</div>
-                            </div>`).join('')}
-                        </div>
-                    </div>
-                `).join('');
+                
+                let html = '';
+                rows.forEach((row, ri) => {
+                    html += `
+                        <div class="kana-row">
+                            <div class="row-header">
+                                <span class="row-title">${row.name}</span>
+                                <button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button>
+                            </div>
+                            <div class="row-cards">
+                    `;
+                    row.chars.forEach((c, ci) => {
+                        html += `
+                                <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
+                                    <div class="char japanese">${c.char}</div>
+                                    <div class="reading">${c.reading}</div>
+                                </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                });
+                document.getElementById('alphabetRows').innerHTML = html;
             }
         }
 
@@ -975,6 +1985,7 @@
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             openModal(rows.flatMap(r => r.chars)[index], 'kana');
         }
+        
         function openKanaModalFromRow(rowIndex, charIndex) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             openModal(rows[rowIndex].chars[charIndex], 'kana');
@@ -989,9 +2000,10 @@
                 {id: 'words_n5', name:'Слова N5', icon:'📝', desc:'Базовая лексика', data: typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : []}
             ];
             
-            document.getElementById('studyContent').innerHTML = categories.map(cat => {
-                const progress = Math.floor(Math.random() * 60);
-                return `
+            let html = '';
+            categories.forEach(cat => {
+                const progress = Math.floor(Math.random() * 60); // Здесь в будущем будет реальный прогресс
+                html += `
                     <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 15px rgba(0,0,0,0.2);" onclick="openCategory('${cat.id}')">
                         <div style="font-size: 36px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">${cat.icon}</div>
                         <div style="flex: 1; text-align: left;">
@@ -1004,7 +2016,8 @@
                         <div style="font-size: 24px; color: var(--text-hint);">›</div>
                     </div>
                 `;
-            }).join('');
+            });
+            document.getElementById('studyContent').innerHTML = html;
         }
 
         function openCategory(id) {
@@ -1040,39 +2053,47 @@
             const charEl = document.getElementById('modalChar');
             
             if (swipeAnim === 'left') {
-                charEl.style.transform = 'translateX(30px)'; charEl.style.opacity = '0';
+                charEl.style.transform = 'translateX(30px)'; 
+                charEl.style.opacity = '0';
             } else if (swipeAnim === 'right') {
-                charEl.style.transform = 'translateX(-30px)'; charEl.style.opacity = '0';
+                charEl.style.transform = 'translateX(-30px)'; 
+                charEl.style.opacity = '0';
             }
 
             setTimeout(() => {
                 const textVal = item.char || item.word || '';
                 charEl.textContent = textVal;
+                
                 document.getElementById('modalReading').textContent = item.reading || item.meaning || '';
                 
-                if(item.meaning && item.reading && item.meaning !== item.reading) {
-                    document.getElementById('modalMeaning').textContent = item.meaning;
-                    document.getElementById('modalMeaning').style.display = 'block';
+                const meaningEl = document.getElementById('modalMeaning');
+                if (item.meaning && item.reading && item.meaning !== item.reading) {
+                    meaningEl.textContent = item.meaning;
+                    meaningEl.style.display = 'block';
                 } else {
-                    document.getElementById('modalMeaning').style.display = 'none';
+                    meaningEl.style.display = 'none';
                 }
                 
                 document.getElementById('modalHint').textContent = item.hint || '';
                 document.getElementById('modalGif').style.display = 'none';
                 
+                const strokeBtn = document.getElementById('modalStrokeBtn');
                 if (textVal.length > 1) {
-                    document.getElementById('modalStrokeBtn').style.display = 'none';
+                    strokeBtn.style.display = 'none';
                 } else {
-                    document.getElementById('modalStrokeBtn').style.display = 'block';
+                    strokeBtn.style.display = 'block';
                 }
 
+                const counterEl = document.getElementById('modalCounter');
+                const swipeHintEl = document.getElementById('modalSwipeHint');
+                
                 if (type === 'study' && currentStudyList.length > 0) {
-                    document.getElementById('modalCounter').style.display = 'block';
-                    document.getElementById('modalSwipeHint').style.display = 'block';
-                    document.getElementById('modalCounter').textContent = `${currentStudyIndex + 1} / ${currentStudyList.length}`;
+                    counterEl.style.display = 'block';
+                    swipeHintEl.style.display = 'block';
+                    counterEl.textContent = `${currentStudyIndex + 1} / ${currentStudyList.length}`;
                 } else {
-                    document.getElementById('modalCounter').style.display = 'none';
-                    document.getElementById('modalSwipeHint').style.display = 'none';
+                    counterEl.style.display = 'none';
+                    swipeHintEl.style.display = 'none';
                 }
 
                 if (swipeAnim) {
@@ -1086,7 +2107,9 @@
                 }
             }, swipeAnim ? 150 : 0);
 
+            // Показываем окно
             document.getElementById('modal').style.display = 'flex';
+            
             if (!swipeAnim) haptic('light');
         }
 
@@ -1096,60 +2119,81 @@
             currentStudyList = []; 
         }
 
+        // ЛОГИКА СВАЙПА В КАРТОЧКЕ
         let touchStartX = 0;
         const modalBox = document.getElementById('modalBox');
         
-        modalBox.addEventListener('touchstart', e => { 
+        modalBox.addEventListener('touchstart', (e) => { 
             touchStartX = e.changedTouches[0].screenX; 
         }, {passive: true});
         
-        modalBox.addEventListener('touchend', e => {
+        modalBox.addEventListener('touchend', (e) => {
             if (!currentStudyList || currentStudyList.length === 0) return; 
-            let diff = touchStartX - e.changedTouches[0].screenX;
+            
+            let touchEndX = e.changedTouches[0].screenX;
+            let diff = touchStartX - touchEndX;
             
             if (diff > 50) { 
+                // Свайп влево -> следующая карточка
                 if (currentStudyIndex < currentStudyList.length - 1) {
                     currentStudyIndex++; 
                     openModal(currentStudyList[currentStudyIndex], 'study', 'left'); 
                     haptic('light');
-                } else { haptic('error'); }
+                } else { 
+                    haptic('error'); 
+                }
             } else if (diff < -50) { 
+                // Свайп вправо -> предыдущая карточка
                 if (currentStudyIndex > 0) {
                     currentStudyIndex--; 
                     openModal(currentStudyList[currentStudyIndex], 'study', 'right'); 
                     haptic('light');
-                } else { haptic('error'); }
+                } else { 
+                    haptic('error'); 
+                }
             }
         }, {passive: true});
 
-        document.getElementById('modal').addEventListener('click', e => {
-            if (e.target.id === 'modal') closeModal();
+        // Закрытие модалки по клику вне ее
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') {
+                closeModal();
+            }
         });
 
         // ==================== ЗВУК И GIF ====================
         async function playSound() {
             if (!modalData) return;
             const text = modalData.char || modalData.word;
+            
             try {
                 if ('speechSynthesis' in window && user.settings.sound) {
                     speechSynthesis.cancel();
                     const u = new SpeechSynthesisUtterance(text);
-                    u.lang = 'ja-JP'; u.rate = 0.7;
+                    u.lang = 'ja-JP'; 
+                    u.rate = 0.7;
                     speechSynthesis.speak(u);
-                    haptic('medium'); return;
+                    haptic('medium'); 
+                    return;
                 }
+                
                 const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
+                
                 if (!response.ok) throw new Error();
                 const url = URL.createObjectURL(await response.blob());
-                new Audio(url).play(); haptic('medium');
-            } catch (e) { tg.showAlert('Ошибка воспроизведения звука'); }
+                new Audio(url).play(); 
+                haptic('medium');
+            } catch (e) { 
+                tg.showAlert('Ошибка воспроизведения звука. Проверьте интернет.'); 
+            }
         }
 
         function showGif() {
             if (!modalData) return;
             const char = modalData.char || modalData.word;
+            
             if (char.length > 1) return;
 
             const container = document.getElementById('modalGif');
@@ -1158,6 +2202,7 @@
             
             const hex4 = char.charCodeAt(0).toString(16).toLowerCase();
             const hex5 = char.padStart(5, '0');
+            
             const urls = [
                 `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex5}.gif`,
                 `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex4}.gif`,
@@ -1174,9 +2219,13 @@
             }
 
             let loaded = false;
+            
             function tryLoad(i) {
                 if (i >= urls.length || loaded) {
-                    if (!loaded) container.innerHTML = '<span style="color:var(--error);">Анимация не найдена</span>'; return;
+                    if (!loaded) {
+                        container.innerHTML = '<span style="color:var(--error);">Анимация не найдена</span>'; 
+                    }
+                    return;
                 }
                 const img = new Image();
                 img.onload = () => { 
@@ -1185,19 +2234,76 @@
                         container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px; background:white; padding:5px;">`; 
                     }
                 };
-                img.onerror = () => tryLoad(i + 1); img.src = urls[i];
+                img.onerror = () => tryLoad(i + 1); 
+                img.src = urls[i];
             }
-            tryLoad(0); haptic('light');
+            tryLoad(0); 
+            haptic('light');
         }
 
-        // ==================== КВИЗЫ И ИГРЫ ====================
+        // ==================== ПРОФИЛЬ И АЧИВКИ ====================
+        function renderProfile() {
+            document.getElementById('profileXp').textContent = user.xp;
+            document.getElementById('profileStreak').textContent = user.streak;
+            document.getElementById('profileCards').textContent = user.cardsLearned;
+            
+            // Если вкладка профиля активна - обновляем детальную стату с сервера
+            fetchUserStats();
+
+            const grid = document.getElementById('achievementsGrid');
+            let html = '';
+            ACHIEVEMENTS.forEach(a => {
+                const unlocked = a.check(user);
+                const opacityClass = unlocked ? '' : 'filter: grayscale(1); opacity: 0.2;';
+                html += `
+                    <div style="text-align: center; cursor: pointer; transition: 0.1s;" onclick="showAchievementInfo('${a.name}', '${a.desc}', ${unlocked})">
+                        <div style="width: 54px; height: 54px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; ${opacityClass}">${a.icon}</div>
+                        <div style="font-size: 10px; color: var(--text-hint);">${a.name}</div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        function showAchievementInfo(name, desc, unlocked) {
+            haptic('light');
+            const status = unlocked ? "✅ ПОЛУЧЕНО" : "🔒 ЗАБЛОКИРОВАНО";
+            tg.showAlert(`${status}\n\n🏆 ${name}\n📝 ${desc}`);
+        }
+
+        // ==================== НАСТРОЙКИ ====================
+        function toggleSetting(key) {
+            user.settings[key] = !user.settings[key];
+            const toggle = document.getElementById(key + 'Toggle');
+            if (user.settings[key]) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+            saveUser(); 
+            haptic('light');
+        }
+
+        function exportData() {
+            const data = JSON.stringify(user, null, 2);
+            const blob = new Blob([data], {type:'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; 
+            a.download = 'yomubot_progress.json'; 
+            a.click();
+        }
+
+        // ==================== КВИЗЫ ====================
         function startQuiz(type) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             const count = type === 'full' ? 15 : 5;
             quiz = { items: shuffle(allKana).slice(0, count), index: 0, correct: 0, wrong: 0, type };
+            
             document.getElementById('quizTitle').textContent = '🎯 Тест';
-            showQuizScreen(); renderQuizQuestion();
+            showQuizScreen(); 
+            renderQuizQuestion();
         }
 
         function startAlphabetQuiz(count) {
@@ -1205,8 +2311,10 @@
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
             quiz = { items: shuffle(allChars).slice(0, count), index: 0, correct: 0, wrong: 0, type: 'alphabet' };
+            
             document.getElementById('quizTitle').textContent = `🎯 ${alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана'}`;
-            showQuizScreen(); renderQuizQuestion();
+            showQuizScreen(); 
+            renderQuizQuestion();
         }
 
         function startRowQuiz(rowIndex) {
@@ -1214,58 +2322,101 @@
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const row = rows[rowIndex];
             quiz = { items: shuffle([...row.chars]), index: 0, correct: 0, wrong: 0, type: 'row' };
+            
             document.getElementById('quizTitle').textContent = `🎯 ${row.name}`;
-            showQuizScreen(); renderQuizQuestion();
+            showQuizScreen(); 
+            renderQuizQuestion();
         }
 
         function showQuizScreen() {
             document.getElementById('quizScreen').style.display = 'flex';
+            // Обязательно прячем нижнюю панель во время теста
+            const nav = document.getElementById('bottomNav');
+            if (nav) nav.style.display = 'none';
         }
 
         function hideQuizScreen() {
             document.getElementById('quizScreen').style.display = 'none';
             document.getElementById('resultsScreen').style.display = 'none';
+            // Возвращаем нижнюю панель
+            const nav = document.getElementById('bottomNav');
+            if (nav) nav.style.display = 'flex';
         }
 
         function renderQuizQuestion() {
-            if (quiz.index >= quiz.items.length) { showResults(); return; }
+            if (quiz.index >= quiz.items.length) { 
+                showResults(); 
+                return; 
+            }
+            
             const item = quiz.items[quiz.index];
             document.getElementById('quizChar').textContent = item.char;
             document.getElementById('quizCorrect').textContent = quiz.correct;
             document.getElementById('quizWrong').textContent = quiz.wrong;
+            
             const allReadings = [...new Set([...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading)))];
             const wrong = shuffle(allReadings.filter(r => r !== item.reading)).slice(0, 3);
             const options = shuffle([item.reading, ...wrong]);
-            document.getElementById('quizOptions').innerHTML = options.map(opt => `
-                <div style="padding: 18px; background: rgba(30,30,46,0.8); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; font-size: 20px; font-weight: 600; color: white; cursor: pointer; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" class="quiz-option" onclick="checkQuizAnswer(this, '${opt}', '${item.reading}')">${opt}</div>
-            `).join('');
+            
+            let html = '';
+            options.forEach(opt => {
+                html += `
+                    <div style="padding: 18px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; font-size: 20px; font-weight: 700; color: white; cursor: pointer; transition: 0.2s;" class="quiz-option" onclick="checkQuizAnswer(this, '${opt}', '${item.reading}')">${opt}</div>
+                `;
+            });
+            
+            document.getElementById('quizOptions').innerHTML = html;
         }
 
         function checkQuizAnswer(btn, selected, correct) {
+            // Блокируем все кнопки, чтобы нельзя было нажать дважды
             document.querySelectorAll('.quiz-option').forEach(b => {
                 b.style.pointerEvents = 'none';
                 if (b.textContent === correct) {
                     b.style.background = 'var(--success)';
                     b.style.borderColor = 'var(--success)';
+                    b.style.boxShadow = '0 0 15px var(--success)';
                 } else if (b.textContent === selected) {
                     b.style.background = 'var(--error)';
                     b.style.borderColor = 'var(--error)';
+                    b.style.boxShadow = '0 0 15px var(--error)';
                 }
             });
-            if (selected === correct) { quiz.correct++; haptic('success'); }
-            else { quiz.wrong++; haptic('error'); }
-            setTimeout(() => { quiz.index++; renderQuizQuestion(); }, 700);
+            
+            if (selected === correct) { 
+                quiz.correct++; 
+                haptic('success'); 
+            } else { 
+                quiz.wrong++; 
+                haptic('error'); 
+            }
+            
+            setTimeout(() => { 
+                quiz.index++; 
+                renderQuizQuestion(); 
+            }, 700);
         }
 
         function showResults() {
             document.getElementById('quizScreen').style.display = 'none';
             document.getElementById('resultsScreen').style.display = 'flex';
-            const score = quiz.correct, total = quiz.items.length, pct = Math.round(score / total * 100), xp = score * 10;
+            
+            const score = quiz.correct;
+            const total = quiz.items.length;
+            const pct = Math.round(score / total * 100);
+            const xp = score * 10;
+            
             let icon, title, subtitle;
-            if (pct === 100) { icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; user.perfectTests = (user.perfectTests || 0) + 1; }
-            else if (pct >= 80) { icon = '🎉'; title = 'Отлично!'; subtitle = 'Так держать!'; }
-            else if (pct >= 60) { icon = '👍'; title = 'Хорошо!'; subtitle = 'Есть куда расти!'; }
-            else { icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ!'; }
+            if (pct === 100) { 
+                icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; 
+                user.perfectTests = (user.perfectTests || 0) + 1; 
+            } else if (pct >= 80) { 
+                icon = '🎉'; title = 'Отлично!'; subtitle = 'Так держать!'; 
+            } else if (pct >= 60) { 
+                icon = '👍'; title = 'Хорошо!'; subtitle = 'Есть куда расти!'; 
+            } else { 
+                icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ!'; 
+            }
             
             document.getElementById('resultsIcon').textContent = icon;
             document.getElementById('resultsTitle').textContent = title;
@@ -1274,42 +2425,76 @@
             document.getElementById('resultsSubtitle').textContent = subtitle;
             
             if (xp > 0) {
-                user.xp += xp; user.cardsLearned += score;
-                if(!user.quests) user.quests = {};
-                user.quests.cards10 = (user.quests.cards10 || 0) + score; user.quests.test = 1;
-                saveUser(); updateUI();
+                user.xp += xp; 
+                user.cardsLearned += score;
+                if (!user.quests) user.quests = {};
+                user.quests.cards10 = (user.quests.cards10 || 0) + score; 
+                user.quests.test = 1;
+                saveUser(); 
+                updateUI();
             }
             haptic('success');
         }
 
-        function finishQuiz() { sendResult('quiz_result', quiz.correct); setTimeout(() => { hideQuizScreen(); goTo('home'); }, 100); }
-        function retryQuiz() { hideQuizScreen(); if (quiz.type === 'alphabet' || quiz.type === 'row') goTo('alphabet'); else startQuiz(quiz.type); }
+        function finishQuiz() { 
+            sendResult('quiz_result', quiz.correct); 
+            setTimeout(() => { 
+                hideQuizScreen(); 
+                goTo('home'); 
+            }, 100); 
+        }
+        
+        function retryQuiz() { 
+            hideQuizScreen(); 
+            if (quiz.type === 'alphabet' || quiz.type === 'row') {
+                goTo('alphabet'); 
+            } else {
+                startQuiz(quiz.type); 
+            }
+        }
 
+        // ==================== СВАЙПЫ (TINDER) ====================
         function startSwipe() {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             swipe = { items: shuffle(allKana).slice(0,10), index:0, correct:0, wrong:0 };
+            
             document.getElementById('swipeScreen').style.display = 'flex';
+            
+            // Прячем меню
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.style.display = 'none';
+            
             renderSwipeCard();
         }
 
         function renderSwipeCard() {
-            if (swipe.index >= swipe.items.length) { showSwipeResults(); return; }
+            if (swipe.index >= swipe.items.length) { 
+                showSwipeResults(); 
+                return; 
+            }
+            
             const item = swipe.items[swipe.index];
             const card = document.getElementById('swipeCard');
+            
             document.getElementById('swipeChar').textContent = item.char;
             document.getElementById('swipeAnswer').textContent = item.reading;
             document.getElementById('swipeHint').style.display = 'block';
             document.getElementById('swipeAnswer').style.opacity = '0';
-            card.classList.remove('revealed'); card.style.transform = ''; card.style.opacity = '1';
+            
+            card.style.transform = ''; 
+            card.style.opacity = '1';
+            
             document.getElementById('swipeCount').textContent = `${swipe.index+1} / ${swipe.items.length}`;
-            document.getElementById('swipeProgress').style.width = `${swipe.index/swipe.items.length*100}%`;
-            document.querySelectorAll('.indicator').forEach(i => i.style.opacity = '0');
+            document.getElementById('swipeProgress').style.width = `${swipe.index / swipe.items.length * 100}%`;
+            
+            document.querySelectorAll('.indicator').forEach(i => {
+                i.style.opacity = '0';
+            });
         }
 
         function swipeReveal() {
             const card = document.getElementById('swipeCard');
-            card.classList.add('revealed');
             document.getElementById('swipeAnswer').style.opacity = '1';
             document.getElementById('swipeHint').style.display = 'none';
             haptic('light');
@@ -1317,51 +2502,79 @@
 
         function swipeYes() {
             document.querySelector('.indicator.know').style.opacity = '1';
-            document.getElementById('swipeCard').style.transform = 'translateX(300px) rotate(15deg)';
-            document.getElementById('swipeCard').style.opacity = '0';
-            swipe.correct++; haptic('medium');
-            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+            const card = document.getElementById('swipeCard');
+            card.style.transform = 'translateX(300px) rotate(15deg)';
+            card.style.opacity = '0';
+            swipe.correct++; 
+            haptic('medium');
+            
+            setTimeout(() => { 
+                swipe.index++; 
+                renderSwipeCard(); 
+            }, 250);
         }
 
         function swipeNo() {
             document.querySelector('.indicator.learn').style.opacity = '1';
-            document.getElementById('swipeCard').style.transform = 'translateX(-300px) rotate(-15deg)';
-            document.getElementById('swipeCard').style.opacity = '0';
-            swipe.wrong++; haptic('medium');
-            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+            const card = document.getElementById('swipeCard');
+            card.style.transform = 'translateX(-300px) rotate(-15deg)';
+            card.style.opacity = '0';
+            swipe.wrong++; 
+            haptic('medium');
+            
+            setTimeout(() => { 
+                swipe.index++; 
+                renderSwipeCard(); 
+            }, 250);
         }
 
         function showSwipeResults() {
             document.getElementById('swipeScreen').style.display = 'none';
+            
             const xp = swipe.correct * 10;
             quiz = { correct: swipe.correct, items: swipe.items, type: 'swipe' };
+            
             if (xp > 0) {
-                user.xp += xp; user.cardsLearned += swipe.correct;
-                if(!user.quests) user.quests = {};
+                user.xp += xp; 
+                user.cardsLearned += swipe.correct;
+                if (!user.quests) user.quests = {};
                 user.quests.cards10 = (user.quests.cards10 || 0) + swipe.correct;
-                saveUser(); updateUI();
+                saveUser(); 
+                updateUI();
             }
+            
             document.getElementById('resultsScreen').style.display = 'flex';
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
             document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
             document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = `Знал: ${swipe.correct}, Учить: ${swipe.wrong}`;
+            
             haptic('success');
             sendResult('swipe_result', swipe.correct);
         }
 
+        // ==================== РУЛЕТКА ====================
         function createWheel() {
             const svg = document.getElementById('wheel');
             const angle = 360 / WHEEL_PRIZES.length;
             let html = '';
+            
             WHEEL_PRIZES.forEach((prize, i) => {
-                const startRad = (i * angle - 90) * Math.PI / 180, endRad = (i * angle + angle - 90) * Math.PI / 180;
-                const x1 = 50 + 50 * Math.cos(startRad), y1 = 50 + 50 * Math.sin(startRad);
-                const x2 = 50 + 50 * Math.cos(endRad), y2 = 50 + 50 * Math.sin(endRad);
+                const startRad = (i * angle - 90) * Math.PI / 180;
+                const endRad = (i * angle + angle - 90) * Math.PI / 180;
+                
+                const x1 = 50 + 50 * Math.cos(startRad);
+                const y1 = 50 + 50 * Math.sin(startRad);
+                const x2 = 50 + 50 * Math.cos(endRad);
+                const y2 = 50 + 50 * Math.sin(endRad);
+                
                 html += `<path d="M 50 50 L ${x1} ${y1} A 50 50 0 0 1 ${x2} ${y2} Z" fill="${prize.color}"/>`;
+                
                 const textRad = (i * angle + angle / 2 - 90) * Math.PI / 180;
-                const tx = 50 + 32 * Math.cos(textRad), ty = 50 + 32 * Math.sin(textRad);
+                const tx = 50 + 32 * Math.cos(textRad);
+                const ty = 50 + 32 * Math.sin(textRad);
+                
                 html += `<text x="${tx}" y="${ty}" fill="white" font-size="7" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(${i * angle + angle / 2}, ${tx}, ${ty})">${prize.value}</text>`;
             });
             svg.innerHTML = html;
@@ -1370,39 +2583,79 @@
         function openWheel() {
             document.getElementById('wheelScreen').style.display = 'flex';
             document.getElementById('wheelResult').style.display = 'none';
+            
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.style.display = 'none';
+            
             if (user.lastDaily === new Date().toDateString()) {
                 document.getElementById('wheelSpinBtn').disabled = true;
                 document.getElementById('wheelSpinBtn').textContent = 'Завтра!';
+                document.getElementById('wheelSpinBtn').style.background = 'gray';
             } else {
                 document.getElementById('wheelSpinBtn').disabled = false;
                 document.getElementById('wheelSpinBtn').textContent = '🎲 КРУТИТЬ!';
+                document.getElementById('wheelSpinBtn').style.background = 'var(--primary)';
             }
         }
 
-        function closeWheel() { document.getElementById('wheelScreen').style.display = 'none'; }
+        function closeWheel() { 
+            document.getElementById('wheelScreen').style.display = 'none'; 
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.style.display = 'flex';
+        }
 
         let wheelRotation = 0;
         function spinWheel() {
             const today = new Date().toDateString();
             if (user.lastDaily === today) return;
+            
             const btn = document.getElementById('wheelSpinBtn');
-            btn.disabled = true; btn.textContent = '🎰 Крутится...';
+            btn.disabled = true; 
+            btn.textContent = '🎰 Крутится...';
+            btn.style.background = 'gray';
+            
             const prizeIndex = Math.floor(Math.random() * WHEEL_PRIZES.length);
             wheelRotation += (5 + Math.random() * 3) * 360 + (360 - (prizeIndex * (360 / WHEEL_PRIZES.length) + (360 / WHEEL_PRIZES.length) / 2)) - (wheelRotation % 360);
+            
             document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
             haptic('medium');
+            
             setTimeout(() => {
-                user.xp += WHEEL_PRIZES[prizeIndex].value; user.lastDaily = today;
-                saveUser(); updateUI();
+                user.xp += WHEEL_PRIZES[prizeIndex].value; 
+                user.lastDaily = today;
+                saveUser(); 
+                updateUI();
+                
                 document.getElementById('wheelResultXp').textContent = `+${WHEEL_PRIZES[prizeIndex].value} XP`;
                 document.getElementById('wheelResult').style.display = 'block';
-                btn.textContent = '✅ Готово!'; haptic('success');
+                
+                btn.textContent = '✅ Готово!'; 
+                haptic('success');
                 sendResult('wheel_reward', WHEEL_PRIZES[prizeIndex].value);
             }, 4500);
         }
 
-        function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+        // ==================== УТИЛИТЫ ====================
+        function shuffle(arr) { 
+            const a = [...arr]; 
+            for (let i = a.length - 1; i > 0; i--) { 
+                const j = Math.floor(Math.random() * (i + 1)); 
+                [a[i], a[j]] = [a[j], a[i]]; 
+            } 
+            return a; 
+        }
 
+        function haptic(type) { 
+            if (!user.settings.vibration) return; 
+            try { 
+                if (type === 'success') tg.HapticFeedback.notificationOccurred('success'); 
+                else if (type === 'error') tg.HapticFeedback.notificationOccurred('error'); 
+                else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium'); 
+                else tg.HapticFeedback.impactOccurred('light'); 
+            } catch(e){} 
+        }
+
+        // Запуск
         init();
     </script>
 </body>
