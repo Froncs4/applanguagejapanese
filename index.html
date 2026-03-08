@@ -393,6 +393,178 @@
             color: var(--success);
         }
 
+        /* ========== ИНТЕРАКТИВНЫЕ ИСТОРИИ (НОВЫЙ ДИЗАЙН) ========== */
+        .story-card-enhanced {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .story-card-enhanced:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .story-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .story-image {
+            font-size: 40px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+        
+        .story-info {
+            flex: 1;
+        }
+        
+        .story-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 6px;
+        }
+        
+        .story-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .story-level, .story-difficulty, .story-duration {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .story-level {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--primary);
+        }
+        
+        .story-difficulty {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-hint);
+        }
+        
+        .story-duration {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+        
+        .story-status {
+            font-size: 24px;
+        }
+        
+        .story-description {
+            font-size: 14px;
+            color: var(--text-hint);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .story-preview {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .story-rewards {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .reward-xp {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        
+        .story-vocab-count {
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+        
+        .completion-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .lock-text {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .interactive-word {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+        
+        .interactive-word:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .non-interactive-word {
+            opacity: 0.7;
+        }
+        
+        .story-option-btn:hover {
+            background: rgba(102, 126, 234, 0.3) !important;
+            transform: translateX(5px);
+        }
+
         /* ========== ИСТОРИИ (ЧТЕНИЕ) ========== */
         .story-card {
             background: rgba(30, 30, 46, 0.7);
@@ -650,27 +822,13 @@
         <div class="section">
             <div class="section-title">📚 Обучение</div>
             <div class="menu-grid">
-                <!-- ОГРОМНАЯ КНОПКА АЗБУКИ (КАК ВЫ ПРОСИЛИ) -->
-                <div class="menu-card wide" onclick="goTo('alphabet')" style="border-left-color: var(--accent);">
-                    <div class="card-icon" style="margin-bottom: 0; font-size: 45px;">🎌</div>
+                <div class="menu-card wide" onclick="goTo('stories')" style="border-left: 4px solid var(--success);">
+                    <div class="card-icon" style="margin-bottom: 0; font-size: 45px;">📚</div>
                     <div style="text-align: left;">
-                        <div class="card-title" style="font-size: 18px; color: var(--accent);">Японская Азбука</div>
-                        <div class="card-subtitle">Хирагана и Катакана</div>
+                        <div class="card-title" style="font-size: 18px; color: var(--success);">Интерактивные Истории</div>
+                        <div class="card-subtitle">Погружайся в японский через увлекательные истории</div>
                     </div>
                 </div>
-                <div class="menu-card wide" onclick="goTo('stories')">
-                    <div class="card-icon" style="margin-bottom: 0; font-size: 45px;">📖</div>
-                    <div style="text-align: left;">
-                        <div class="card-title" style="font-size: 18px; color: var(--success);">Истории (Чтение)</div>
-                        <div class="card-subtitle">Читай и переводи</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">🎮 Практика</div>
-            <div class="menu-grid">
                 <div class="menu-card" onclick="startQuiz('mixed')">
                     <div class="card-icon">🎯</div>
                     <div class="card-title">Быстрый тест</div>
@@ -722,18 +880,82 @@
     <div class="screen" id="studyScreen">
         <div class="glass-header">
             <h2 id="studyTitle" style="font-weight: 800; font-size: 26px;">📚 Словари</h2>
-            <p style="color: var(--text-hint); font-size: 14px;">Кандзи и слова по уровням JLPT</p>
+            <p style="color: var(--text-hint); font-size: 14px;">Азбука, кандзи и слова по уровням JLPT</p>
         </div>
-        <div class="section" id="studyContent" style="display: flex; flex-direction: column; gap: 14px;"></div>
+        
+        <div class="section">
+            <div class="section-title">🎌 Японская Азбука</div>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="goTo('alphabet', 'hiragana')" style="border-left: 4px solid var(--primary);">
+                    <div class="card-icon">あ</div>
+                    <div class="card-title">Хирагана</div>
+                    <div class="card-subtitle">46 символов</div>
+                </div>
+                <div class="menu-card" onclick="goTo('alphabet', 'katakana')" style="border-left: 4px solid var(--accent);">
+                    <div class="card-icon">ア</div>
+                    <div class="card-title">Катакана</div>
+                    <div class="card-subtitle">46 символов</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🈁 Кандзи</div>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startStudy('kanji_n5')">
+                    <div class="card-icon">🈴</div>
+                    <div class="card-title">Кандзи N5</div>
+                    <div class="card-subtitle">103 иероглифа</div>
+                </div>
+                <div class="menu-card" onclick="startStudy('kanji_n4')">
+                    <div class="card-icon">🈵</div>
+                    <div class="card-title">Кандзи N4</div>
+                    <div class="card-subtitle">181 иероглиф</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📝 Слова</div>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startStudy('words_n5')">
+                    <div class="card-icon">🍜</div>
+                    <div class="card-title">Слова N5</div>
+                    <div class="card-subtitle">40 слов</div>
+                </div>
+                <div class="menu-card" onclick="startStudy('words_n4')">
+                    <div class="card-icon">🗾</div>
+                    <div class="card-title">Слова N4</div>
+                    <div class="card-subtitle">16 слов</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- ИСТОРИИ -->
+    <!-- ИСТОРИИ - НОВЫЙ ИНТЕРЕСНЫЙ ФОРМАТ -->
     <div class="screen" id="storiesScreen">
         <div class="glass-header">
-            <h2 style="font-weight: 800; font-size: 26px;">📖 Истории</h2>
-            <p style="color: var(--text-hint); font-size: 14px;">Практика чтения с переводом по клику</p>
+            <h2 style="font-weight: 800; font-size: 26px;">📚 Интерактивные Истории</h2>
+            <p style="color: var(--text-hint); font-size: 14px;">Погружайся в японский язык через увлекательные истории</p>
         </div>
-        <div class="section" id="storiesList"></div>
+        
+        <!-- Прогресс по историям -->
+        <div class="section">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>📖 Прогресс чтения</span>
+                    <span id="storiesProgress">0/5 историй</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="storiesProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточки историй -->
+        <div class="section" id="storiesList">
+            <!-- Истории будут генерироваться через JS -->
+        </div>
     </div>
 
     <!-- ЭКРАН ЧТЕНИЯ -->
@@ -1227,36 +1449,161 @@
             `).join('');
         }
 
-        // ==================== ИСТОРИИ (ДАННЫЕ) ====================
-        const STORIES = [
+        // ==================== ИНТЕРАКТИВНЫЕ ИСТОРИИ (НОВЫЙ ФОРМАТ) ====================
+        const INTERACTIVE_STORIES = [
             {
-                id: "story_1",
-                title: "Поход в магазин (N5)",
+                id: "story_cafe",
+                title: "☕ Поход в кафе",
+                level: "N5",
+                difficulty: "Легко",
+                duration: "5 мин",
+                xp: 50,
+                description: "Помоги Таро заказать кофе в токийском кафе",
+                preview: "今日は、カフェに行きます...",
+                image: "☕",
+                isUnlocked: true,
+                isCompleted: false,
                 content: [
-                    {jp: "今日", kana: "きょう", ru: "Сегодня"},
-                    {jp: "は", kana: "wa", ru: "(тема)"},
-                    {jp: "スーパー", kana: "スーパー", ru: "супермаркет"},
-                    {jp: "へ", kana: "e", ru: "в (направление)"},
-                    {jp: "行きます", kana: "いきます", ru: "иду"},
-                    {jp: "。", kana: "", ru: ""}
+                    {jp: "今日", kana: "きょう", ru: "Сегодня", interactive: true},
+                    {jp: "は", kana: "わ", ru: "(тема)", interactive: false},
+                    {jp: "カフェ", kana: "カフェ", ru: "кафе", interactive: true},
+                    {jp: "に", kana: "に", ru: "в (место)", interactive: false},
+                    {jp: "行きます", kana: "いきます", ru: "иду/еду", interactive: true},
+                    {jp: "。", kana: "", ru: "", interactive: false}
                 ],
-                quiz: { q: "Куда идет герой?", options: ["В школу", "В супермаркет", "Домой"], correct: "В супермаркет" }
+                quiz: { 
+                    question: "Куда идёт герой?", 
+                    options: ["В школу", "В кафе", "Домой", "В парк"], 
+                    correct: "В кафе",
+                    hint: "Посмотри на слово カフェ"
+                },
+                achievements: ["Первая история", "Читатель N5"],
+                vocabulary: ["今日", "カフェ", "行きます"]
             },
             {
-                id: "story_2",
-                title: "Новый друг (N5)",
+                id: "story_friend",
+                title: "👥 Новый друг",
+                level: "N5", 
+                difficulty: "Легко",
+                duration: "7 мин",
+                xp: 60,
+                description: "Познакомься с новым другом и узнай о его хобби",
+                preview: "私の友達は猫が好きです...",
+                image: "👥",
+                isUnlocked: true,
+                isCompleted: false,
                 content: [
-                    {jp: "私", kana: "わたし", ru: "Я"},
-                    {jp: "の", kana: "no", ru: "(принадлежность)"},
-                    {jp: "友達", kana: "ともだち", ru: "друг"},
-                    {jp: "は", kana: "wa", ru: "(тема)"},
-                    {jp: "猫", kana: "ねこ", ru: "кошка"},
-                    {jp: "が", kana: "ga", ru: "(объект)"},
-                    {jp: "好き", kana: "すき", ru: "нравится"},
-                    {jp: "です", kana: "desu", ru: "есть (связка)"},
-                    {jp: "。", kana: "", ru: ""}
+                    {jp: "私", kana: "わたし", ru: "Я", interactive: true},
+                    {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
+                    {jp: "友達", kana: "ともだち", ru: "друг", interactive: true},
+                    {jp: "は", kana: "わ", ru: "(тема)", interactive: false},
+                    {jp: "猫", kana: "ねこ", ru: "кошка/кот", interactive: true},
+                    {jp: "が", kana: "が", ru: "(объект)", interactive: false},
+                    {jp: "好き", kana: "すき", ru: "нравится", interactive: true},
+                    {jp: "です", kana: "です", ru: "есть/является", interactive: false},
+                    {jp: "。", kana: "", ru: "", interactive: false}
                 ],
-                quiz: { q: "Кого любит друг героя?", options: ["Собак", "Кошек", "Птиц"], correct: "Кошек" }
+                quiz: { 
+                    question: "Что нравится другу героя?", 
+                    options: ["Собаки", "Кошки", "Рыбки", "Птицы"], 
+                    correct: "Кошки",
+                    hint: "Ищи слово 猫 (ねこ)"
+                },
+                achievements: ["Дружелюбный", "Любитель животных"],
+                vocabulary: ["私", "友達", "猫", "好き", "です"]
+            },
+            {
+                id: "story_shopping",
+                title: "🛍️ Шоппинг в Токио",
+                level: "N5",
+                difficulty: "Средне",
+                duration: "10 мин", 
+                xp: 80,
+                description: "Сходи за покупками в японский магазин",
+                preview: "このリンゴはいくらですか...",
+                image: "🛍️",
+                isUnlocked: false,
+                isCompleted: false,
+                requirement: "Заверши 2 истории",
+                content: [
+                    {jp: "この", kana: "この", ru: "этот/эта/это", interactive: true},
+                    {jp: "リンゴ", kana: "リンゴ", ru: "яблоко", interactive: true},
+                    {jp: "は", kana: "わ", ru: "(тема)", interactive: false},
+                    {jp: "いくら", kana: "いくら", ru: "сколько", interactive: true},
+                    {jp: "です", kana: "です", ru: "стоит", interactive: false},
+                    {jp: "か", kana: "か", ru: "? (вопрос)", interactive: false},
+                    {jp: "。", kana: "", ru: "", interactive: false}
+                ],
+                quiz: { 
+                    question: "Что хочет купить герой?", 
+                    options: ["Банан", "Яблоко", "Апельсин", "Грушу"], 
+                    correct: "Яблоко",
+                    hint: "リンゴ - это яблоко"
+                },
+                achievements: ["Покупатель", "Экономист"],
+                vocabulary: ["この", "リンゴ", "いくら", "です"]
+            },
+            {
+                id: "story_travel",
+                title: "🚃 Путешествие на поезде",
+                level: "N4",
+                difficulty: "Средне",
+                duration: "12 мин",
+                xp: 100,
+                description: "Отправляйся в путешествие по Японии на скоростном поезде",
+                preview: "新幹線で京都に行きます...",
+                image: "🚃",
+                isUnlocked: false,
+                isCompleted: false,
+                requirement: "XP 500+",
+                content: [
+                    {jp: "新幹線", kana: "しんかんせん", ru: "синкансэн (пуля)", interactive: true},
+                    {jp: "で", kana: "で", ru: "на (транспорте)", interactive: false},
+                    {jp: "京都", kana: "きょうと", ru: "Киото", interactive: true},
+                    {jp: "に", kana: "に", ru: "в (место)", interactive: false},
+                    {jp: "行きます", kana: "いきます", ru: "поеду", interactive: true},
+                    {jp: "。", kana: "", ru: "", interactive: false}
+                ],
+                quiz: { 
+                    question: "На чём едет герой?", 
+                    options: ["Автобус", "Машина", "Синкансэн", "Велосипед"], 
+                    correct: "Синкансэн",
+                    hint: "新幹線 - это знаменитый японский поезд"
+                },
+                achievements: ["Путешественник", "Скоростник"],
+                vocabulary: ["新幹線", "京都", "行きます"]
+            },
+            {
+                id: "story_festival",
+                title: "🎌 Фестиваль Сакуры",
+                level: "N4",
+                difficulty: "Сложно",
+                duration: "15 мин",
+                xp: 150,
+                description: "Участвуй в традиционном японском фестивале цветения сакуры",
+                preview: "春の桜祭りに参加しましょう...",
+                image: "🎌",
+                isUnlocked: false,
+                isCompleted: false,
+                requirement: "XP 1000+",
+                content: [
+                    {jp: "春", kana: "はる", ru: "весна", interactive: true},
+                    {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
+                    {jp: "桜", kana: "さくら", ru: "сакура", interactive: true},
+                    {jp: "祭り", kana: "まつり", ru: "фестиваль", interactive: true},
+                    {jp: "に", kana: "に", ru: "в (время)", interactive: false},
+                    {jp: "参加", kana: "さんか", ru: "участие", interactive: true},
+                    {jp: "します", kana: "します", ru: "буду участвовать", interactive: false},
+                    {jp: "。", kana: "", ru: "", interactive: false}
+                ],
+                quiz: { 
+                    question: "Какой фестиваль посещает герой?", 
+                    options: ["Фестиваль огней", "Фестиваль сакуры", "Фестиваль льда", "Фестиваль музыки"], 
+                    correct: "Фестиваль сакуры",
+                    hint: "桜 (さくら) - это сакура/вишнёвый цвет"
+                },
+                achievements: ["Фестивальщик", "Любитель весны", "Мастер культуры"],
+                vocabulary: ["春", "桜", "祭り", "参加", "します"]
             }
         ];
 
@@ -1801,90 +2148,234 @@
             document.getElementById('questsList').innerHTML = html;
         }
 
-        // ==================== ИСТОРИИ (ЧТЕНИЕ) ====================
+        // ==================== ИНТЕРАКТИВНЫЕ ИСТОРИИ (РЕНДЕРИНГ) ====================
         function renderStories() {
+            const container = document.getElementById('storiesList');
+            const completedStories = user.completedStories || [];
+            const totalStories = INTERACTIVE_STORIES.length;
+            const completedCount = completedStories.length;
+            
+            // Обновляем прогресс
+            document.getElementById('storiesProgress').textContent = `${completedCount}/${totalStories} историй`;
+            document.getElementById('storiesProgressBar').style.width = `${(completedCount / totalStories) * 100}%`;
+            
             let html = '';
-            STORIES.forEach(story => {
+            
+            INTERACTIVE_STORIES.forEach((story, index) => {
+                const isCompleted = completedStories.includes(story.id);
+                const isUnlocked = checkStoryUnlock(story, completedCount);
+                
+                const statusIcon = isCompleted ? '✅' : (isUnlocked ? '🔓' : '🔒');
+                const statusColor = isCompleted ? 'var(--success)' : (isUnlocked ? 'var(--primary)' : 'var(--text-hint)');
+                const opacity = isUnlocked ? '1' : '0.6';
+                const cursor = isUnlocked ? 'pointer' : 'not-allowed';
+                
                 html += `
-                    <div class="story-card" onclick="openStory('${story.id}')">
-                        <div style="font-size: 40px;">🎌</div>
-                        <div style="flex:1;">
-                            <div style="font-size: 18px; font-weight: 800; color: white; margin-bottom: 5px;">${story.title}</div>
-                            <div style="font-size: 13px; color: var(--success);">+30 XP за прочтение</div>
+                    <div class="story-card-enhanced" 
+                         style="opacity: ${opacity}; cursor: ${cursor};"
+                         onclick="${isUnlocked ? `openInteractiveStory('${story.id}')` : 'showStoryLocked(\'' + story.requirement + '\')'}">
+                        
+                        <div class="story-header">
+                            <div class="story-image">${story.image}</div>
+                            <div class="story-info">
+                                <div class="story-title">${story.title}</div>
+                                <div class="story-meta">
+                                    <span class="story-level">${story.level}</span>
+                                    <span class="story-difficulty">${story.difficulty}</span>
+                                    <span class="story-duration">⏱️ ${story.duration}</span>
+                                </div>
+                            </div>
+                            <div class="story-status" style="color: ${statusColor}; font-size: 24px;">
+                                ${statusIcon}
+                            </div>
                         </div>
-                        <div style="font-size: 24px; color: var(--text-hint);">›</div>
+                        
+                        <div class="story-description">${story.description}</div>
+                        
+                        <div class="story-preview">
+                            <span style="color: var(--text-hint); font-style: italic;">"${story.preview}"</span>
+                        </div>
+                        
+                        <div class="story-rewards">
+                            <div class="reward-xp">+${story.xp} XP</div>
+                            <div class="story-vocab-count">📝 ${story.vocabulary.length} слов</div>
+                            ${isCompleted ? '<div class="completion-badge">Завершено</div>' : ''}
+                        </div>
+                        
+                        ${!isUnlocked ? `<div class="lock-overlay"><div class="lock-text">${story.requirement}</div></div>` : ''}
                     </div>
                 `;
             });
-            document.getElementById('storiesList').innerHTML = html;
+            
+            container.innerHTML = html;
         }
-
-        function openStory(id) {
-            const story = STORIES.find(s => s.id === id);
+        
+        function checkStoryUnlock(story, completedCount) {
+            if (story.isUnlocked) return true;
+            
+            // Проверяем различные условия разблокировки
+            if (story.requirement.includes('Заверши')) {
+                const required = parseInt(story.requirement.match(/\d+/)[0]);
+                return completedCount >= required;
+            }
+            
+            if (story.requirement.includes('XP')) {
+                const required = parseInt(story.requirement.match(/\d+/)[0]);
+                return user.xp >= required;
+            }
+            
+            return false;
+        }
+        
+        function showStoryLocked(requirement) {
+            showNotification(`🔒 История заблокирована: ${requirement}`, 'info', 3000);
+            haptic('error');
+        }
+        
+        function openInteractiveStory(storyId) {
+            const story = INTERACTIVE_STORIES.find(s => s.id === storyId);
             if (!story) return;
-
+            
+            currentStory = story;
             document.getElementById('readingTitle').textContent = story.title;
             
             let textHtml = '';
-            story.content.forEach(word => {
+            story.content.forEach((word, index) => {
                 if (word.jp === '。') {
                     textHtml += `<span style="color:white;">。</span><br><br>`;
                 } else {
+                    const interactiveClass = word.interactive ? 'interactive-word' : 'non-interactive-word';
                     textHtml += `
-                        <div class="story-word" onclick="showWordTranslation('${word.kana}', '${word.ru}')">
+                        <span class="${interactiveClass} story-word" 
+                              onclick="${word.interactive ? `showWordDetails('${word.jp}', '${word.kana}', '${word.ru}', ${index})` : ''}"
+                              data-word="${word.jp}"
+                              data-kana="${word.kana}"
+                              data-ru="${word.ru}">
                             <span class="story-kana">${word.kana}</span>
                             <span class="story-kanji">${word.jp}</span>
-                        </div>
+                        </span>
                     `;
                 }
             });
             
             document.getElementById('readingText').innerHTML = textHtml;
             
-            // Вопрос
-            document.getElementById('readingQuestion').textContent = story.quiz.q;
+            // Обновляем викторину
+            document.getElementById('readingQuestion').textContent = story.quiz.question;
             let optionsHtml = '';
             story.quiz.options.forEach(opt => {
-                optionsHtml += `<button class="shop-btn" onclick="checkStoryAnswer(this, '${opt}', '${story.quiz.correct}')" style="font-size:18px; padding:15px; width:100%; text-align:left; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1); margin-bottom:10px;">${opt}</button>`;
+                optionsHtml += `
+                    <button class="story-option-btn" 
+                            onclick="checkStoryAnswer(this, '${opt}', '${story.quiz.correct}', '${story.quiz.hint}')" 
+                            style="font-size: 16px; padding: 15px; width: 100%; text-align: left; 
+                                   background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); 
+                                   margin-bottom: 10px; border-radius: 12px; color: white;
+                                   transition: all 0.2s;">
+                        ${opt}
+                    </button>
+                `;
             });
             document.getElementById('readingOptions').innerHTML = optionsHtml;
             document.getElementById('readingQuiz').style.display = 'block';
 
             goTo('reading');
+            haptic('light');
         }
-
-        function showWordTranslation(kana, ru) {
+        
+        function showWordDetails(jp, kana, ru, index) {
             const tooltip = document.getElementById('translationTooltip');
-            tooltip.innerHTML = `<span style="color:var(--primary);">${kana}</span><br>${ru}`;
+            tooltip.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 28px; color: var(--primary); margin-bottom: 8px;">${jp}</div>
+                    <div style="font-size: 18px; color: white; margin-bottom: 4px;">${kana}</div>
+                    <div style="font-size: 16px; color: var(--text-hint);">${ru}</div>
+                </div>
+            `;
             tooltip.style.display = 'block';
             haptic('light');
+            
+            // Добавляем анимацию к слову
+            const wordElement = document.querySelectorAll('.story-word')[index];
+            if (wordElement) {
+                wordElement.style.transform = 'scale(1.1)';
+                wordElement.style.color = 'var(--primary)';
+                setTimeout(() => {
+                    wordElement.style.transform = 'scale(1)';
+                    wordElement.style.color = '';
+                }, 300);
+            }
             
             setTimeout(() => {
                 tooltip.style.display = 'none';
             }, 3000);
         }
-
-        function checkStoryAnswer(btn, selected, correct) {
-            document.querySelectorAll('#readingOptions button').forEach(b => {
-                b.style.pointerEvents = 'none';
-                if (b.textContent === correct) {
-                    b.style.background = 'var(--success)';
-                } else if (b.textContent === selected) {
-                    b.style.background = 'var(--error)';
-                }
-            });
+        
+        function checkStoryAnswer(btn, selected, correct, hint) {
+            const buttons = document.querySelectorAll('#readingOptions button');
+            buttons.forEach(b => b.style.pointerEvents = 'none');
             
             if (selected === correct) {
+                btn.style.background = 'var(--success)';
+                btn.style.color = 'white';
                 haptic('success');
+                
+                // Начисляем XP и отмечаем завершение
                 setTimeout(() => {
-                    quiz.correct = 3; 
-                    quiz.items = [1,2,3];
-                    document.getElementById('readingScreen').classList.remove('active');
-                    showResults(); // Показываем экран победы
-                }, 1000);
+                    completeStory(currentStory.id);
+                }, 1500);
             } else {
+                btn.style.background = 'var(--error)';
+                btn.style.color = 'white';
                 haptic('error');
+                
+                // Показываем подсказку
+                setTimeout(() => {
+                    showNotification(`💡 Подсказка: ${hint}`, 'info', 4000);
+                }, 1000);
+                
+                // Показываем правильный ответ
+                buttons.forEach(b => {
+                    if (b.textContent === correct) {
+                        b.style.background = 'var(--success)';
+                        b.style.color = 'white';
+                    }
+                });
             }
+        }
+        
+        function completeStory(storyId) {
+            if (!user.completedStories) user.completedStories = [];
+            
+            if (!user.completedStories.includes(storyId)) {
+                user.completedStories.push(storyId);
+                const story = INTERACTIVE_STORIES.find(s => s.id === storyId);
+                
+                // Начисляем XP
+                user.xp += story.xp;
+                saveUser();
+                updateUI();
+                
+                // Показываем уведомление
+                showNotification(`🎉 История завершена! +${story.xp} XP`, 'success', 3000);
+                
+                // Показываем достижения
+                if (story.achievements && story.achievements.length > 0) {
+                    setTimeout(() => {
+                        showNotification(`🏆 Получено достижение: ${story.achievements[0]}`, 'success', 3000);
+                    }, 2000);
+                }
+            }
+            
+            // Возвращаемся к списку историй
+            setTimeout(() => {
+                goTo('stories');
+            }, 2000);
+        }
+
+        function startStudy(type) {
+            // Заглушка для изучения кандзи и слов
+            showNotification(`🚧 Изучение ${type.replace('_', ' ')} в разработке`, 'info', 3000);
+            haptic('light');
         }
 
         // ==================== ОСТАЛЬНЫЕ ФУНКЦИИ (АЗБУКА, СЛОВАРИ) ====================
