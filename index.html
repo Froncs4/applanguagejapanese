@@ -10,1600 +10,183 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Базовые цвета (меняются через JS) */
             --primary: #667eea;
-            --primary-dark: #5a67d8;
             --secondary: #764ba2;
             --accent: #f093fb;
+            
             --success: #4ade80;
             --error: #f87171;
             --warning: #fbbf24;
-            --bg: var(--tg-theme-bg-color, #1a1a2e);
-            --bg-secondary: var(--tg-theme-secondary-bg-color, #23233b);
-            --text: var(--tg-theme-text-color, #ffffff);
-            --text-hint: var(--tg-theme-hint-color, #999999);
-            --card-radius: 20px;
+            --bg: #0f0f16; /* Темная подложка */
+            --text: #ffffff;
+            --text-hint: rgba(255,255,255,0.6);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 80px;
+            background: var(--bg); color: var(--text);
+            min-height: 100vh; overflow-x: hidden; padding-bottom: 120px;
         }
 
-        /* ========== ФОНОВЫЕ GIF ========== */
+        /* ========== GIF ФОН И ЗАТЕМНЕНИЕ ========== */
         .app-bg-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -2;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 0.5s ease;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
+            background-size: cover; background-position: center; opacity: 0; transition: opacity 0.5s ease;
         }
-
         .app-bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            background: var(--bg);
-            opacity: 0.85; /* Затемнение чтобы текст читался */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            /* Плавное затемнение: сверху светлее, снизу темнее */
+            background: linear-gradient(to bottom, rgba(15,15,22,0.6) 0%, rgba(15,15,22,0.9) 100%);
         }
 
-        .japanese {
-            font-family: 'Noto Sans JP', sans-serif;
+        .japanese { font-family: 'Noto Sans JP', sans-serif; }
+
+        /* ========== GLASSMORPHISM (СТЕКЛО) ========== */
+        .glass-panel {
+            background: rgba(30, 30, 45, 0.4); /* Полупрозрачный фон */
+            backdrop-filter: blur(16px); /* Сильное размытие */
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08); /* Тонкий блик по краям */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Объемная тень */
         }
 
-        /* ========== BOTTOM NAV ========== */
+        /* Шапки экранов */
+        .glass-header {
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 30px 20px 25px; border-radius: 0 0 35px 35px;
+            color: white; margin-bottom: 25px; text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative; overflow: hidden;
+        }
+        
+        /* Неоновый отсвет сверху шапки в цвет выбранной темы */
+        .glass-header::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at top, var(--primary) 0%, transparent 50%);
+            opacity: 0.15; z-index: -1; pointer-events: none;
+        }
+
+        /* ========== НАВИГАЦИЯ ========== */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            padding-bottom: calc(8px + env(safe-area-inset-bottom));
-            z-index: 100;
+            position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
+            height: 75px; 
+            background: rgba(20, 20, 30, 0.75) !important;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.08) !important;
+            display: flex !important; justify-content: space-around !important; align-items: center !important;
+            padding-bottom: env(safe-area-inset-bottom) !important; z-index: 9999 !important; 
         }
-
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 6px 14px;
-            border: none;
-            background: none;
-            color: var(--text-hint);
-            font-size: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; padding: 6px 14px;
+            border: none; background: none; color: var(--text-hint); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s;
         }
+        .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 15px rgba(var(--primary), 0.5); }
+        .nav-item .icon { font-size: 24px; margin-bottom: 4px; transition: 0.2s; }
 
-        .nav-item.active {
-            color: var(--primary);
-        }
+        /* Экраны */
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .nav-item .icon {
-            font-size: 22px;
-            margin-bottom: 3px;
+        /* ========== ЭЛЕМЕНТЫ ПРОФИЛЯ ========== */
+        .user-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; text-align: left; }
+        .avatar { 
+            width: 64px; height: 64px; border-radius: 50%; 
+            background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; 
+            font-size: 28px; background-size: cover; background-position: center; 
+            border: 2px solid var(--primary); box-shadow: 0 0 15px rgba(var(--primary), 0.3);
         }
+        .user-info h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);}
+        .user-rank { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); font-weight: 700; background: rgba(var(--primary), 0.1); padding: 4px 10px; border-radius: 12px; display: inline-flex;}
 
-        /* ========== SCREENS ========== */
-        .screen {
-            display: none;
-            min-height: 100vh;
+        .stats-row { display: flex; gap: 12px; }
+        .stat-box { 
+            flex: 1; padding: 14px 10px; text-align: center; border-radius: 18px; 
+            background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); 
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
         }
+        .stat-value { font-size: 20px; font-weight: 900; color: white; margin-bottom: 2px;}
+        .stat-label { font-size: 11px; color: var(--text-hint); font-weight: 500;}
 
-        .screen.active {
-            display: block;
-        }
+        .section { padding: 0 16px; margin-bottom: 28px; }
+        .section-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; padding-left: 4px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        /* ========== HOME SCREEN ========== */
-        .home-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            padding: 24px 20px 28px;
-            border-radius: 0 0 28px 28px;
-            color: white;
-            margin-bottom: 20px;
+        /* ========== КАРТОЧКИ (МЕНЮ И УЧЕБА) ========== */
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .menu-card, .category-card {
+            background: rgba(30, 30, 45, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: 22px; padding: 20px 16px; text-align: center; cursor: pointer; transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 25px rgba(0,0,0,0.2);
         }
-
-        .user-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 20px;
-        }
-
-        .avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        .user-info h1 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .user-rank {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .stat-box {
-            flex: 1;
-            background: rgba(255,255,255,0.15);
-            border-radius: 14px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            opacity: 0.85;
-        }
-
-        /* ========== SECTIONS ========== */
-        .section {
-            padding: 0 16px;
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            padding-left: 4px;
-        }
-
-        /* ========== MENU GRID ========== */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .menu-card {
-            background: var(--bg-secondary);
-            border-radius: 18px;
-            padding: 18px 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 2px solid transparent;
-        }
-
-        .menu-card:active {
-            transform: scale(0.97);
-            border-color: var(--primary);
-        }
-
-        .menu-card .card-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .menu-card .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-
-        .menu-card .card-subtitle {
-            font-size: 11px;
-            color: var(--text-hint);
-        }
-
-        .menu-card.wide {
-            grid-column: span 2;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .menu-card.wide .card-subtitle {
-            color: rgba(255,255,255,0.8);
-        }
+        .category-card { display: flex; text-align: left; align-items: center; gap: 16px; padding: 18px;}
+        
+        .menu-card:active, .category-card:active { transform: scale(0.96); border-color: var(--primary); background: rgba(0,0,0,0.5); }
+        
+        .menu-card .card-icon { font-size: 38px; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)); }
+        .menu-card .card-title { font-size: 15px; font-weight: 800; margin-bottom: 4px; color: white; }
+        .menu-card .card-subtitle { font-size: 12px; color: var(--text-hint); font-weight: 500;}
+        
+        /* Широкая карточка с акцентом */
+        .menu-card.wide { grid-column: span 2; border-left: 4px solid var(--primary); display: flex; align-items: center; text-align: left; gap: 20px; padding: 20px;}
+        .menu-card.wide .card-icon { margin-bottom: 0; font-size: 45px;}
+        .menu-card.wide .card-title { color: var(--primary); font-size: 18px; margin-bottom: 6px;}
 
         /* ========== DAILY QUESTS ========== */
-        .quest-item {
-            background: var(--bg-secondary);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .quest-icon {
-            font-size: 26px;
-        }
-
-        .quest-info {
-            flex: 1;
-        }
-
-        .quest-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .quest-bar {
-            height: 6px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .quest-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 3px;
-            transition: width 0.3s;
-        }
-
-        .quest-reward {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--warning);
-        }
-
-        .quest-item.done {
-            opacity: 0.6;
-        }
-
-        .quest-item.done .quest-reward {
-            color: var(--success);
-        }
-
-        /* ========== ALPHABET SCREEN ========== */
-        .alphabet-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 20px 16px;
-            color: white;
-            text-align: center;
-        }
-
-        .alphabet-header h2 {
-            font-size: 22px;
-            margin-bottom: 14px;
-        }
-
-        .tabs {
-            display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 14px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            background: transparent;
-            color: rgba(255,255,255,0.7);
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-        }
-
-        .tab-btn.active {
-            background: white;
-            color: var(--primary);
-        }
-
-        .view-toggle {
-            display: flex;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            padding: 3px;
-        }
-
-        .view-btn {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            background: transparent;
-            color: rgba(255,255,255,0.7);
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .view-btn.active {
-            background: white;
-            color: var(--primary);
-        }
-
-        .alphabet-content {
-            padding: 16px;
-        }
-
-        .test-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .test-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            color: white;
-        }
-
-        .test-btn.primary {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-        }
-
-        .test-btn.secondary {
-            background: rgba(255,255,255,0.1);
-        }
-
-        /* ========== KANA GRID ========== */
-        .kana-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-        }
-
-        .kana-cell {
-            aspect-ratio: 1;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .kana-cell:active {
-            transform: scale(0.95);
-            background: var(--primary);
-            color: white;
-        }
-
-        .kana-cell .char {
-            font-size: 24px;
-            font-weight: 500;
-        }
-
-        .kana-cell .reading {
-            font-size: 10px;
-            color: var(--text-hint);
-            margin-top: 2px;
-        }
-
-        .kana-cell:active .reading {
-            color: rgba(255,255,255,0.8);
-        }
-
-        /* ========== ROW VIEW ========== */
-        .kana-row {
-            margin-bottom: 18px;
-        }
-
-        .row-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .row-title {
-            font-size: 15px;
-            font-weight: 700;
-        }
-
-        .row-test-btn {
-            padding: 6px 14px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 16px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .row-cards {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 6px;
-            scrollbar-width: none;
-        }
-
-        .row-cards::-webkit-scrollbar {
-            display: none;
-        }
-
-        .row-card {
-            min-width: 60px;
-            height: 75px;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .row-card:active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .row-card .char {
-            font-size: 26px;
-        }
-
-        .row-card .reading {
-            font-size: 11px;
-            color: var(--text-hint);
-        }
-
-        .row-card:active .reading {
-            color: rgba(255,255,255,0.8);
-        }
-
-        /* ========== STUDY SCREEN ========== */
-        .study-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 20px 16px;
-            color: white;
-        }
-
-        .study-header h2 {
-            font-size: 22px;
-        }
-
-        .study-content {
-            padding: 16px;
-        }
-
-        .category-card {
-            background: var(--bg-secondary);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            cursor: pointer;
-        }
-
-        .category-card:active {
-            transform: scale(0.98);
-        }
-
-        .category-icon {
-            font-size: 36px;
-        }
-
-        .category-info {
-            flex: 1;
-        }
-
-        .category-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .category-desc {
-            font-size: 12px;
-            color: var(--text-hint);
-            margin-bottom: 8px;
-        }
-
-        .category-bar {
-            height: 5px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .category-bar-fill {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 3px;
-        }
-
-        .category-arrow {
-            font-size: 18px;
-            color: var(--text-hint);
-        }
-
-        /* ========== PROFILE SCREEN ========== */
-        .profile-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 30px 20px;
-            text-align: center;
-            color: white;
-            position: relative;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            margin: 0 auto 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        .profile-name {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .profile-rank-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .profile-settings-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .profile-edit-name {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .profile-stats {
-            display: flex;
-            justify-content: space-around;
-            padding: 20px;
-            background: var(--bg);
-            margin: -20px 16px 0;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            position: relative;
-        }
-
-        .profile-stat {
-            text-align: center;
-        }
-
-        .profile-stat-value {
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .profile-stat-label {
-            font-size: 11px;
-            color: var(--text-hint);
-        }
-
-        .profile-section {
-            padding: 20px 16px;
-        }
-
-        .profile-section-title {
-            font-size: 17px;
-            font-weight: 700;
-            margin-bottom: 14px;
-        }
-
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .achievement {
-            text-align: center;
-            cursor: pointer;
-        }
+        .quest-item { 
+            background: rgba(30, 30, 45, 0.4); backdrop-filter: blur(12px); border-radius: 18px; 
+            padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; 
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .quest-icon { font-size: 28px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 14px;}
+        .quest-info { flex: 1; }
+        .quest-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: white;}
+        .quest-bar { height: 8px; background: rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
+        .quest-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px; transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 10px var(--primary);}
+        .quest-reward { font-size: 15px; font-weight: 800; color: var(--primary); }
+        .quest-item.done { opacity: 0.6; border-color: var(--success); }
+        .quest-item.done .quest-reward { color: var(--success); }
+
+        /* ========== АЗБУКА И КНОПКИ ========== */
+        .tabs { display: flex; background: rgba(0,0,0,0.4); border-radius: 14px; padding: 5px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);}
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-hint); font-size: 15px; font-weight: 700; border-radius: 10px; transition: 0.2s;}
+        .tab-btn.active { background: rgba(255,255,255,0.1); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         
-        .achievement:active {
-            transform: scale(0.9);
-        }
+        .test-buttons { display: flex; gap: 12px; margin-bottom: 20px; }
+        .test-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 15px; font-weight: 800; cursor: pointer; color: white; transition: 0.2s;}
+        .test-btn.primary { background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 5px 20px rgba(var(--primary), 0.4); }
+        .test-btn.secondary { background: rgba(30, 30, 45, 0.6); backdrop-filter: blur(10px); border: 1px solid var(--primary); color: white; }
+        .test-btn:active { transform: scale(0.95); }
 
-        .achievement-icon {
-            width: 54px;
-            height: 54px;
-            background: var(--bg-secondary);
-            border-radius: 14px;
-            margin: 0 auto 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-        }
+        .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .kana-cell { background: rgba(30, 30, 45, 0.4); backdrop-filter: blur(10px); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; border: 1px solid rgba(255,255,255,0.08); padding: 14px 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);}
+        .kana-cell:active { background: var(--primary); transform: scale(0.92); border-color: var(--accent);}
+        .kana-cell .char { font-size: 28px; font-weight: 700; color: white; }
+        .kana-cell .reading { font-size: 12px; color: var(--text-hint); margin-top: 4px; font-weight: 600;}
 
-        .achievement.locked .achievement-icon {
-            filter: grayscale(1);
-            opacity: 0.4;
-        }
-
-        .achievement-name {
-            font-size: 10px;
-            color: var(--text-hint);
-        }
-
-        /* ========== LEADERBOARD SCREEN ========== */
-        .leaderboard-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            padding: 20px 16px;
-            color: white;
-            text-align: center;
-        }
-
-        .leaderboard-header h2 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .leaderboard-header p {
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .leaderboard-list {
-            padding: 16px;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            background: var(--bg-secondary);
-            border-radius: 14px;
-            padding: 12px;
-            margin-bottom: 10px;
-            gap: 12px;
-        }
-
-        .leaderboard-rank {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-            min-width: 30px;
-            text-align: center;
-        }
-
-        .leaderboard-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.1);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: white;
-            background-color: var(--primary);
-            position: relative;
-        }
-
-        .leaderboard-info {
-            flex: 1;
-        }
-
-        .leaderboard-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .leaderboard-details {
-            display: flex;
-            gap: 12px;
-            font-size: 12px;
-            color: var(--text-hint);
-        }
-
-        .leaderboard-xp {
-            font-weight: 700;
-            color: var(--warning);
-        }
-
-        .leaderboard-streak {
-            color: var(--error);
-        }
-
-        /* ========== SETTINGS SCREEN ========== */
-        .settings-header {
-            padding: 20px 16px;
-            background: var(--bg-secondary);
-        }
-
-        .settings-header h2 {
-            font-size: 22px;
-            font-weight: 700;
-        }
-
-        .settings-content {
-            padding: 16px;
-        }
-
-        .settings-group {
-            background: var(--bg-secondary);
-            border-radius: 18px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .settings-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            cursor: pointer;
-        }
-
-        .settings-item:last-child {
-            border-bottom: none;
-        }
-
-        .settings-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .settings-icon {
-            font-size: 20px;
-        }
-
-        .settings-label {
-            font-size: 15px;
-        }
-
-        .settings-value {
-            font-size: 14px;
-            color: var(--text-hint);
-        }
-
-        .toggle {
-            width: 48px;
-            height: 28px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 14px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .toggle.active {
-            background: var(--primary);
-        }
-
-        .toggle::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: white;
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .toggle.active::after {
-            left: 23px;
-        }
-
-        /* Темы и Палитры */
-        .color-picker {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding: 10px 16px;
-            margin: 0 -16px;
-            scrollbar-width: none;
-        }
+        /* ========== НАСТРОЙКИ ========== */
+        .settings-group { background: rgba(30,30,45,0.4); backdrop-filter: blur(12px); border-radius: 22px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 8px 25px rgba(0,0,0,0.2);}
+        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .color-circle { width: 48px; height: 48px; border-radius: 50%; border: 3px solid transparent; flex-shrink: 0; transition: 0.2s; cursor: pointer;}
+        .color-circle.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 20px rgba(255,255,255,0.6);}
+        .bg-option { width: 90px; height: 140px; border-radius: 16px; background-size: cover; background-position: center; border: 2px solid transparent; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px; transition: 0.2s; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .bg-option.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
         
-        .color-picker::-webkit-scrollbar {
-            display: none;
-        }
-
-        .color-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: 0.2s;
-        }
-
-        .color-circle.active {
-            border-color: white;
-            transform: scale(1.1);
-        }
-
-        .bg-picker {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 10px 16px;
-            margin: 0 -16px;
-            scrollbar-width: none;
-        }
-        
-        .bg-picker::-webkit-scrollbar {
-            display: none;
-        }
-
-        .bg-option {
-            width: 80px;
-            height: 120px;
-            border-radius: 12px;
-            border: 3px solid transparent;
-            background-size: cover;
-            background-position: center;
-            background-color: var(--bg-secondary);
-            flex-shrink: 0;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bg-option.active {
-            border-color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        /* ========== MODAL ========== */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-            padding: 20px;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-box {
-            background: var(--bg);
-            border-radius: 24px;
-            padding: 28px 22px;
-            text-align: center;
-            max-width: 320px;
-            width: 100%;
-            animation: modalIn 0.25s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        @keyframes modalIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-counter {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(255,255,255,0.1);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            color: var(--text-hint);
-            display: none;
-        }
-        
-        @keyframes slideHint {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(5px); }
-            100% { transform: translateX(0); }
-        }
-
-        .modal-swipe-hint {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 18px;
-            opacity: 0.5;
-            display: none;
-            animation: slideHint 2s infinite;
-        }
-
-        .modal-char {
-            font-size: 80px;
-            margin-bottom: 10px;
-        }
-
-        .modal-reading {
-            font-size: 32px;
-            color: var(--primary);
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .modal-meaning {
-            font-size: 18px;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-
-        .modal-hint {
-            font-size: 14px;
-            color: var(--text-hint);
-            margin-bottom: 20px;
-        }
-
-        .modal-gif {
-            margin: 14px 0;
-            display: none;
-            min-height: 80px;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-gif.show {
-            display: flex;
-        }
-
-        .modal-gif img {
-            max-width: 150px;
-            border-radius: 12px;
-            background: white; /* Чтобы черные линии было видно */
-            padding: 5px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 14px;
-            font-size: 22px;
-            cursor: pointer;
-        }
-
-        .modal-btn:active {
-            transform: scale(0.95);
-        }
-
-        .modal-btn.sound {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .modal-btn.stroke {
-            background: linear-gradient(135deg, var(--accent), #f5576c);
-            color: white;
-        }
-
-        .modal-btn.close {
-            background: var(--bg-secondary);
-            color: white;
-            flex: 0.5;
-        }
-
-        /* ========== SWIPE SCREEN ========== */
-        .swipe-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: none;
-            flex-direction: column;
-            z-index: 150;
-            padding: 20px;
-        }
-
-        .swipe-screen.show {
-            display: flex;
-        }
-
-        .swipe-header {
-            text-align: center;
-            padding-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .swipe-header h2 {
-            font-size: 22px;
-            color: white;
-            margin-bottom: 14px;
-        }
-
-        .swipe-progress {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            color: rgba(255,255,255,0.8);
-            font-size: 15px;
-        }
-
-        .progress-bar {
-            width: 120px;
-            height: 6px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 3px;
-            transition: width 0.3s;
-        }
-
-        .swipe-area {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        .swipe-card {
-            width: 280px;
-            height: 380px;
-            background: linear-gradient(145deg, #ffffff, #f8f9ff);
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            transition: transform 0.3s, opacity 0.3s;
-        }
-
-        .swipe-card .card-char {
-            font-size: 120px;
-            color: #1a1a2e;
-            margin-bottom: 16px;
-        }
-
-        .swipe-card .card-hint {
-            font-size: 16px;
-            color: #999;
-        }
-
-        .swipe-card .card-answer {
-            font-size: 36px;
-            color: var(--primary);
-            font-weight: 700;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .swipe-card.revealed .card-answer {
-            opacity: 1;
-        }
-
-        .swipe-card.revealed .card-hint {
-            display: none;
-        }
-
-        .swipe-indicators {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            right: 16px;
-            display: flex;
-            justify-content: space-between;
-            pointer-events: none;
-        }
-
-        .indicator {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .indicator.know {
-            background: var(--success);
-            color: white;
-        }
-
-        .indicator.learn {
-            background: var(--error);
-            color: white;
-        }
-
-        .swipe-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            padding: 20px;
-        }
-
-        .swipe-btn {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-        }
-
-        .swipe-btn:active {
-            transform: scale(0.95);
-        }
-
-        .swipe-btn.no {
-            background: var(--error);
-            color: white;
-        }
-
-        .swipe-btn.reveal {
-            background: var(--warning);
-            color: white;
-        }
-
-        .swipe-btn.yes {
-            background: var(--success);
-            color: white;
-        }
-
-        .swipe-hint-text {
-            text-align: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-            padding-bottom: 20px;
-        }
-
-        /* ========== QUIZ SCREEN ========== */
-        .quiz-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            display: none;
-            flex-direction: column;
-            z-index: 150;
-            padding: 20px;
-        }
-
-        .quiz-screen.show {
-            display: flex;
-        }
-
-        .quiz-header {
-            text-align: center;
-            padding-top: 20px;
-            margin-bottom: 24px;
-        }
-
-        .quiz-title {
-            font-size: 20px;
-            color: white;
-            margin-bottom: 14px;
-        }
-
-        .quiz-score {
-            display: flex;
-            justify-content: center;
-            gap: 28px;
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .quiz-score .correct {
-            color: var(--success);
-        }
-
-        .quiz-score .wrong {
-            color: var(--error);
-        }
-
-        .quiz-card {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 26px;
-            padding: 45px 30px;
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .quiz-char {
-            font-size: 90px;
-            color: white;
-        }
-
-        .quiz-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .quiz-option {
-            padding: 18px;
-            background: rgba(255,255,255,0.95);
-            border: 3px solid transparent;
-            border-radius: 16px;
-            font-size: 20px;
-            font-weight: 600;
-            color: #1a1a2e;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .quiz-option:active {
-            transform: scale(0.97);
-        }
-
-        .quiz-option.correct {
-            background: var(--success);
-            color: white;
-        }
-
-        .quiz-option.wrong {
-            background: var(--error);
-            color: white;
-        }
-
-        .quiz-option.disabled {
-            pointer-events: none;
-        }
-
-        /* ========== RESULTS SCREEN ========== */
-        .results-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 150;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .results-screen.show {
-            display: flex;
-        }
-
-        .results-icon {
-            font-size: 90px;
-            margin-bottom: 20px;
-            animation: bounce 0.5s ease;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-        }
-
-        .results-title {
-            font-size: 30px;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .results-score {
-            font-size: 52px;
-            font-weight: 800;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-
-        .results-xp {
-            font-size: 22px;
-            color: var(--warning);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .results-subtitle {
-            font-size: 16px;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 36px;
-        }
-
-        .results-btn {
-            width: 100%;
-            max-width: 260px;
-            padding: 16px;
-            border: none;
-            border-radius: 28px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-
-        .results-btn.primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-
-        .results-btn.secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        /* ========== WHEEL SCREEN ========== */
-        .wheel-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 150;
-            padding: 20px;
-        }
-
-        .wheel-screen.show {
-            display: flex;
-        }
-
-        .wheel-title {
-            font-size: 26px;
-            color: white;
-            margin-bottom: 8px;
-            background: linear-gradient(90deg, #f093fb, #f5576c, #ffd200);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .wheel-subtitle {
-            color: rgba(255,255,255,0.6);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .wheel-container {
-            position: relative;
-            width: 280px;
-            height: 280px;
-            margin-bottom: 30px;
-        }
-
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 40px rgba(102,126,234,0.3);
-        }
-
-        .wheel-pointer {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-top: 30px solid #ffd200;
-            z-index: 10;
-        }
-
-        .wheel-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(145deg, #2d2d44, #1a1a2e);
-            border-radius: 50%;
-            border: 3px solid #ffd200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            z-index: 5;
-        }
-
-        .wheel-spin-btn {
-            padding: 16px 50px;
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            border: none;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-            cursor: pointer;
-        }
-
-        .wheel-result {
-            margin-top: 24px;
-            padding: 18px 30px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 18px;
-            display: none;
-            text-align: center;
-        }
-
-        .wheel-result.show {
-            display: block;
-        }
-
-        .wheel-result-xp {
-            font-size: 42px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #ffd200, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .wheel-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .loading-screen {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 300;
-        }
-
-        .loading-logo {
-            font-size: 60px;
-            margin-bottom: 16px;
-            animation: pulse 1.2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .loading-text {
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .loading-spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-top: 18px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        .toggle { width: 54px; height: 32px; background: rgba(0,0,0,0.5); border-radius: 16px; position: relative; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+        .toggle.active { background: var(--primary); border-color: var(--accent); box-shadow: 0 0 15px var(--primary);}
+        .toggle::after { content: ''; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; top: 3px; left: 4px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .toggle.active::after { left: 24px; }
+
+        /* Лоадер */
+        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
+        .loading-logo { font-size: 70px; margin-bottom: 20px; animation: pulse 1.5s infinite ease-in-out; filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));}
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .loading-spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-top: 25px; box-shadow: 0 0 15px var(--primary);}
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -1612,42 +195,30 @@
 
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
-        <div class="loading-text">YomuBot</div>
+        <div style="color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px;">YomuBot</div>
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Home Screen -->
+    <!-- Главная -->
     <div class="screen active" id="homeScreen">
-        <div class="home-header">
+        <div class="glass-header">
             <div class="user-row">
                 <div class="avatar" id="userAvatar">👤</div>
-                <div class="user-info">
+                <div>
                     <h1 id="userName">Загрузка...</h1>
-                    <div class="user-rank">
-                        <span id="userBadge">🥚</span>
-                        <span id="userRankName">Новичок</span>
-                    </div>
+                    <div class="user-rank"><span id="userBadge">🥚</span> <span id="userRankName">Новичок</span></div>
                 </div>
             </div>
             <div class="stats-row">
-                <div class="stat-box">
-                    <div class="stat-value" id="userXp">0</div>
-                    <div class="stat-label">XP</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="userStreak">0</div>
-                    <div class="stat-label">🔥 Серия</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="userCards">0</div>
-                    <div class="stat-label">Карточек</div>
-                </div>
+                <div class="stat-box"><div class="stat-value" id="userXp">0</div><div class="stat-label">XP</div></div>
+                <div class="stat-box"><div class="stat-value" id="userStreak">0</div><div class="stat-label">🔥 Серия</div></div>
+                <div class="stat-box"><div class="stat-value" id="userCards">0</div><div class="stat-label">Карточек</div></div>
             </div>
         </div>
 
         <div class="section">
             <div class="section-title">📋 Ежедневные задания</div>
-            <div id="questsList"></div>
+            <div id="questsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <div class="section">
@@ -1655,8 +226,10 @@
             <div class="menu-grid">
                 <div class="menu-card wide" onclick="goTo('alphabet')">
                     <div class="card-icon">🎌</div>
-                    <div class="card-title">Японская Азбука</div>
-                    <div class="card-subtitle">Хирагана и Катакана</div>
+                    <div style="text-align: left;">
+                        <div class="card-title">Японская Азбука</div>
+                        <div class="card-subtitle">Хирагана и Катакана</div>
+                    </div>
                 </div>
                 <div class="menu-card" onclick="goTo('study', 'kanji_n5')">
                     <div class="card-icon">🈁</div>
@@ -1708,286 +281,215 @@
         </div>
     </div>
 
-    <!-- Alphabet Screen -->
+    <!-- Азбука -->
     <div class="screen" id="alphabetScreen">
-        <div class="alphabet-header">
-            <h2>🎌 Японская Азбука</h2>
+        <div class="glass-header" style="padding-bottom: 15px;">
+            <h2 style="margin-bottom: 20px; font-weight: 800; font-size: 26px;">🎌 Японская Азбука</h2>
             <div class="tabs">
                 <button class="tab-btn active" onclick="setAlphabetTab('hiragana')">Хирагана</button>
                 <button class="tab-btn" onclick="setAlphabetTab('katakana')">Катакана</button>
             </div>
-            <div class="view-toggle">
+            <div style="display: flex; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 4px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);">
                 <button class="view-btn active" onclick="setAlphabetView('grid')">📋 Сетка</button>
                 <button class="view-btn" onclick="setAlphabetView('rows')">📚 Строки</button>
             </div>
         </div>
-        <div class="alphabet-content">
+        <div class="section">
             <div class="test-buttons">
                 <button class="test-btn primary" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
                 <button class="test-btn secondary" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
             </div>
             <div id="alphabetGrid" class="kana-grid"></div>
-            <div id="alphabetRows" class="hidden"></div>
+            <div id="alphabetRows" style="display: none;"></div>
         </div>
     </div>
 
-    <!-- Study Screen -->
+    <!-- Изучение -->
     <div class="screen" id="studyScreen">
-        <div class="study-header">
-            <h2 id="studyTitle">📚 Изучение</h2>
-        </div>
-        <div class="study-content" id="studyContent"></div>
+        <div class="glass-header"><h2 id="studyTitle" style="font-weight: 800; font-size: 26px;">📚 Изучение</h2></div>
+        <div class="section" style="display: flex; flex-direction: column; gap: 14px;" id="studyContent"></div>
     </div>
 
-    <!-- Profile Screen -->
+    <!-- Профиль -->
     <div class="screen" id="profileScreen">
-        <div class="profile-header">
-            <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
-            <button class="profile-edit-name" onclick="promptChangeName()">✏️</button>
+        <div class="glass-header">
+            <button style="position:absolute; top:25px; right:20px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); width:44px; height:44px; border-radius:50%; color:white; font-size:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="goTo('settings')">⚙️</button>
+            <button style="position:absolute; top:25px; left:20px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); width:44px; height:44px; border-radius:50%; color:white; font-size:20px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="promptChangeName()">✏️</button>
             
-            <div class="profile-avatar" id="profileAvatar">👤</div>
-            <div class="profile-name" id="profileName">Пользователь</div>
-            <div class="profile-rank-badge">
-                <span id="profileBadge">🥚</span>
-                <span id="profileRankName">Новичок</span>
+            <div id="profileAvatar" class="avatar" style="margin: 0 auto 15px; width: 85px; height: 85px; font-size: 40px; border-width: 3px;">👤</div>
+            <h1 id="profileName" style="font-size: 26px; font-weight: 800; margin-bottom: 8px;">Пользователь</h1>
+            <div class="user-rank" style="margin: 0 auto; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 6px 16px;">
+                <span id="profileBadge">🥚</span> <span id="profileRankName">Новичок</span>
             </div>
         </div>
         
-        <div class="profile-stats">
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileXp">0</div>
-                <div class="profile-stat-label">XP</div>
-            </div>
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileStreak">0</div>
-                <div class="profile-stat-label">Серия</div>
-            </div>
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileCards">0</div>
-                <div class="profile-stat-label">Карточек</div>
-            </div>
+        <div class="stats-row" style="padding: 0 16px; margin-top: -35px; position: relative; z-index: 2;">
+            <div class="stat-box" style="background: rgba(20,20,30,0.9); backdrop-filter: blur(15px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);"><div class="stat-value" id="profileXp" style="color:var(--primary);">0</div><div class="stat-label">XP</div></div>
+            <div class="stat-box" style="background: rgba(20,20,30,0.9); backdrop-filter: blur(15px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);"><div class="stat-value" id="profileStreak" style="color:var(--primary);">0</div><div class="stat-label">Серия</div></div>
+            <div class="stat-box" style="background: rgba(20,20,30,0.9); backdrop-filter: blur(15px); box-shadow: 0 10px 20px rgba(0,0,0,0.4);"><div class="stat-value" id="profileCards" style="color:var(--primary);">0</div><div class="stat-label">Карточек</div></div>
         </div>
 
-        <div class="profile-section">
-            <div class="profile-section-title">📊 Прогресс по разделам</div>
-            <!-- Сюда подгружается подробная статистика -->
-            <div id="progressDetails" style="margin-bottom: 20px;">
-                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 16px;">Загрузка статистики с сервера...</div>
+        <div class="section" style="margin-top: 35px;">
+            <div class="section-title">📊 Прогресс по разделам</div>
+            <div id="progressDetails" style="margin-bottom: 25px;">
+                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 30px; background: rgba(30,30,45,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">Загрузка статистики...</div>
             </div>
             
-            <div class="profile-section-title">🎯 Дополнительно</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div>
-                    <div class="stat-label">Лучшая серия</div>
-                </div>
-                <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div>
-                    <div class="stat-label">Точность</div>
-                </div>
-                <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div>
-                    <div class="stat-label">Лучший блиц</div>
-                </div>
-                <div class="stat-box" style="background: var(--bg-secondary);">
-                    <div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div>
-                    <div class="stat-label">Голосовых</div>
-                </div>
+            <div class="section-title">🎯 Дополнительно</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 25px;">
+                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div><div class="stat-label">Лучшая серия</div></div>
+                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div><div class="stat-label">Точность</div></div>
+                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div><div class="stat-label">Лучший блиц</div></div>
+                <div class="stat-box" style="background: rgba(30,30,45,0.4); backdrop-filter: blur(10px);"><div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div><div class="stat-label">Голосовых</div></div>
             </div>
 
-            <div class="profile-section-title">🏆 Достижения (Нажми)</div>
-            <div class="achievements-grid" id="achievementsGrid"></div>
+            <div class="section-title">🏆 Достижения (Нажми)</div>
+            <div id="achievementsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;"></div>
         </div>
     </div>
 
-    <!-- Leaderboard Screen -->
+    <!-- Рейтинг -->
     <div class="screen" id="leaderboardScreen">
-        <div class="leaderboard-header">
-            <h2>🏆 Рейтинг игроков</h2>
-            <p>Топ-20 по опыту</p>
+        <div class="glass-header">
+            <h2 style="margin-bottom: 5px; font-weight: 800; font-size: 26px;">🏆 Рейтинг игроков</h2>
+            <p style="color: var(--text-hint); font-size: 14px; font-weight: 500;">Топ-20 по опыту</p>
         </div>
-        <div class="leaderboard-list" id="leaderboardList">
+        <div class="section" id="leaderboardList" style="display: flex; flex-direction: column; gap: 12px;">
             <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
 
-    <!-- Settings Screen -->
+    <!-- Настройки -->
     <div class="screen" id="settingsScreen">
-        <div class="settings-header">
-            <h2>⚙️ Настройки</h2>
-        </div>
-        <div class="settings-content">
-            
+        <div class="glass-header"><h2 style="font-weight: 800; font-size: 26px;">⚙️ Настройки</h2></div>
+        <div class="section">
             <div class="settings-group">
-                <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
-                    <div class="settings-left">
-                        <span class="settings-icon">🎨</span>
-                        <span class="settings-label" style="font-weight: bold;">Цвет интерфейса</span>
-                    </div>
+                <div class="settings-item" style="border-bottom: none; padding-bottom: 10px;">
+                    <div style="font-weight: 800; font-size: 16px; color: white;">🎨 Цвет интерфейса</div>
                 </div>
                 <div class="color-picker" id="colorPicker"></div>
             </div>
 
             <div class="settings-group">
-                <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
-                    <div class="settings-left">
-                        <span class="settings-icon">🖼️</span>
-                        <span class="settings-label" style="font-weight: bold;">Тема оформления (Фон)</span>
-                    </div>
+                <div class="settings-item" style="border-bottom: none; padding-bottom: 10px;">
+                    <div style="font-weight: 800; font-size: 16px; color: white;">🖼️ Тема (Фон)</div>
                 </div>
                 <div class="bg-picker" id="bgPicker"></div>
             </div>
             
             <div class="settings-group">
                 <div class="settings-item" onclick="toggleSetting('sound')">
-                    <div class="settings-left">
-                        <span class="settings-icon">🔊</span>
-                        <span class="settings-label">Звуки</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600;"><span style="font-size:22px;">🔊</span> Звуки</div>
                     <div class="toggle active" id="soundToggle"></div>
                 </div>
                 <div class="settings-item" onclick="toggleSetting('vibration')">
-                    <div class="settings-left">
-                        <span class="settings-icon">📳</span>
-                        <span class="settings-label">Вибрация</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600;"><span style="font-size:22px;">📳</span> Вибрация</div>
                     <div class="toggle active" id="vibrationToggle"></div>
                 </div>
             </div>
             
             <div class="settings-group">
                 <div class="settings-item" onclick="tg.close()">
-                    <div class="settings-left">
-                        <span class="settings-icon">🚪</span>
-                        <span class="settings-label">Вернуться в бота</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:14px; font-weight:800; color: var(--error);"><span style="font-size:22px;">🚪</span> Закрыть приложение</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА (ЖЕСТКО СКРЫТЫ ЧЕРЕЗ STYLE) -->
-
+    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА СО СТРОГИМ STYLE="DISPLAY: NONE" -->
+    
     <!-- Modal (Изучение карточек) -->
-    <div class="modal" id="modal" style="display: none;">
-        <div class="modal-box" id="modalBox">
-            <div class="modal-counter" id="modalCounter" style="display: none;">1/10</div>
-            <div class="modal-swipe-hint" id="modalSwipeHint" style="display: none;">↔️</div>
+    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(10px); z-index: 500; align-items: center; justify-content: center; padding: 20px;">
+        <div id="modalBox" style="background: rgba(30, 30, 46, 0.95); border-radius: 35px; padding: 40px 25px; width: 100%; max-width: 350px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 20px 50px rgba(0,0,0,0.6); position: relative;">
+            <div id="modalCounter" style="display: none; position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); padding: 6px 14px; border-radius: 14px; font-size: 13px; font-weight: 700; color: white;">1/10</div>
+            <div id="modalSwipeHint" style="display: none; position: absolute; top: 20px; right: 20px; font-size: 20px; opacity: 0.5;">↔️</div>
             
-            <div class="modal-char japanese" id="modalChar">あ</div>
-            <div class="modal-reading" id="modalReading">a</div>
-            <div class="modal-meaning" id="modalMeaning" style="display: none;"></div>
-            <div class="modal-hint" id="modalHint">Подсказка</div>
+            <div id="modalChar" class="japanese" style="font-size: 90px; margin-bottom: 10px; color: white; transition: 0.2s; text-shadow: 0 4px 15px rgba(0,0,0,0.5);">あ</div>
+            <div id="modalReading" style="font-size: 34px; color: var(--primary); font-weight: 800; margin-bottom: 6px; text-shadow: 0 0 15px rgba(var(--primary), 0.3);">a</div>
+            <div id="modalMeaning" style="display: none; font-size: 18px; color: white; margin-bottom: 8px; font-weight: 500;"></div>
+            <div id="modalHint" style="margin-bottom: 25px; color: var(--text-hint); font-size: 14px;">Подсказка</div>
             
-            <div class="modal-gif" id="modalGif" style="display: none;">
-                <img id="gifImage" src="" alt="">
-            </div>
+            <div id="modalGif" style="display: none; margin: 15px 0; justify-content: center;"><img id="gifImage" src="" style="max-width:160px; border-radius:16px; background:white; padding:8px; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);"></div>
             
-            <div class="modal-buttons">
-                <button class="modal-btn sound" onclick="playSound()">🔊</button>
-                <button class="modal-btn stroke" id="modalStrokeBtn" onclick="showGif()">✍️</button>
-                <button class="modal-btn close" onclick="closeModal()">✕</button>
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button style="flex: 1; padding: 18px; border: 1px solid var(--primary); border-radius: 20px; font-size: 26px; cursor: pointer; color: white; background: rgba(0,0,0,0.3); transition: 0.2s;" onclick="playSound()">🔊</button>
+                <button id="modalStrokeBtn" style="flex: 1; padding: 18px; border: none; border-radius: 20px; font-size: 26px; cursor: pointer; color: white; background: var(--primary); box-shadow: 0 5px 15px rgba(var(--primary), 0.4); transition: 0.2s;" onclick="showGif()">✍️</button>
+                <button style="flex: 0.5; padding: 18px; border: none; border-radius: 20px; font-size: 26px; cursor: pointer; color: white; background: rgba(255,255,255,0.1); transition: 0.2s;" onclick="closeModal()">✕</button>
             </div>
         </div>
     </div>
 
     <!-- Swipe Screen (Tinder) -->
-    <div class="swipe-screen" id="swipeScreen" style="display: none;">
-        <div class="swipe-header">
-            <h2>🃏 Карточки</h2>
-            <div class="swipe-progress">
-                <span id="swipeCount">1 / 10</span>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="swipeProgress"></div>
-                </div>
-            </div>
+    <div id="swipeScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+        <h2 style="color: white; margin-bottom: 20px; font-size: 28px; font-weight: 800;">🃏 Карточки</h2>
+        <div style="display: flex; align-items: center; gap: 14px; color: white; margin-bottom: 30px; width: 100%; max-width: 320px;">
+            <span id="swipeCount" style="font-weight: 700; font-size: 16px;">1 / 10</span>
+            <div style="flex:1; height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);"><div id="swipeProgress" style="height:100%; background:var(--primary); width:10%; box-shadow: 0 0 10px var(--primary); transition: width 0.3s;"></div></div>
         </div>
         
-        <div class="swipe-area">
-            <div class="swipe-card" id="swipeCard">
-                <div class="swipe-indicators">
-                    <div class="indicator learn">👎 Учить</div>
-                    <div class="indicator know">👍 Знаю</div>
-                </div>
-                <div class="card-char japanese" id="swipeChar">あ</div>
-                <div class="card-hint" id="swipeHint">Нажми 👁 чтобы увидеть</div>
-                <div class="card-answer" id="swipeAnswer">a</div>
+        <div id="swipeCard" style="width: 100%; max-width: 320px; height: 420px; background: rgba(30,30,46,0.9); border-radius: 35px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: transform 0.3s, opacity 0.3s;">
+            <div style="position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between;">
+                <div class="indicator learn" style="padding: 8px 18px; background: var(--error); border-radius: 20px; font-weight: 800; opacity: 0; color: white; box-shadow: 0 4px 10px rgba(var(--error), 0.4);">👎 Учить</div>
+                <div class="indicator know" style="padding: 8px 18px; background: var(--success); border-radius: 20px; font-weight: 800; opacity: 0; color: white; box-shadow: 0 4px 10px rgba(var(--success), 0.4);">👍 Знаю</div>
             </div>
+            <div class="japanese" id="swipeChar" style="font-size: 130px; margin-bottom: 15px; color: white; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">あ</div>
+            <div id="swipeHint" style="color: var(--text-hint); font-size: 16px; font-weight: 500;">Нажми 👁 чтобы увидеть</div>
+            <div id="swipeAnswer" style="font-size: 40px; font-weight: 900; color: var(--primary); opacity: 0; text-shadow: 0 0 15px rgba(var(--primary), 0.4);">a</div>
         </div>
         
-        <div class="swipe-buttons">
-            <button class="swipe-btn no" onclick="swipeNo()">👎</button>
-            <button class="swipe-btn reveal" onclick="swipeReveal()">👁</button>
-            <button class="swipe-btn yes" onclick="swipeYes()">👍</button>
+        <div style="display: flex; gap: 35px; margin-top: 40px;">
+            <button style="width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--error); font-size: 32px; background: rgba(0,0,0,0.6); color: white; box-shadow: 0 5px 20px rgba(0,0,0,0.4); transition: 0.1s;" onclick="swipeNo()">👎</button>
+            <button style="width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--warning); font-size: 32px; background: rgba(0,0,0,0.6); color: white; box-shadow: 0 5px 20px rgba(0,0,0,0.4); transition: 0.1s;" onclick="swipeReveal()">👁</button>
+            <button style="width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--success); font-size: 32px; background: rgba(0,0,0,0.6); color: white; box-shadow: 0 5px 20px rgba(0,0,0,0.4); transition: 0.1s;" onclick="swipeYes()">👍</button>
         </div>
     </div>
 
     <!-- Quiz Screen -->
-    <div class="quiz-screen" id="quizScreen" style="display: none;">
-        <div class="quiz-header">
-            <div class="quiz-title" id="quizTitle">🎯 Тест</div>
-            <div class="quiz-score">
-                <span class="correct">✓ <span id="quizCorrect">0</span></span>
-                <span class="wrong">✗ <span id="quizWrong">0</span></span>
-            </div>
+    <div id="quizScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+        <h2 id="quizTitle" style="color: white; margin-bottom: 15px; font-size: 26px; font-weight: 800;">🎯 Тест</h2>
+        <div style="display: flex; gap: 40px; font-size: 22px; font-weight: 900; margin-bottom: 25px;">
+            <span style="color: var(--success); text-shadow: 0 0 10px rgba(var(--success), 0.5);">✓ <span id="quizCorrect">0</span></span>
+            <span style="color: var(--error); text-shadow: 0 0 10px rgba(var(--error), 0.5);">✗ <span id="quizWrong">0</span></span>
         </div>
         
-        <div class="quiz-card">
-            <div class="quiz-char japanese" id="quizChar">あ</div>
+        <div style="background: rgba(30,30,46,0.8); border: 2px solid var(--primary); border-radius: 35px; padding: 50px 20px; text-align: center; margin-bottom: 35px; width: 100%; max-width: 320px; box-shadow: 0 15px 40px rgba(0,0,0,0.5);">
+            <div id="quizChar" class="japanese" style="font-size: 100px; color: white; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">あ</div>
         </div>
-        <div class="quiz-options" id="quizOptions"></div>
+        
+        <div id="quizOptions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; max-width: 320px;"></div>
     </div>
 
     <!-- Results Screen -->
-    <div class="results-screen" id="resultsScreen" style="display: none;">
-        <div class="results-icon" id="resultsIcon">🎉</div>
-        <div class="results-title" id="resultsTitle">Отлично!</div>
-        <div class="results-score" id="resultsScore">5 / 5</div>
-        <div class="results-xp" id="resultsXp">+50 XP</div>
-        <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
+    <div id="resultsScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
+        <div id="resultsIcon" style="font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🎉</div>
+        <h1 id="resultsTitle" style="color: var(--primary); margin-bottom: 10px; font-size: 36px; font-weight: 900; text-shadow: 0 0 20px rgba(var(--primary), 0.4);">Отлично!</h1>
+        <div id="resultsScore" style="font-size: 55px; font-weight: 900; color: white; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">5 / 5</div>
+        <div id="resultsXp" style="font-size: 26px; color: var(--warning); font-weight: 800; margin-bottom: 10px; text-shadow: 0 0 15px rgba(var(--warning), 0.4);">+50 XP</div>
+        <div id="resultsSubtitle" style="color: var(--text-hint); margin-bottom: 45px; font-size: 18px;">Так держать!</div>
         
-        <button class="results-btn primary" onclick="finishQuiz()">✨ Забрать награду</button>
-        <button class="results-btn secondary" onclick="retryQuiz()">🔄 Ещё раз</button>
+        <button style="width: 100%; max-width: 300px; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(var(--primary), 0.4); transition: 0.2s;" onclick="finishQuiz()">✨ Забрать награду</button>
+        <button style="width: 100%; max-width: 300px; padding: 20px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; transition: 0.2s;" onclick="retryQuiz()">🔄 Ещё раз</button>
     </div>
 
     <!-- Wheel Screen -->
-    <div class="wheel-screen" id="wheelScreen" style="display: none;">
-        <button class="wheel-close" onclick="closeWheel()">✕</button>
-        <div class="wheel-title">🎡 РУЛЕТКА</div>
-        <div class="wheel-subtitle">Крути раз в день!</div>
+    <div id="wheelScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(15px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+        <button style="position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px; transition: 0.2s;" onclick="closeWheel()">✕</button>
+        <h2 style="color: var(--primary); font-size: 32px; font-weight: 900; margin-bottom: 10px; text-shadow: 0 0 20px rgba(var(--primary), 0.5);">🎡 РУЛЕТКА</h2>
+        <p style="color: var(--text-hint); margin-bottom: 40px; font-size: 16px;">Испытай свою удачу!</p>
         
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <svg class="wheel" id="wheel" viewBox="0 0 100 100"></svg>
-            <div class="wheel-center">🎯</div>
+        <div style="position: relative; width: 320px; height: 320px; margin-bottom: 50px;">
+            <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--warning); z-index: 10; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));"></div>
+            <svg id="wheel" viewBox="0 0 100 100" style="width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 50px rgba(var(--primary), 0.5); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);"></svg>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 66px; height: 66px; background: rgba(30,30,46,0.9); border: 4px solid var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🎯</div>
         </div>
         
-        <button class="wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()">🎲 КРУТИТЬ</button>
+        <button id="wheelSpinBtn" style="padding: 20px 70px; background: var(--primary); border: none; border-radius: 35px; color: white; font-size: 22px; font-weight: 900; box-shadow: 0 10px 30px rgba(var(--primary), 0.5); transition: 0.2s;" onclick="spinWheel()">🎲 КРУТИТЬ</button>
         
-        <div class="wheel-result" id="wheelResult" style="display: none;">
-            <div class="wheel-result-xp" id="wheelResultXp">+100 XP</div>
-            <div>Награда начислена!</div>
+        <div id="wheelResult" style="display: none; margin-top: 35px; padding: 25px 45px; background: rgba(255,255,255,0.1); border-radius: 24px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.4);">
+            <div id="wheelResultXp" style="font-size: 50px; font-weight: 900; color: var(--warning); margin-bottom: 8px; text-shadow: 0 0 15px rgba(var(--warning), 0.4);">+100 XP</div>
+            <div style="color: white; font-size: 16px; font-weight: 600;">Награда зачислена!</div>
         </div>
     </div>
-
-    <!-- Навигация -->
-    <nav class="bottom-nav" id="bottomNav">
-        <button class="nav-item active" onclick="goTo('home')">
-            <span class="icon">🏠</span><span>Главная</span>
-        </button>
-        <button class="nav-item" onclick="goTo('alphabet')">
-            <span class="icon">🔤</span><span>Азбука</span>
-        </button>
-        <button class="nav-item" onclick="goTo('study')">
-            <span class="icon">📚</span><span>Учить</span>
-        </button>
-        <button class="nav-item" onclick="goTo('profile')">
-            <span class="icon">👤</span><span>Профиль</span>
-        </button>
-        <button class="nav-item" onclick="goTo('leaderboard')">
-            <span class="icon">🏆</span><span>Рейтинг</span>
-        </button>
-    </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
@@ -2013,7 +515,7 @@
         let currentStudyList = [];
         let currentStudyIndex = 0;
 
-        // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
+        // ==================== 1. ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
         const PALETTES = [
             { id: 'purple', name: 'Фиолетовый', p: '#667eea', s: '#764ba2', a: '#f093fb' },
             { id: 'blue', name: 'Океан', p: '#4facfe', s: '#00f2fe', a: '#43e97b' },
@@ -2022,6 +524,11 @@
             { id: 'dark', name: 'Ночь', p: '#537895', s: '#09203f', a: '#141e30' },
             { id: 'orange', name: 'Огонь', p: '#ff0844', s: '#ffb199', a: '#f6d365' }
         ];
+
+        function hexToRgb(hex) {
+            var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
+        }
 
         function applyPalette(paletteId) {
             const pal = PALETTES.find(p => p.id === paletteId) || PALETTES[0];
@@ -2046,7 +553,7 @@
             `).join('');
         }
 
-        // ==================== ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
+        // ==================== 2. ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
         const BACKGROUNDS = [
             { id: 'default', name: 'Тёмный', url: '' },
             { id: 'sakura', name: 'Сакура', url: 'sakura.gif' },
@@ -2078,12 +585,12 @@
                 <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
                      style="background-image: url('${bg.url || ''}'); background-color: var(--bg-secondary); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
-                     <div style="background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: white; text-align:center;">${bg.name}</div>
+                     <div style="background: rgba(0,0,0,0.8); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; text-align:center;">${bg.name}</div>
                 </div>
             `).join('');
         }
 
-        // ==================== ДОСТИЖЕНИЯ ====================
+        // ==================== 3. ДОСТИЖЕНИЯ (57 ШТУК с иконками) ====================
         const ACHIEVEMENTS = [];
         
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
@@ -2140,8 +647,10 @@
                     user.cardsLearned = data.user.cards_learned;
                     
                     // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ПРИОРИТЕТ ВЫШЕ ЧЕМ ТГ)
-                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
+                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User' && data.user.name !== 'User') {
                         user.name = data.user.name;
+                    } else if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                        user.name = tg.initDataUnsafe.user.first_name;
                     }
                     return true;
                 }
@@ -2209,6 +718,7 @@
                     
                     container.innerHTML = html;
 
+                    // Скачиваем аватарки безопасно через BLOB
                     data.players.forEach((p, index) => {
                         loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
                     });
@@ -2256,10 +766,10 @@
                 const percent = Math.min(100, Math.round(learned / sec.total * 100));
                 progressHtml += `
                     <div style="margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; color: white;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color: white;">
                             <span>${sec.name}</span><span>${learned}/${sec.total} (<span style="color:var(--primary); font-weight:bold;">${percent}%</span>)</span>
                         </div>
-                        <div style="height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden;">
+                        <div style="height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
                             <div style="height:100%; width:${percent}%; background:var(--primary); border-radius:4px; box-shadow: 0 0 10px var(--primary);"></div>
                         </div>
                     </div>
@@ -2276,7 +786,7 @@
                 if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
 
-            // ЖЕСТКИЙ ФОЛЛБЭК ИМЕНИ ИЗ ТЕЛЕГРАМА
+            // ЖЕСТКИЙ ФОЛЛБЭК ИМЕНИ ИЗ ТЕЛЕГРАМА (если в памяти мусор)
             if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...' || user.name === 'User' || user.name === 'Х') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
@@ -2328,6 +838,7 @@
         async function init() {
             loadUserFromStorage();
             
+            // Если сервер жив, обновим данные с него
             await fetchUserFromServer();
             
             applyBackground(user.settings.bg || 'default');
@@ -2344,11 +855,13 @@
             updateUI();
             setAvatar();
 
+            // Гарантируем, что нижняя панель видна
             const bNav = document.getElementById('bottomNav');
             if(bNav) bNav.classList.remove('hidden');
 
             setTimeout(() => {
                 document.getElementById('loadingScreen').style.display = 'none';
+                createWheel();
             }, 800);
         }
 
@@ -2371,20 +884,10 @@
         }
 
         function updateUI() {
-            const LOCAL_RANKS = [
-                {min: 0, name: 'Новичок', badge: '🥚'}, {min: 100, name: 'Ученик', badge: '🐣'},
-                {min: 500, name: 'Искатель', badge: '🔍'}, {min: 1000, name: 'Странник', badge: '🚶'},
-                {min: 1500, name: 'Кохай', badge: '🎒'}, {min: 2500, name: 'Сэмпай', badge: '🎓'},
-                {min: 4800, name: 'Мечник', badge: '⚔️'}, {min: 8000, name: 'Самурай', badge: '🥷'},
-                {min: 12000, name: 'Ронин', badge: '🏯'}, {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
-                {min: 25000, name: 'Сенсей', badge: '🧙'}, {min: 35000, name: 'Шихан', badge: '📜'},
-                {min: 50000, name: 'Даймё', badge: '👑'}, {min: 70000, name: 'Сёгун', badge: '🏰'},
-                {min: 100000, name: 'Император', badge: '👘'}, {min: 150000, name: 'Легенда', badge: '🐉'},
-                {min: 250000, name: 'Ками', badge: '⛩️'}
-            ];
-
-            let rank = LOCAL_RANKS[0];
-            for (let r of LOCAL_RANKS) { if (user.xp >= r.min) rank = r; }
+            let rank = {name:'Новичок', badge:'🥚'};
+            if (typeof RANKS !== 'undefined') {
+                for (let r of RANKS) { if (user.xp >= r.min) rank = r; }
+            }
 
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
@@ -2489,14 +992,16 @@
             document.getElementById('studyContent').innerHTML = categories.map(cat => {
                 const progress = Math.floor(Math.random() * 60);
                 return `
-                    <div class="category-card" onclick="openCategory('${cat.id}')">
-                        <div class="category-icon">${cat.icon}</div>
-                        <div class="category-info">
-                            <div class="category-title">${cat.name}</div>
-                            <div class="category-desc">${cat.desc}</div>
-                            <div class="category-bar"><div class="category-bar-fill" style="width:${progress}%"></div></div>
+                    <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 15px rgba(0,0,0,0.2);" onclick="openCategory('${cat.id}')">
+                        <div style="font-size: 36px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">${cat.icon}</div>
+                        <div style="flex: 1; text-align: left;">
+                            <div style="font-size: 16px; font-weight: 700; margin-bottom: 4px; color: white;">${cat.name}</div>
+                            <div style="font-size: 12px; color: var(--text-hint); margin-bottom: 8px;">${cat.desc}</div>
+                            <div style="height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
+                                <div style="height: 100%; background: var(--primary); border-radius: 3px; width: ${progress}%; box-shadow: 0 0 10px var(--primary);"></div>
+                            </div>
                         </div>
-                        <div style="font-size:24px; opacity:0.5; color: white;">›</div>
+                        <div style="font-size: 24px; color: var(--text-hint);">›</div>
                     </div>
                 `;
             }).join('');
@@ -2685,50 +1190,7 @@
             tryLoad(0); haptic('light');
         }
 
-        // ==================== ПРОФИЛЬ И АЧИВКИ ====================
-        function renderProfile() {
-            document.getElementById('profileXp').textContent = user.xp;
-            document.getElementById('profileStreak').textContent = user.streak;
-            document.getElementById('profileCards').textContent = user.cardsLearned;
-            
-            fetchUserStats();
-
-            const grid = document.getElementById('achievementsGrid');
-            grid.innerHTML = ACHIEVEMENTS.map(a => {
-                const unlocked = a.check(user);
-                return `<div class="achievement ${unlocked ? '' : 'locked'}" onclick="showAchievementInfo('${a.name}', '${a.desc}', ${unlocked})">
-                            <div class="achievement-icon">${a.icon}</div>
-                            <div class="achievement-name">${a.name}</div>
-                        </div>`;
-            }).join('');
-        }
-
-        function showAchievementInfo(name, desc, unlocked) {
-            haptic('light');
-            const status = unlocked ? "✅ ПОЛУЧЕНО" : "🔒 ЗАБЛОКИРОВАНО";
-            tg.showAlert(`${status}\n\n🏆 ${name}\n📝 ${desc}`);
-        }
-
-        // ==================== НАСТРОЙКИ ====================
-        function toggleSetting(key) {
-            user.settings[key] = !user.settings[key];
-            document.getElementById(key + 'Toggle').classList.toggle('active', user.settings[key]);
-            saveUser(); haptic('light');
-        }
-
-        function exportData() {
-            const data = JSON.stringify(user, null, 2);
-            const blob = new Blob([data], {type:'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'yomubot_progress.json'; a.click();
-        }
-
-        function showAbout() {
-            tg.showAlert('YomuBot v2.5\n\nЯпонский язык в твоем кармане.\n🎌 Сделано с любовью!');
-        }
-
-        // ==================== КВИЗЫ ====================
+        // ==================== КВИЗЫ И ИГРЫ ====================
         function startQuiz(type) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
@@ -2774,14 +1236,21 @@
             const allReadings = [...new Set([...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading)))];
             const wrong = shuffle(allReadings.filter(r => r !== item.reading)).slice(0, 3);
             const options = shuffle([item.reading, ...wrong]);
-            document.getElementById('quizOptions').innerHTML = options.map(opt => `<button class="quiz-option" onclick="checkQuizAnswer('${opt}', '${item.reading}')">${opt}</button>`).join('');
+            document.getElementById('quizOptions').innerHTML = options.map(opt => `
+                <div style="padding: 18px; background: rgba(30,30,46,0.8); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; font-size: 20px; font-weight: 600; color: white; cursor: pointer; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3);" class="quiz-option" onclick="checkQuizAnswer(this, '${opt}', '${item.reading}')">${opt}</div>
+            `).join('');
         }
 
-        function checkQuizAnswer(selected, correct) {
-            document.querySelectorAll('.quiz-option').forEach(btn => {
-                btn.style.pointerEvents = 'none';
-                if (btn.textContent === correct) btn.classList.add('correct');
-                else if (btn.textContent === selected) btn.classList.add('wrong');
+        function checkQuizAnswer(btn, selected, correct) {
+            document.querySelectorAll('.quiz-option').forEach(b => {
+                b.style.pointerEvents = 'none';
+                if (b.textContent === correct) {
+                    b.style.background = 'var(--success)';
+                    b.style.borderColor = 'var(--success)';
+                } else if (b.textContent === selected) {
+                    b.style.background = 'var(--error)';
+                    b.style.borderColor = 'var(--error)';
+                }
             });
             if (selected === correct) { quiz.correct++; haptic('success'); }
             else { quiz.wrong++; haptic('error'); }
@@ -2816,7 +1285,6 @@
         function finishQuiz() { sendResult('quiz_result', quiz.correct); setTimeout(() => { hideQuizScreen(); goTo('home'); }, 100); }
         function retryQuiz() { hideQuizScreen(); if (quiz.type === 'alphabet' || quiz.type === 'row') goTo('alphabet'); else startQuiz(quiz.type); }
 
-        // ==================== TINDER СВАЙПЫ ====================
         function startSwipe() {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
@@ -2883,7 +1351,6 @@
             sendResult('swipe_result', swipe.correct);
         }
 
-        // ==================== РУЛЕТКА ====================
         function createWheel() {
             const svg = document.getElementById('wheel');
             const angle = 360 / WHEEL_PRIZES.length;
@@ -2912,9 +1379,7 @@
             }
         }
 
-        function closeWheel() { 
-            document.getElementById('wheelScreen').style.display = 'none'; 
-        }
+        function closeWheel() { document.getElementById('wheelScreen').style.display = 'none'; }
 
         let wheelRotation = 0;
         function spinWheel() {
