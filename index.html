@@ -1018,6 +1018,7 @@
             freezes: 0,
             league: 1,
             quests: {},
+            questsDate: null,
             settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }
         };
 
@@ -1464,7 +1465,8 @@
                     user.quests = {};
                 }
                 if (!user.quests) user.quests = {};
-                user.quests.login = 1;
+                // Отмечаем только сам факт входа, награду не выдаём сразу — она зависит от XP с сервера
+                user.quests.login = Math.min(1, user.quests.login || 0);
                 
                 saveUser();
                 updateUI();
@@ -2173,16 +2175,8 @@
             document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = subtitle;
             
-            if (xp > 0) {
-                user.xp += xp; 
-                user.coins += Math.floor(xp / 5);
-                user.cardsLearned += score;
-                if (!user.quests) user.quests = {};
-                user.quests.cards10 = (user.quests.cards10 || 0) + score; 
-                user.quests.test = 1;
-                saveUser(); 
-                updateUI();
-            }
+            // Экономика и квесты считаются на сервере через /api/progress,
+            // здесь только отображаем результат.
             haptic('success');
         }
 
@@ -2313,13 +2307,8 @@
             document.getElementById('swipeScreen').style.display = 'none';
             const xp = swipe.correct * 10;
             
-            if (xp > 0) {
-                user.xp += xp; 
-                user.coins += Math.floor(xp / 5);
-                user.cardsLearned += swipe.correct;
-                saveUser(); updateUI();
-            }
-            
+            // Экономика (XP/монеты) считается на сервере через /api/progress,
+            // здесь только показываем визуальный результат.
             document.getElementById('resultsScreen').style.display = 'flex';
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
@@ -2465,3 +2454,4 @@
     </script>
 </body>
 </html>
+
