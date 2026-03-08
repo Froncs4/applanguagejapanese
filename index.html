@@ -512,12 +512,31 @@
         .category-desc { font-size: 12px; color: var(--text-hint); margin-bottom: 8px; }
 
         /* ========== ПРОФИЛЬ ДЕТАЛИ ========== */
-        .profile-btn { position: absolute; top: 20px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); width: 44px; height: 44px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
-        .profile-stats { display: flex; justify-content: space-around; padding: 20px; background: rgba(30, 30, 46, 0.8); backdrop-filter: blur(15px); margin: -35px 16px 0; border-radius: 20px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); position: relative; z-index: 2; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .profile-btn { position: absolute; top: 85px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); width: 44px; height: 44px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; z-index: 10; }
+        .profile-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--primary); transform: scale(1.1); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); }
+        .profile-btn:active { transform: scale(0.95); }
+        .profile-stats { display: flex; justify-content: space-around; padding: 20px; background: rgba(30, 30, 46, 0.8); backdrop-filter: blur(15px); margin: -35px 16px 0; border-radius: 20px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); position: relative; z-index: 2; border: 1px solid rgba(255, 255, 255, 0.05); animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* ========== РЕСПОНСИВНЫЙ ДИЗАЙН ========== */
+        @media (max-width: 380px) {
+            .glass-header { padding: 20px 15px; padding-top: 75px; }
+            .profile-btn { top: 80px; width: 40px; height: 40px; font-size: 18px; }
+            .profile-stats { padding: 15px; margin: -30px 12px 0; }
+            .achievements-grid { grid-template-columns: repeat(3, 1fr); }
+            .section { padding: 0 12px; }
+        }
+        
+        @media (max-height: 700px) {
+            .glass-header { padding: 20px 20px; padding-top: 70px; }
+            .profile-btn { top: 75px; }
+        }
         .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .achievement { text-align: center; cursor: pointer; transition: 0.1s; }
+        .achievement { text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .achievement:hover { transform: translateY(-5px); }
         .achievement:active { transform: scale(0.9); }
-        .achievement-icon { width: 54px; height: 54px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
+        .achievement-icon { width: 54px; height: 54px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: all 0.3s ease; }
+        .achievement:hover .achievement-icon { border-color: var(--primary); box-shadow: 0 0 15px rgba(102, 126, 234, 0.3); }
         .achievement.locked .achievement-icon { filter: grayscale(1); opacity: 0.2; }
         .achievement-name { font-size: 10px; color: var(--text-hint); }
 
