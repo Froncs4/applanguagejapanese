@@ -882,7 +882,8 @@
             color: white;
             transition: 0.2s;
         }
- /* ===== ДОБАВИТЬ ЭТОТ БЛОК ===== */
+
+        /* ИСПРАВЛЕНИЕ: Классы для модального окна карточек */
         .modal-char {
             font-size: 80px;
             font-weight: 700;
@@ -927,8 +928,8 @@
             width: 100%;
             margin-top: 10px;
         }
-        /* =============================== */
-                .quiz-card {
+
+        .quiz-card {
             background: rgba(30, 30, 46, 0.9);
             border: 2px solid var(--primary);
             border-radius: 35px;
@@ -940,7 +941,7 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
 
-        /* ===== ВСТАВИТЬ ЭТО ===== */
+        /* ИСПРАВЛЕНИЕ: Сетка кнопок квиза 2x2 */
         .quiz-options {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -964,7 +965,7 @@
             align-items: center;
             justify-content: center;
         }
-        /* ======================== */
+
         .quiz-option.correct {
             background: var(--success);
             border-color: var(--success);
@@ -1045,11 +1046,9 @@
     </style>
 </head>
 <body>
-    <!-- Фоновые слои CSS -->
     <div class="app-bg-layer" id="appBgLayer"></div>
     <div class="app-bg-overlay"></div>
 
-    <!-- Загрузка -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
         <div style="color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px;">YomuBot</div>
@@ -1118,7 +1117,7 @@
                 <div class="menu-card" onclick="goTo('study', 'kanji_n3')">
                     <div class="card-icon">🈁</div>
                     <div class="card-title">Кандзи N3</div>
-                    <div class="card-subtitle">370 иероглифов</div>
+                    <div class="card-subtitle">Новый уровень</div>
                 </div>
             </div>
         </div>
@@ -1297,10 +1296,6 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА (ЖЕСТКО СКРЫТЫ)    -->
-    <!-- ========================================== -->
-    
     <!-- МОДАЛКА КАРТОЧЕК -->
     <div id="modal" class="overlay-screen" style="display: none;">
         <div class="modal-box" id="modalBox">
@@ -1380,7 +1375,7 @@
         <button style="width: 100%; max-width: 300px; padding: 20px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; transition: 0.2s;" onclick="retryQuiz()">🔄 Ещё раз</button>
     </div>
 
-    <!-- РУЛЕТКА -->
+    <!-- РУЛЕТКА ВНУТРИ ПРИЛОЖЕНИЯ -->
     <div id="wheelScreen" class="overlay-screen" style="display: none;">
         <button style="position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px; transition: 0.2s; cursor: pointer;" onclick="closeWheel()">✕</button>
         <h2 style="color: var(--primary); font-size: 32px; font-weight: 900; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,0,0,0.8);">🎡 РУЛЕТКА</h2>
@@ -1429,13 +1424,7 @@
         const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
-            id: null, 
-            name: '', 
-            xp: 0, 
-            streak: 0, 
-            cardsLearned: 0, 
-            perfectTests: 0, 
-            quests: {},
+            id: null, name: '', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
             settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }
         };
 
@@ -1445,11 +1434,10 @@
         let modalData = null;
 
         let quiz = { items: [], index: 0, correct: 0, wrong: 0, type: 'mixed' };
-        let swipe = { items: [], index: 0, correct: 0, wrong: 0 };
+        let swipe = { items: [], index: 0, correct: 0, wrong: 0, history: [] };
         let currentStudyList = [];
         let currentStudyIndex = 0;
 
-        // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
         const PALETTES = [
             { id: 'purple', name: 'Фиолетовый', p: '#667eea', s: '#764ba2', a: '#f093fb' },
             { id: 'blue', name: 'Океан', p: '#4facfe', s: '#00f2fe', a: '#43e97b' },
@@ -1464,11 +1452,9 @@
             document.documentElement.style.setProperty('--primary', pal.p);
             document.documentElement.style.setProperty('--secondary', pal.s);
             document.documentElement.style.setProperty('--accent', pal.a);
-            
             if (!user.settings) user.settings = {};
             user.settings.themeColor = paletteId;
-            saveUser();
-            renderPalettePicker();
+            saveUser(); renderPalettePicker();
         }
 
         function renderPalettePicker() {
@@ -1482,7 +1468,6 @@
             `).join('');
         }
 
-        // ==================== ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
         const BACKGROUNDS = [
             { id: 'bg-dark', name: 'Тёмный', url: '' },
             { id: 'bg-sakura', name: 'Сакура', url: 'sakura.gif' },
@@ -1495,7 +1480,6 @@
         function applyBackground(bgId) {
             const bgLayer = document.getElementById('appBgLayer');
             const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
-            
             if (bg.url !== '') {
                 bgLayer.style.backgroundImage = `url('${bg.url}')`;
                 bgLayer.style.opacity = '0.4'; 
@@ -1503,11 +1487,9 @@
                 bgLayer.style.backgroundImage = 'none';
                 bgLayer.style.opacity = '0';
             }
-            
             if (!user.settings) user.settings = {};
             user.settings.bg = bgId;
-            saveUser();
-            renderBgPicker();
+            saveUser(); renderBgPicker();
         }
 
         function renderBgPicker() {
@@ -1522,60 +1504,27 @@
             `).join('');
         }
 
-        // ==================== ДОСТИЖЕНИЯ (57 ШТУК) ====================
         const ACHIEVEMENTS = [];
-        
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
         const xpNames = ["Первый шаг", "Ученик", "Искатель", "Странник", "Кохай", "Сэмпай", "Мечник", "Самурай", "Ронин", "Мастер", "Сенсей", "Шихан", "Даймё", "Сёгун", "Ками"];
         const xpIcons = ['🌱','🌿','🌳','🌲','🍄','🐚','🐌','🦋','🐛','🐝','🐞','🐠','🐟','🐬','🐲'];
-        
         for (let i = 0; i < xpMilestones.length; i++) {
-            ACHIEVEMENTS.push({ 
-                id: `xp_${i}`, 
-                name: xpNames[i], 
-                icon: xpIcons[i], 
-                desc: `Набери ${xpMilestones[i]} XP.`, 
-                check: (u) => u.xp >= xpMilestones[i] 
-            });
+            ACHIEVEMENTS.push({ id: `xp_${i}`, name: xpNames[i], icon: xpIcons[i], desc: `Набери ${xpMilestones[i]} XP.`, check: (u) => u.xp >= xpMilestones[i] });
         }
-
         const strMilestones = [3, 7, 10, 14, 21, 30, 50, 60, 90, 100, 150, 180, 200, 250, 300, 365, 500];
         const strIcons = ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛','🔥','💥','⚡','✨','💫'];
-        
         for (let i = 0; i < strMilestones.length; i++) {
-            ACHIEVEMENTS.push({ 
-                id: `str_${strMilestones[i]}`, 
-                name: `${strMilestones[i]} Дней`, 
-                icon: strIcons[i], 
-                desc: `Поддерживай серию ${strMilestones[i]} дней.`, 
-                check: (u) => u.streak >= strMilestones[i] 
-            });
+            ACHIEVEMENTS.push({ id: `str_${strMilestones[i]}`, name: `${strMilestones[i]} Дней`, icon: strIcons[i], desc: `Поддерживай серию ${strMilestones[i]} дней.`, check: (u) => u.streak >= strMilestones[i] });
         }
-
         const cardMilestones = [10, 20, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000];
         const crdIcons = ['📝','📖','📄','📃','📑','📓','📔','📒','📕','📗','📘','📙','📚','📜','🗺️'];
-        
         for (let i = 0; i < cardMilestones.length; i++) {
-            ACHIEVEMENTS.push({ 
-                id: `crd_${cardMilestones[i]}`, 
-                name: `Словарь ${cardMilestones[i]}`, 
-                icon: crdIcons[i], 
-                desc: `Изучи ${cardMilestones[i]} карточек.`, 
-                check: (u) => u.cardsLearned >= cardMilestones[i] 
-            });
+            ACHIEVEMENTS.push({ id: `crd_${cardMilestones[i]}`, name: `Словарь ${cardMilestones[i]}`, icon: crdIcons[i], desc: `Изучи ${cardMilestones[i]} карточек.`, check: (u) => u.cardsLearned >= cardMilestones[i] });
         }
-
         const testMilestones = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250];
         const testIcons = ['🥉','🥈','🥇','🏅','🏆','🏵️','🎗️','🎫','🎟️','👑'];
-        
         for (let i = 0; i < testMilestones.length; i++) {
-            ACHIEVEMENTS.push({ 
-                id: `pt_${testMilestones[i]}`, 
-                name: `Снайпер ${testMilestones[i]}`, 
-                icon: testIcons[i], 
-                desc: `Пройди ${testMilestones[i]} тестов без ошибок.`, 
-                check: (u) => (u.perfectTests || 0) >= testMilestones[i] 
-            });
+            ACHIEVEMENTS.push({ id: `pt_${testMilestones[i]}`, name: `Снайпер ${testMilestones[i]}`, icon: testIcons[i], desc: `Пройди ${testMilestones[i]} тестов без ошибок.`, check: (u) => (u.perfectTests || 0) >= testMilestones[i] });
         }
 
         const DAILY_QUESTS = [
@@ -1590,47 +1539,17 @@
             {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
-        // ==================== СЕТЬ И ЗАГРУЗКА ====================
-        async function sendResult(type, score) {
-            try {
-                if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
-                    // Сохраняем напрямую через ваш API сервер
-                    await fetch(`${API_BASE}/api/progress`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'X-Telegram-Init-Data': AUTH_HEADER,
-                            'ngrok-skip-browser-warning': 'true'
-                        },
-                        body: JSON.stringify({ 
-                            action: 'quiz_complete', 
-                            correct: score, 
-                            total: score 
-                        })
-                    });
-                }
-            } catch (e) {
-                console.warn("Ошибка сохранения API:", e);
-            }
-        }
-
-
         async function fetchUserFromServer() {
             if (!AUTH_HEADER) return false;
             try {
-                const response = await fetch(`${API_BASE}/api/user`, {
-                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
-                });
+                const response = await fetch(`${API_BASE}/api/user`, { headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' } });
                 if (!response.ok) throw new Error('Server error');
                 const data = await response.json();
-                
                 if (data.success) {
                     user.id = data.user.id;
                     user.xp = data.user.xp;
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
-                    
-                    // Защита имени пользователя
                     if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
                         user.name = data.user.name;
                     } else if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -1638,66 +1557,42 @@
                     }
                     return true;
                 }
-            } catch (e) { 
-                return false; 
-            }
+            } catch (e) { return false; }
         }
 
         async function loadAvatarBlob(userId, elementId) {
             try {
-                const response = await fetch(`${API_BASE}/api/avatar/${userId}`, {
-                    headers: { 'ngrok-skip-browser-warning': 'true', 'X-Telegram-Init-Data': AUTH_HEADER }
-                });
+                const response = await fetch(`${API_BASE}/api/avatar/${userId}`, { headers: { 'ngrok-skip-browser-warning': 'true', 'X-Telegram-Init-Data': AUTH_HEADER } });
                 if (response.ok) {
                     const contentType = response.headers.get('content-type');
                     if (contentType && contentType.includes('image')) {
                         const blob = await response.blob();
                         const url = URL.createObjectURL(blob);
                         const el = document.getElementById(elementId);
-                        if (el) {
-                            el.style.backgroundImage = `url('${url}')`;
-                        }
+                        if (el) el.style.backgroundImage = `url('${url}')`;
                     }
                 }
-            } catch (e) {
-                console.warn('Avatar download failed');
-            }
+            } catch (e) {}
         }
 
         async function fetchLeaderboard() {
             const container = document.getElementById('leaderboardList');
             if (!container) return;
-            
             container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>';
-            
             try {
-                const response = await fetch(`${API_BASE}/api/leaderboard`, {
-                    method: 'GET',
-                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
-                });
-                
+                const response = await fetch(`${API_BASE}/api/leaderboard`, { method: 'GET', headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' } });
                 if (!response.ok) throw new Error(`HTTP ошибка`);
                 const data = await response.json();
-                
                 if (data.success && Array.isArray(data.players) && data.players.length > 0) {
                     let html = '';
-                    
                     data.players.forEach((p, index) => {
-                        const rank = index + 1;
-                        let safeName = p.name;
-                        
-                        // Жесткий перехват кривых имен
-                        if (!safeName || safeName === 'Test User' || safeName === 'User' || safeName === 'Х') {
-                            safeName = `Игрок ${p.id.toString().slice(-4)}`;
-                        }
-                        
+                        let safeName = (!p.name || p.name === 'Test User' || p.name === 'User' || p.name === 'Х') ? `Игрок ${p.id.toString().slice(-4)}` : p.name;
                         const initial = safeName.charAt(0).toUpperCase();
                         const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
                         const avatarDivId = `lb-av-${p.id}-${index}`;
-
                         html += `
                         <div class="leaderboard-item">
-                            <div class="leaderboard-rank">#${rank}</div>
+                            <div class="leaderboard-rank">#${index + 1}</div>
                             <div class="leaderboard-avatar" id="${avatarDivId}" style="background-image: url('${fallbackUrl}');"></div>
                             <div class="leaderboard-info">
                                 <div class="leaderboard-name">${safeName}</div>
@@ -1708,44 +1603,22 @@
                             </div>
                         </div>`;
                     });
-                    
                     container.innerHTML = html;
-
-                    // Асинхронно докачиваем реальные аватарки
-                    data.players.forEach((p, index) => {
-                        loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
-                    });
-
-                } else {
-                    container.innerHTML = '<div style="text-align: center; color: var(--text-hint);">Нет данных</div>';
-                }
-            } catch (e) { 
-                container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; 
-            }
+                    data.players.forEach((p, index) => loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`));
+                } else { container.innerHTML = '<div style="text-align: center; color: var(--text-hint);">Нет данных</div>'; }
+            } catch (e) { container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; }
         }
 
         async function fetchUserStats() {
             if (!AUTH_HEADER) return;
-            
             const container = document.getElementById('progressDetails');
-            
             try {
-                const response = await fetch(`${API_BASE}/api/user/stats`, {
-                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
-                });
-                
+                const response = await fetch(`${API_BASE}/api/user/stats`, { headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' } });
                 if (!response.ok) throw new Error('Stats API Error');
                 const data = await response.json();
-                
-                if (data.success) {
-                    renderProfileStats(data.stats);
-                } else {
-                    throw new Error('No success flag');
-                }
+                if (data.success) renderProfileStats(data.stats);
             } catch (e) { 
-                if (container) {
-                    container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.<br>Проверьте работу сервера.</div>`;
-                }
+                if (container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.</div>`;
             }
         }
 
@@ -1754,23 +1627,16 @@
             document.getElementById('profileAccuracy').textContent = Math.round((stats.accuracy || 0) * 100) + '%';
             document.getElementById('profileBlitz').textContent = stats.best_blitz || 0;
             document.getElementById('profileVoice').textContent = stats.voice_msgs || 0;
-
             const byType = stats.by_type || {};
             const sections = [
-                { id: 'hiragana', name: 'Хирагана', total: 46 }, 
-                { id: 'katakana', name: 'Катакана', total: 46 },
-                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 }, 
-                { id: 'words_n5', name: 'Слова N5', total: 40 },
-                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 }, 
-                { id: 'words_n4', name: 'Слова N4', total: 16 }
+                { id: 'hiragana', name: 'Хирагана', total: 46 }, { id: 'katakana', name: 'Катакана', total: 46 },
+                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 }, { id: 'words_n5', name: 'Слова N5', total: 40 },
+                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 }, { id: 'words_n4', name: 'Слова N4', total: 16 }
             ];
-            
             let progressHtml = '';
-            
             sections.forEach(sec => {
                 const learned = byType[sec.id] || 0;
                 const percent = Math.min(100, Math.round(learned / sec.total * 100));
-                
                 progressHtml += `
                     <div style="margin-bottom:12px;">
                         <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color: white;">
@@ -1783,44 +1649,25 @@
                     </div>
                 `;
             });
-            
             document.getElementById('progressDetails').innerHTML = progressHtml;
         }
 
-        // ==================== ЛОГИКА ПОЛЬЗОВАТЕЛЯ ====================
         function loadUserFromStorage() {
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
                 user = { ...user, ...JSON.parse(saved) };
-                if (!user.settings) {
-                    user.settings = { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' };
-                }
+                if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' };
             }
-
-            // Фоллбэк имени из ТГ
             if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...' || user.name === 'User' || user.name === 'Х') {
-                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                    user.name = tg.initDataUnsafe.user.first_name;
-                } else {
-                    user.name = 'Ученик';
-                }
+                user.name = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : 'Ученик';
             }
         }
 
-        function saveUser() {
-            localStorage.setItem('yomubot_user', JSON.stringify(user));
-        }
+        function saveUser() { localStorage.setItem('yomubot_user', JSON.stringify(user)); }
 
         function setAvatar() {
             const tgUser = tg.initDataUnsafe?.user;
-            let avatarUrl = '';
-            if (tgUser && tgUser.photo_url) {
-                avatarUrl = tgUser.photo_url;
-            } else {
-                const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
-                avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff`;
-            }
-            
+            let avatarUrl = (tgUser && tgUser.photo_url) ? tgUser.photo_url : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name ? user.name.charAt(0).toUpperCase() : '?')}&background=667eea&color=fff`;
             document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('userAvatar').textContent = '';
             document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
@@ -1832,37 +1679,17 @@
             if (newName && newName.trim()) {
                 const trimmed = newName.trim().slice(0, 15);
                 try {
-                    const response = await fetch(`${API_BASE}/api/setname`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json', 
-                            'X-Telegram-Init-Data': AUTH_HEADER, 
-                            'ngrok-skip-browser-warning': 'true' 
-                        },
-                        body: JSON.stringify({ name: trimmed })
-                    });
-                    const data = await response.json();
-                    if (data.success) {
-                        user.name = trimmed;
-                        saveUser(); 
-                        updateUI(); 
-                        setAvatar();
-                        tg.showAlert('Имя успешно изменено!');
-                    } else {
-                        tg.showAlert('Ошибка при смене имени');
-                    }
-                } catch (e) {
-                    console.error(e);
-                    tg.showAlert('Ошибка соединения с сервером');
-                }
+                    const response = await fetch(`${API_BASE}/api/setname`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }, body: JSON.stringify({ name: trimmed }) });
+                    if ((await response.json()).success) {
+                        user.name = trimmed; saveUser(); updateUI(); setAvatar(); tg.showAlert('Имя успешно изменено!');
+                    } else tg.showAlert('Ошибка при смене имени');
+                } catch (e) { tg.showAlert('Ошибка соединения с сервером'); }
             }
         }
 
         async function init() {
             try {
                 loadUserFromStorage();
-                
-                // Даем серверу максимум 2 секунды на ответ. Если не успел - идем дальше!
                 const fetchPromise = fetchUserFromServer();
                 const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2000));
                 await Promise.race([fetchPromise, timeoutPromise]);
@@ -1871,118 +1698,73 @@
                 applyPalette(user.settings?.themeColor || 'purple');
 
                 const today = new Date().toDateString();
-                if (!user.questsDate || user.questsDate !== today) {
-                    user.questsDate = today;
-                    user.quests = {};
-                }
+                if (!user.questsDate || user.questsDate !== today) { user.questsDate = today; user.quests = {}; }
                 if (!user.quests) user.quests = {};
                 user.quests.login = 1;
                 
-                saveUser();
-                updateUI();
-                setAvatar();
+                saveUser(); updateUI(); setAvatar();
 
-                // Гарантируем, что панель навигации видна при старте
                 const bNav = document.getElementById('bottomNav');
                 if(bNav) bNav.style.display = 'flex';
                 
-            } catch (e) {
-                console.error("Ошибка при инициализации:", e);
-            } finally {
-                // ГАРАНТИРОВАННО убираем экран загрузки в любом случае!
-                document.getElementById('loadingScreen').style.display = 'none';
-            }
+            } catch (e) { console.error("Init Error:", e); }
+            finally { document.getElementById('loadingScreen').style.display = 'none'; }
         }
 
-
         function goTo(screen, param = null) {
-            // Прячем все экраны
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            // Снимаем выделение со всех кнопок меню
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            // Выделяем нужную кнопку меню
             const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
             if (navBtn) navBtn.classList.add('active');
             
-            // Показываем нужный экран
             const screenEl = document.getElementById(screen + 'Screen');
             if(screenEl) screenEl.classList.add('active');
             
             currentScreen = screen;
-            
             if (screen === 'alphabet') renderAlphabet();
             if (screen === 'study') renderStudy(param);
             if (screen === 'profile') renderProfile();
             if (screen === 'leaderboard') fetchLeaderboard();
-            if (screen === 'settings') { 
-                renderBgPicker(); 
-                renderPalettePicker(); 
-            }
-            
+            if (screen === 'settings') { renderBgPicker(); renderPalettePicker(); }
             haptic('light');
         }
 
         function updateUI() {
             const LOCAL_RANKS = [
-                {min: 0, name: 'Новичок', badge: '🥚'}, 
-                {min: 100, name: 'Ученик', badge: '🐣'},
-                {min: 500, name: 'Искатель', badge: '🔍'}, 
-                {min: 1000, name: 'Странник', badge: '🚶'},
-                {min: 1500, name: 'Кохай', badge: '🎒'}, 
-                {min: 2500, name: 'Сэмпай', badge: '🎓'},
-                {min: 4800, name: 'Мечник', badge: '⚔️'}, 
-                {min: 8000, name: 'Самурай', badge: '🥷'},
-                {min: 12000, name: 'Ронин', badge: '🏯'}, 
-                {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
-                {min: 25000, name: 'Сенсей', badge: '🧙'}, 
-                {min: 35000, name: 'Шихан', badge: '📜'},
-                {min: 50000, name: 'Даймё', badge: '👑'}, 
-                {min: 70000, name: 'Сёгун', badge: '🏰'},
-                {min: 100000, name: 'Император', badge: '👘'}, 
-                {min: 150000, name: 'Легенда', badge: '🐉'},
-                {min: 250000, name: 'Ками', badge: '⛩️'}
+                {min: 0, name: 'Новичок', badge: '🥚'}, {min: 100, name: 'Ученик', badge: '🐣'},
+                {min: 500, name: 'Искатель', badge: '🔍'}, {min: 1000, name: 'Странник', badge: '🚶'},
+                {min: 1500, name: 'Кохай', badge: '🎒'}, {min: 2500, name: 'Сэмпай', badge: '🎓'},
+                {min: 4800, name: 'Мечник', badge: '⚔️'}, {min: 8000, name: 'Самурай', badge: '🥷'},
+                {min: 12000, name: 'Ронин', badge: '🏯'}, {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
+                {min: 25000, name: 'Сенсей', badge: '🧙'}, {min: 35000, name: 'Шихан', badge: '📜'},
+                {min: 50000, name: 'Даймё', badge: '👑'}, {min: 70000, name: 'Сёгун', badge: '🏰'},
+                {min: 100000, name: 'Император', badge: '👘'}, {min: 150000, name: 'Легенда', badge: '🐉'}
             ];
-
             let rank = LOCAL_RANKS[0];
-            for (let r of LOCAL_RANKS) { 
-                if (user.xp >= r.min) rank = r; 
-            }
+            for (let r of LOCAL_RANKS) { if (user.xp >= r.min) rank = r; }
 
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
             document.getElementById('userStreak').textContent = user.streak;
             document.getElementById('userCards').textContent = user.cardsLearned;
-            
             document.getElementById('userBadge').textContent = rank.badge;
             document.getElementById('userRankName').textContent = rank.name;
             
-            const profileBadge = document.getElementById('profileBadge');
-            const profileRankName = document.getElementById('profileRankName');
-            const profileName = document.getElementById('profileName');
-            
-            if (profileBadge) profileBadge.textContent = rank.badge;
-            if (profileRankName) profileRankName.textContent = rank.name;
-            if (profileName) profileName.textContent = user.name;
-            
+            if (document.getElementById('profileBadge')) document.getElementById('profileBadge').textContent = rank.badge;
+            if (document.getElementById('profileRankName')) document.getElementById('profileRankName').textContent = rank.name;
+            if (document.getElementById('profileName')) document.getElementById('profileName').textContent = user.name;
             renderQuests();
         }
 
         function renderQuests() {
             const quests = user.quests || {};
             let html = '';
-            
             DAILY_QUESTS.forEach(q => {
                 const progress = quests[q.id] || 0;
                 const done = progress >= q.target;
                 const pct = Math.min(progress / q.target * 100, 100);
-                
-                let opacityClass = done ? 'opacity: 0.5; border-color: var(--success);' : '';
-                let rewardText = done ? '✓' : '+' + q.xp;
-                let rewardColor = done ? 'var(--success)' : 'var(--primary)';
-                
                 html += `
-                    <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 14px; border: 1px solid rgba(255, 255, 255, 0.08); ${opacityClass}">
+                    <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 14px; border: 1px solid rgba(255, 255, 255, 0.08); ${done ? 'opacity: 0.5; border-color: var(--success);' : ''}">
                         <div style="font-size: 28px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 14px;">${q.icon}</div>
                         <div style="flex: 1;">
                             <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: white;">${q.name}</div>
@@ -1990,15 +1772,12 @@
                                 <div style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px; width: ${pct}%; box-shadow: 0 0 10px var(--primary);"></div>
                             </div>
                         </div>
-                        <div style="font-size: 15px; font-weight: 800; color: ${rewardColor};">${rewardText}</div>
-                    </div>
-                `;
+                        <div style="font-size: 15px; font-weight: 800; color: ${done ? 'var(--success)' : 'var(--primary)'};">${done ? '✓' : '+' + q.xp}</div>
+                    </div>`;
             });
-            
             document.getElementById('questsList').innerHTML = html;
         }
 
-        // ==================== АЛФАВИТ ====================
         function setAlphabetTab(tab) {
             alphabetTab = tab;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -2021,38 +1800,19 @@
             if (alphabetView === 'grid') {
                 document.getElementById('alphabetGrid').style.display = 'grid';
                 document.getElementById('alphabetRows').style.display = 'none';
-                
                 let html = '';
                 allChars.forEach((c, i) => {
-                    html += `
-                        <div class="kana-cell" onclick="openKanaModal(${i})">
-                            <div class="char japanese">${c.char}</div>
-                            <div class="reading">${c.reading}</div>
-                        </div>
-                    `;
+                    html += `<div class="kana-cell" onclick="openKanaModal(${i})"><div class="char japanese">${c.char}</div><div class="reading">${c.reading}</div></div>`;
                 });
                 document.getElementById('alphabetGrid').innerHTML = html;
             } else {
                 document.getElementById('alphabetGrid').style.display = 'none';
                 document.getElementById('alphabetRows').style.display = 'block';
-                
                 let html = '';
                 rows.forEach((row, ri) => {
-                    html += `
-                        <div class="kana-row">
-                            <div class="row-header">
-                                <span class="row-title">${row.name}</span>
-                                <button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button>
-                            </div>
-                            <div class="row-cards">
-                    `;
+                    html += `<div class="kana-row"><div class="row-header"><span class="row-title">${row.name}</span><button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button></div><div class="row-cards">`;
                     row.chars.forEach((c, ci) => {
-                        html += `
-                                <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
-                                    <div class="char japanese">${c.char}</div>
-                                    <div class="reading">${c.reading}</div>
-                                </div>
-                        `;
+                        html += `<div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})"><div class="char japanese">${c.char}</div><div class="reading">${c.reading}</div></div>`;
                     });
                     html += `</div></div>`;
                 });
@@ -2064,24 +1824,21 @@
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             openModal(rows.flatMap(r => r.chars)[index], 'kana');
         }
-        
         function openKanaModalFromRow(rowIndex, charIndex) {
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             openModal(rows[rowIndex].chars[charIndex], 'kana');
         }
 
-        // ==================== УЧЁБА ====================
         function renderStudy() {
             const categories = [
                 {id: 'kanji_n5', name:'Кандзи N5', icon:'🈁', desc:'103 базовых иероглифа', data: typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : []},
                 {id: 'kanji_n4', name:'Кандзи N4', icon:'🈁', desc:'181 иероглиф', data: typeof KANJI_N4 !== 'undefined' ? KANJI_N4 : []},
-                {id: 'kanji_n3', name:'Кандзи N3', icon:'🈁', desc:'370 иероглифов', data: typeof KANJI_N3 !== 'undefined' ? KANJI_N3 : []},
+                {id: 'kanji_n3', name:'Кандзи N3', icon:'🈁', desc:'Новый уровень N3', data: typeof KANJI_N3 !== 'undefined' ? KANJI_N3 : []},
                 {id: 'words_n5', name:'Слова N5', icon:'📝', desc:'Базовая лексика', data: typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : []}
             ];
-            
             let html = '';
             categories.forEach(cat => {
-                const progress = Math.floor(Math.random() * 60); // Здесь в будущем будет реальный прогресс
+                const progress = Math.floor(Math.random() * 60); 
                 html += `
                     <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px; cursor: pointer; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 15px rgba(0,0,0,0.2);" onclick="openCategory('${cat.id}')">
                         <div style="font-size: 36px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));">${cat.icon}</div>
@@ -2093,453 +1850,239 @@
                             </div>
                         </div>
                         <div style="font-size: 24px; color: var(--text-hint);">›</div>
-                    </div>
-                `;
+                    </div>`;
             });
             document.getElementById('studyContent').innerHTML = html;
         }
 
         function openCategory(id) {
             let dataObj = {};
-            if (id === 'kanji_n5') dataObj = KANJI_N5;
-            else if (id === 'kanji_n4') dataObj = KANJI_N4;
-            else if (id === 'kanji_n3') dataObj = KANJI_N3;
-            else if (id === 'words_n5') dataObj = WORDS_N5;
+            if (id === 'kanji_n5') dataObj = typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : {};
+            else if (id === 'kanji_n4') dataObj = typeof KANJI_N4 !== 'undefined' ? KANJI_N4 : {};
+            else if (id === 'kanji_n3') dataObj = typeof KANJI_N3 !== 'undefined' ? KANJI_N3 : {};
+            else if (id === 'words_n5') dataObj = typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : {};
             
             let dataArray = [];
-            if (Array.isArray(dataObj)) {
-                dataArray = dataObj;
-            } else {
-                for (let key in dataObj) {
-                    if (dataObj.hasOwnProperty(key)) {
-                        dataArray.push({ char: key, reading: dataObj[key] });
-                    }
-                }
-            }
+            if (Array.isArray(dataObj)) dataArray = dataObj;
+            else for (let key in dataObj) if (dataObj.hasOwnProperty(key)) dataArray.push({ char: key, reading: dataObj[key] });
             
             if (dataArray && dataArray.length) {
-                currentStudyList = dataArray;
-                currentStudyIndex = 0;
-                openModal(currentStudyList[currentStudyIndex], 'study');
-            } else {
-                tg.showAlert("Данные для этого раздела еще не загружены!");
-            }
+                currentStudyList = dataArray; currentStudyIndex = 0; openModal(currentStudyList[currentStudyIndex], 'study');
+            } else tg.showAlert("Данные еще не загружены!");
         }
 
-        // ==================== МОДАЛЬНОЕ ОКНО ====================
         function openModal(item, type = 'kana', swipeAnim = null) {
             modalData = item;
             const charEl = document.getElementById('modalChar');
             
-            if (swipeAnim === 'left') {
-                charEl.style.transform = 'translateX(30px)'; 
-                charEl.style.opacity = '0';
-            } else if (swipeAnim === 'right') {
-                charEl.style.transform = 'translateX(-30px)'; 
-                charEl.style.opacity = '0';
-            }
+            if (swipeAnim === 'left') { charEl.style.transform = 'translateX(30px)'; charEl.style.opacity = '0'; }
+            else if (swipeAnim === 'right') { charEl.style.transform = 'translateX(-30px)'; charEl.style.opacity = '0'; }
 
             setTimeout(() => {
                 const textVal = item.char || item.word || '';
                 charEl.textContent = textVal;
-                
                 document.getElementById('modalReading').textContent = item.reading || item.meaning || '';
                 
                 const meaningEl = document.getElementById('modalMeaning');
                 if (item.meaning && item.reading && item.meaning !== item.reading) {
-                    meaningEl.textContent = item.meaning;
-                    meaningEl.style.display = 'block';
-                } else {
-                    meaningEl.style.display = 'none';
-                }
+                    meaningEl.textContent = item.meaning; meaningEl.style.display = 'block';
+                } else meaningEl.style.display = 'none';
                 
                 document.getElementById('modalHint').textContent = item.hint || '';
                 document.getElementById('modalGif').style.display = 'none';
-                
-                const strokeBtn = document.getElementById('modalStrokeBtn');
-                if (textVal.length > 1) {
-                    strokeBtn.style.display = 'none';
-                } else {
-                    strokeBtn.style.display = 'block';
-                }
+                document.getElementById('modalStrokeBtn').style.display = textVal.length > 1 ? 'none' : 'block';
 
                 const counterEl = document.getElementById('modalCounter');
                 const swipeHintEl = document.getElementById('modalSwipeHint');
-                
                 if (type === 'study' && currentStudyList.length > 0) {
-                    counterEl.style.display = 'block';
-                    swipeHintEl.style.display = 'block';
+                    counterEl.style.display = 'block'; swipeHintEl.style.display = 'block';
                     counterEl.textContent = `${currentStudyIndex + 1} / ${currentStudyList.length}`;
                 } else {
-                    counterEl.style.display = 'none';
-                    swipeHintEl.style.display = 'none';
+                    counterEl.style.display = 'none'; swipeHintEl.style.display = 'none';
                 }
 
                 if (swipeAnim) {
-                    charEl.style.transform = 'translateX(0)';
-                    charEl.style.opacity = '1';
-                    charEl.style.transition = 'all 0.2s ease-out';
+                    charEl.style.transform = 'translateX(0)'; charEl.style.opacity = '1'; charEl.style.transition = 'all 0.2s ease-out';
                 } else {
-                    charEl.style.transition = 'none';
-                    charEl.style.transform = 'none';
-                    charEl.style.opacity = '1';
+                    charEl.style.transition = 'none'; charEl.style.transform = 'none'; charEl.style.opacity = '1';
                 }
             }, swipeAnim ? 150 : 0);
-
-            // Показываем окно
             document.getElementById('modal').style.display = 'flex';
-            
             if (!swipeAnim) haptic('light');
         }
 
         function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-            modalData = null;
-            currentStudyList = []; 
+            document.getElementById('modal').style.display = 'none'; modalData = null; currentStudyList = []; 
         }
 
-        // ЛОГИКА СВАЙПА В КАРТОЧКЕ
         let touchStartX = 0;
         const modalBox = document.getElementById('modalBox');
-        
-        modalBox.addEventListener('touchstart', (e) => { 
-            touchStartX = e.changedTouches[0].screenX; 
-        }, {passive: true});
-        
+        modalBox.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
         modalBox.addEventListener('touchend', (e) => {
             if (!currentStudyList || currentStudyList.length === 0) return; 
-            
-            let touchEndX = e.changedTouches[0].screenX;
-            let diff = touchStartX - touchEndX;
-            
+            let diff = touchStartX - e.changedTouches[0].screenX;
             if (diff > 50) { 
-                // Свайп влево -> следующая карточка
-                if (currentStudyIndex < currentStudyList.length - 1) {
-                    currentStudyIndex++; 
-                    openModal(currentStudyList[currentStudyIndex], 'study', 'left'); 
-                    haptic('light');
-                } else { 
-                    haptic('error'); 
-                }
+                if (currentStudyIndex < currentStudyList.length - 1) { currentStudyIndex++; openModal(currentStudyList[currentStudyIndex], 'study', 'left'); haptic('light'); } else haptic('error'); 
             } else if (diff < -50) { 
-                // Свайп вправо -> предыдущая карточка
-                if (currentStudyIndex > 0) {
-                    currentStudyIndex--; 
-                    openModal(currentStudyList[currentStudyIndex], 'study', 'right'); 
-                    haptic('light');
-                } else { 
-                    haptic('error'); 
-                }
+                if (currentStudyIndex > 0) { currentStudyIndex--; openModal(currentStudyList[currentStudyIndex], 'study', 'right'); haptic('light'); } else haptic('error'); 
             }
         }, {passive: true});
+        document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
 
-        // Закрытие модалки по клику вне ее
-        document.getElementById('modal').addEventListener('click', (e) => {
-            if (e.target.id === 'modal') {
-                closeModal();
-            }
-        });
-
-        // ==================== ЗВУК И GIF ====================
         async function playSound() {
             if (!modalData) return;
             const text = modalData.char || modalData.word;
-            
             try {
                 if ('speechSynthesis' in window && user.settings.sound) {
                     speechSynthesis.cancel();
                     const u = new SpeechSynthesisUtterance(text);
-                    u.lang = 'ja-JP'; 
-                    u.rate = 0.7;
-                    speechSynthesis.speak(u);
-                    haptic('medium'); 
-                    return;
+                    u.lang = 'ja-JP'; u.rate = 0.7; speechSynthesis.speak(u); haptic('medium'); return;
                 }
-                
-                const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
-                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
-                });
-                
+                const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, { headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' } });
                 if (!response.ok) throw new Error();
                 const url = URL.createObjectURL(await response.blob());
-                new Audio(url).play(); 
-                haptic('medium');
-            } catch (e) { 
-                tg.showAlert('Ошибка воспроизведения звука. Проверьте интернет.'); 
-            }
+                new Audio(url).play(); haptic('medium');
+            } catch (e) { tg.showAlert('Ошибка воспроизведения звука.'); }
         }
 
         function showGif() {
             if (!modalData) return;
             const char = modalData.char || modalData.word;
-            
             if (char.length > 1) return;
-
             const container = document.getElementById('modalGif');
-            container.innerHTML = '<span style="color:var(--text-hint);">Загрузка...</span>';
-            container.style.display = 'flex';
+            container.innerHTML = '<span style="color:var(--text-hint);">Загрузка...</span>'; container.style.display = 'flex';
             
             const hex4 = char.charCodeAt(0).toString(16).toLowerCase();
             const hex5 = char.padStart(5, '0');
-            
             const urls = [
                 `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex5}.gif`,
                 `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex4}.gif`,
                 `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex4}.gif`
             ];
-
             if (modalData.reading) {
-                let r = modalData.reading.split(' ')[0].toLowerCase();
-                r = r.replace('shi','si').replace('chi','ti').replace('tsu','tu').replace('fu','hu');
+                let r = modalData.reading.split(' ')[0].toLowerCase().replace('shi','si').replace('chi','ti').replace('tsu','tu').replace('fu','hu');
                 urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_${r}_stroke_order_animation.gif`);
                 urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_${r}_stroke_order_animation.gif`);
-                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_letter_${r}_stroke_order_animation.gif`);
-                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_letter_${r}_stroke_order_animation.gif`);
             }
-
             let loaded = false;
-            
             function tryLoad(i) {
-                if (i >= urls.length || loaded) {
-                    if (!loaded) {
-                        container.innerHTML = '<span style="color:var(--error);">Анимация не найдена</span>'; 
-                    }
-                    return;
-                }
+                if (i >= urls.length || loaded) { if (!loaded) container.innerHTML = '<span style="color:var(--error);">Анимация не найдена</span>'; return; }
                 const img = new Image();
-                img.onload = () => { 
-                    if (!loaded) { 
-                        loaded = true; 
-                        container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px; background:white; padding:5px;">`; 
-                    }
-                };
-                img.onerror = () => tryLoad(i + 1); 
-                img.src = urls[i];
+                img.onload = () => { if (!loaded) { loaded = true; container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px; background:white; padding:5px;">`; } };
+                img.onerror = () => tryLoad(i + 1); img.src = urls[i];
             }
-            tryLoad(0); 
-            haptic('light');
+            tryLoad(0); haptic('light');
         }
 
-        // ==================== ПРОФИЛЬ И АЧИВКИ ====================
         function renderProfile() {
             document.getElementById('profileXp').textContent = user.xp;
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
-            
-            // Если вкладка профиля активна - обновляем детальную стату с сервера
             fetchUserStats();
-
             const grid = document.getElementById('achievementsGrid');
             let html = '';
             ACHIEVEMENTS.forEach(a => {
                 const unlocked = a.check(user);
-                const opacityClass = unlocked ? '' : 'filter: grayscale(1); opacity: 0.2;';
                 html += `
                     <div style="text-align: center; cursor: pointer; transition: 0.1s;" onclick="showAchievementInfo('${a.name}', '${a.desc}', ${unlocked})">
-                        <div style="width: 54px; height: 54px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; ${opacityClass}">${a.icon}</div>
+                        <div style="width: 54px; height: 54px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; ${unlocked ? '' : 'filter: grayscale(1); opacity: 0.2;'}">${a.icon}</div>
                         <div style="font-size: 10px; color: var(--text-hint);">${a.name}</div>
-                    </div>
-                `;
+                    </div>`;
             });
             grid.innerHTML = html;
         }
 
         function showAchievementInfo(name, desc, unlocked) {
-            haptic('light');
-            const status = unlocked ? "✅ ПОЛУЧЕНО" : "🔒 ЗАБЛОКИРОВАНО";
-            tg.showAlert(`${status}\n\n🏆 ${name}\n📝 ${desc}`);
+            haptic('light'); tg.showAlert(`${unlocked ? "✅ ПОЛУЧЕНО" : "🔒 ЗАБЛОКИРОВАНО"}\n\n🏆 ${name}\n📝 ${desc}`);
         }
 
-        // ==================== НАСТРОЙКИ ====================
         function toggleSetting(key) {
             user.settings[key] = !user.settings[key];
             const toggle = document.getElementById(key + 'Toggle');
-            if (user.settings[key]) {
-                toggle.classList.add('active');
-            } else {
-                toggle.classList.remove('active');
-            }
-            saveUser(); 
-            haptic('light');
+            if (user.settings[key]) toggle.classList.add('active'); else toggle.classList.remove('active');
+            saveUser(); haptic('light');
         }
 
-        function exportData() {
-            const data = JSON.stringify(user, null, 2);
-            const blob = new Blob([data], {type:'application/json'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; 
-            a.download = 'yomubot_progress.json'; 
-            a.click();
-        }
-
-        // ==================== КВИЗЫ ====================
         function startQuiz(type) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
-            const count = type === 'full' ? 15 : 5;
-            quiz = { items: shuffle(allKana).slice(0, count), index: 0, correct: 0, wrong: 0, type };
-            
-            document.getElementById('quizTitle').textContent = '🎯 Тест';
-            showQuizScreen(); 
-            renderQuizQuestion();
+            quiz = { items: shuffle(allKana).slice(0, type === 'full' ? 15 : 5), index: 0, correct: 0, wrong: 0, type };
+            document.getElementById('quizTitle').textContent = '🎯 Тест'; showQuizScreen(); renderQuizQuestion();
         }
 
         function startAlphabetQuiz(count) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            const allChars = rows.flatMap(r => r.chars);
-            quiz = { items: shuffle(allChars).slice(0, count), index: 0, correct: 0, wrong: 0, type: 'alphabet' };
-            
-            document.getElementById('quizTitle').textContent = `🎯 ${alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана'}`;
-            showQuizScreen(); 
-            renderQuizQuestion();
+            quiz = { items: shuffle(rows.flatMap(r => r.chars)).slice(0, count), index: 0, correct: 0, wrong: 0, type: 'alphabet' };
+            document.getElementById('quizTitle').textContent = `🎯 ${alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана'}`; showQuizScreen(); renderQuizQuestion();
         }
 
         function startRowQuiz(rowIndex) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
-            const row = rows[rowIndex];
-            quiz = { items: shuffle([...row.chars]), index: 0, correct: 0, wrong: 0, type: 'row' };
-            
-            document.getElementById('quizTitle').textContent = `🎯 ${row.name}`;
-            showQuizScreen(); 
-            renderQuizQuestion();
+            quiz = { items: shuffle([...rows[rowIndex].chars]), index: 0, correct: 0, wrong: 0, type: 'row' };
+            document.getElementById('quizTitle').textContent = `🎯 ${rows[rowIndex].name}`; showQuizScreen(); renderQuizQuestion();
         }
 
         function showQuizScreen() {
             document.getElementById('quizScreen').style.display = 'flex';
-            // Обязательно прячем нижнюю панель во время теста
-            const nav = document.getElementById('bottomNav');
-            if (nav) nav.style.display = 'none';
+            const nav = document.getElementById('bottomNav'); if (nav) nav.style.display = 'none';
         }
 
         function hideQuizScreen() {
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultsScreen').style.display = 'none';
-            // Возвращаем нижнюю панель
-            const nav = document.getElementById('bottomNav');
-            if (nav) nav.style.display = 'flex';
+            document.getElementById('quizScreen').style.display = 'none'; document.getElementById('resultsScreen').style.display = 'none';
+            const nav = document.getElementById('bottomNav'); if (nav) nav.style.display = 'flex';
         }
 
         function renderQuizQuestion() {
-            if (quiz.index >= quiz.items.length) { 
-                showResults(); 
-                return; 
-            }
-            
+            if (quiz.index >= quiz.items.length) { showResults(); return; }
             const item = quiz.items[quiz.index];
             document.getElementById('quizChar').textContent = item.char;
             document.getElementById('quizCorrect').textContent = quiz.correct;
             document.getElementById('quizWrong').textContent = quiz.wrong;
-            
             const allReadings = [...new Set([...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading)))];
             const wrong = shuffle(allReadings.filter(r => r !== item.reading)).slice(0, 3);
             const options = shuffle([item.reading, ...wrong]);
-            
             let html = '';
             options.forEach(opt => {
-                html += `
-                    <div style="padding: 18px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; font-size: 20px; font-weight: 700; color: white; cursor: pointer; transition: 0.2s;" class="quiz-option" onclick="checkQuizAnswer(this, '${opt}', '${item.reading}')">${opt}</div>
-                `;
+                html += `<div class="quiz-option" onclick="checkQuizAnswer(this, '${opt}', '${item.reading}')">${opt}</div>`;
             });
-            
             document.getElementById('quizOptions').innerHTML = html;
         }
 
         function checkQuizAnswer(btn, selected, correct) {
-            // Блокируем все кнопки, чтобы нельзя было нажать дважды
             document.querySelectorAll('.quiz-option').forEach(b => {
                 b.style.pointerEvents = 'none';
-                if (b.textContent === correct) {
-                    b.style.background = 'var(--success)';
-                    b.style.borderColor = 'var(--success)';
-                    b.style.boxShadow = '0 0 15px var(--success)';
-                } else if (b.textContent === selected) {
-                    b.style.background = 'var(--error)';
-                    b.style.borderColor = 'var(--error)';
-                    b.style.boxShadow = '0 0 15px var(--error)';
-                }
+                if (b.textContent === correct) { b.classList.add('correct'); }
+                else if (b.textContent === selected) { b.classList.add('wrong'); }
             });
-            
-            if (selected === correct) { 
-                quiz.correct++; 
-                haptic('success'); 
-            } else { 
-                quiz.wrong++; 
-                haptic('error'); 
-            }
-            
-            setTimeout(() => { 
-                quiz.index++; 
-                renderQuizQuestion(); 
-            }, 700);
+            if (selected === correct) { quiz.correct++; haptic('success'); } else { quiz.wrong++; haptic('error'); }
+            setTimeout(() => { quiz.index++; renderQuizQuestion(); }, 700);
         }
 
         function showResults() {
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultsScreen').style.display = 'flex';
-            
-            const score = quiz.correct;
-            const total = quiz.items.length;
-            const pct = Math.round(score / total * 100);
-            const xp = score * 10;
-            
+            document.getElementById('quizScreen').style.display = 'none'; document.getElementById('resultsScreen').style.display = 'flex';
+            const score = quiz.correct; const total = quiz.items.length; const pct = Math.round(score / total * 100); const xp = score * 10;
             let icon, title, subtitle;
-            if (pct === 100) { 
-                icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; 
-                user.perfectTests = (user.perfectTests || 0) + 1; 
-            } else if (pct >= 80) { 
-                icon = '🎉'; title = 'Отлично!'; subtitle = 'Так держать!'; 
-            } else if (pct >= 60) { 
-                icon = '👍'; title = 'Хорошо!'; subtitle = 'Есть куда расти!'; 
-            } else { 
-                icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ!'; 
-            }
-            
-            document.getElementById('resultsIcon').textContent = icon;
-            document.getElementById('resultsTitle').textContent = title;
-            document.getElementById('resultsScore').textContent = `${score} / ${total}`;
-            document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
+            if (pct === 100) { icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; user.perfectTests = (user.perfectTests || 0) + 1; }
+            else if (pct >= 80) { icon = '🎉'; title = 'Отлично!'; subtitle = 'Так держать!'; }
+            else if (pct >= 60) { icon = '👍'; title = 'Хорошо!'; subtitle = 'Есть куда расти!'; }
+            else { icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ!'; }
+            document.getElementById('resultsIcon').textContent = icon; document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('resultsScore').textContent = `${score} / ${total}`; document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = subtitle;
-            
-            if (xp > 0) {
-                user.xp += xp; 
-                user.cardsLearned += score;
-                if (!user.quests) user.quests = {};
-                user.quests.cards10 = (user.quests.cards10 || 0) + score; 
-                user.quests.test = 1;
-                saveUser(); 
-                updateUI();
-            }
+            if (xp > 0) { user.xp += xp; user.cardsLearned += score; if (!user.quests) user.quests = {}; user.quests.cards10 = (user.quests.cards10 || 0) + score; user.quests.test = 1; saveUser(); updateUI(); }
             haptic('success');
         }
 
-        function finishQuiz() { 
-            sendResult('quiz_result', quiz.correct); 
-            setTimeout(() => { 
-                hideQuizScreen(); 
-                goTo('home'); 
-            }, 100); 
-        }
-        
-        function retryQuiz() { 
-            hideQuizScreen(); 
-            if (quiz.type === 'alphabet' || quiz.type === 'row') {
-                goTo('alphabet'); 
-            } else {
-                startQuiz(quiz.type); 
-            }
-        }
+        function finishQuiz() { sendResult('quiz_result', quiz.correct); setTimeout(() => { hideQuizScreen(); goTo('home'); }, 100); }
+        function retryQuiz() { hideQuizScreen(); if (quiz.type === 'alphabet' || quiz.type === 'row') goTo('alphabet'); else startQuiz(quiz.type); }
 
-        // ==================== СВАЙПЫ (TINDER) ====================
-        // Запрос к нашему новому умному API
+        // ================= УМНЫЕ СВАЙПЫ (SRS) =================
         async function fetchDueReviews() {
             if (!AUTH_HEADER) return [];
             try {
-                const res = await fetch(`${API_BASE}/api/reviews`, {
-                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
-                });
+                const res = await fetch(`${API_BASE}/api/reviews`, { headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' } });
                 const data = await res.json();
                 if(data.success && data.cards.length > 0) return data.cards;
             } catch(e) { console.warn(e); }
@@ -2548,56 +2091,62 @@
 
         async function startSwipe() {
             document.getElementById('swipeScreen').style.display = 'flex';
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.style.display = 'none';
-            
+            const nav = document.getElementById('bottomNav'); if(nav) nav.style.display = 'none';
             document.getElementById('swipeChar').textContent = "⏳";
             document.getElementById('swipeHint').textContent = "Ищем забытые карточки...";
             
             let reviewCards = await fetchDueReviews();
             let items = [];
-            
             if (reviewCards && reviewCards.length > 0) {
-                items = reviewCards; // ИСПОЛЬЗУЕМ УМНЫЕ КАРТОЧКИ!
+                items = reviewCards; 
                 document.querySelector('#swipeScreen h2').innerHTML = '🧠 Повторение';
             } else {
-                // Если нечего повторять, даем случайные
-                const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
+                let allKana = [];
+                if (typeof HIRAGANA_ROWS !== 'undefined' && typeof KATAKANA_ROWS !== 'undefined') allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
                 items = shuffle(allKana).slice(0, 10);
                 document.querySelector('#swipeScreen h2').innerHTML = '🃏 Практика';
             }
-            
             swipe = { items: shuffle(items).slice(0,15), index: 0, correct: 0, wrong: 0, history: [] };
             renderSwipeCard();
         }
 
+        function renderSwipeCard() {
+            if (swipe.index >= swipe.items.length) { showSwipeResults(); return; }
+            const item = swipe.items[swipe.index];
+            const card = document.getElementById('swipeCard');
+            document.getElementById('swipeChar').textContent = item.char;
+            document.getElementById('swipeAnswer').textContent = item.reading;
+            document.getElementById('swipeHint').style.display = 'block'; document.getElementById('swipeAnswer').style.opacity = '0';
+            card.style.transform = ''; card.style.opacity = '1';
+            document.getElementById('swipeCount').textContent = `${swipe.index+1} / ${swipe.items.length}`;
+            document.getElementById('swipeProgress').style.width = `${swipe.index / swipe.items.length * 100}%`;
+            document.querySelectorAll('.indicator').forEach(i => i.style.opacity = '0');
+        }
+
+        function swipeReveal() {
+            document.getElementById('swipeAnswer').style.opacity = '1'; document.getElementById('swipeHint').style.display = 'none'; haptic('light');
+        }
+
         function swipeYes() {
+            if (!swipe.items || swipe.items.length === 0 || swipe.index >= swipe.items.length) return;
             swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: true });
             document.querySelector('.indicator.know').style.opacity = '1';
-            const card = document.getElementById('swipeCard');
-            card.style.transform = 'translateX(300px) rotate(15deg)'; card.style.opacity = '0';
-            swipe.correct++; haptic('medium');
-            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+            const card = document.getElementById('swipeCard'); card.style.transform = 'translateX(300px) rotate(15deg)'; card.style.opacity = '0';
+            swipe.correct++; haptic('medium'); setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
         }
 
         function swipeNo() {
+            if (!swipe.items || swipe.items.length === 0 || swipe.index >= swipe.items.length) return;
             swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: false });
             document.querySelector('.indicator.learn').style.opacity = '1';
-            const card = document.getElementById('swipeCard');
-            card.style.transform = 'translateX(-300px) rotate(-15deg)'; card.style.opacity = '0';
-            swipe.wrong++; haptic('medium');
-            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+            const card = document.getElementById('swipeCard'); card.style.transform = 'translateX(-300px) rotate(-15deg)'; card.style.opacity = '0';
+            swipe.wrong++; haptic('medium'); setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
         }
 
         function showSwipeResults() {
             document.getElementById('swipeScreen').style.display = 'none';
             const xp = swipe.correct * 10;
-            
-            if (xp > 0) {
-                user.xp += xp; user.cardsLearned += swipe.correct;
-                saveUser(); updateUI();
-            }
-            
+            if (xp > 0) { user.xp += xp; user.cardsLearned += swipe.correct; saveUser(); updateUI(); }
             document.getElementById('resultsScreen').style.display = 'flex';
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
@@ -2605,175 +2154,81 @@
             document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = `Знал: ${swipe.correct}, Учить: ${swipe.wrong}`;
             haptic('success');
-            
-            // Отправляем массив history на сервер, чтобы алгоритм SM-2 обновил карточки
             sendResult('swipe_result', swipe.correct, swipe.history);
         }
-        
-        // Обновленная функция отправки (замените старую)
-        async function sendResult(type, score, detailedHistory = []) {
-            try {
-                if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
-                    await fetch(`${API_BASE}/api/progress`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' },
-                        body: JSON.stringify({ action: 'quiz_complete', correct: score, total: score, results: detailedHistory })
-                    });
-                }
-            } catch (e) { console.warn("API Error:", e); }
-        }
 
-
-        function renderSwipeCard() {
-            if (swipe.index >= swipe.items.length) { 
-                showSwipeResults(); 
-                return; 
-            }
-            
-            const item = swipe.items[swipe.index];
-            const card = document.getElementById('swipeCard');
-            
-            document.getElementById('swipeChar').textContent = item.char;
-            document.getElementById('swipeAnswer').textContent = item.reading;
-            document.getElementById('swipeHint').style.display = 'block';
-            document.getElementById('swipeAnswer').style.opacity = '0';
-            
-            card.style.transform = ''; 
-            card.style.opacity = '1';
-            
-            document.getElementById('swipeCount').textContent = `${swipe.index+1} / ${swipe.items.length}`;
-            document.getElementById('swipeProgress').style.width = `${swipe.index / swipe.items.length * 100}%`;
-            
-            document.querySelectorAll('.indicator').forEach(i => {
-                i.style.opacity = '0';
-            });
-        }
-
-        function swipeReveal() {
-            const card = document.getElementById('swipeCard');
-            document.getElementById('swipeAnswer').style.opacity = '1';
-            document.getElementById('swipeHint').style.display = 'none';
-            haptic('light');
-        }
-
-            document.getElementById('resultsScreen').style.display = 'flex';
-            document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
-            document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
-            document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
-            document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
-            document.getElementById('resultsSubtitle').textContent = `Знал: ${swipe.correct}, Учить: ${swipe.wrong}`;
-            
-            haptic('success');
-            sendResult('swipe_result', swipe.correct);
-
-        // ==================== РУЛЕТКА ====================
+        // ================= РУЛЕТКА =================
         function createWheel() {
-            const svg = document.getElementById('wheel');
-            const angle = 360 / WHEEL_PRIZES.length;
-            let html = '';
-            
+            const svg = document.getElementById('wheel'); const angle = 360 / WHEEL_PRIZES.length; let html = '';
             WHEEL_PRIZES.forEach((prize, i) => {
-                const startRad = (i * angle - 90) * Math.PI / 180;
-                const endRad = (i * angle + angle - 90) * Math.PI / 180;
-                
-                const x1 = 50 + 50 * Math.cos(startRad);
-                const y1 = 50 + 50 * Math.sin(startRad);
-                const x2 = 50 + 50 * Math.cos(endRad);
-                const y2 = 50 + 50 * Math.sin(endRad);
-                
+                const startRad = (i * angle - 90) * Math.PI / 180; const endRad = (i * angle + angle - 90) * Math.PI / 180;
+                const x1 = 50 + 50 * Math.cos(startRad); const y1 = 50 + 50 * Math.sin(startRad);
+                const x2 = 50 + 50 * Math.cos(endRad); const y2 = 50 + 50 * Math.sin(endRad);
                 html += `<path d="M 50 50 L ${x1} ${y1} A 50 50 0 0 1 ${x2} ${y2} Z" fill="${prize.color}"/>`;
-                
                 const textRad = (i * angle + angle / 2 - 90) * Math.PI / 180;
-                const tx = 50 + 32 * Math.cos(textRad);
-                const ty = 50 + 32 * Math.sin(textRad);
-                
+                const tx = 50 + 32 * Math.cos(textRad); const ty = 50 + 32 * Math.sin(textRad);
                 html += `<text x="${tx}" y="${ty}" fill="white" font-size="7" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(${i * angle + angle / 2}, ${tx}, ${ty})">${prize.value}</text>`;
             });
             svg.innerHTML = html;
         }
 
         function openWheel() {
-            document.getElementById('wheelScreen').style.display = 'flex';
-            document.getElementById('wheelResult').style.display = 'none';
-            
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.style.display = 'none';
-            
+            document.getElementById('wheelScreen').style.display = 'flex'; document.getElementById('wheelResult').style.display = 'none';
+            const nav = document.getElementById('bottomNav'); if(nav) nav.style.display = 'none';
             if (user.lastDaily === new Date().toDateString()) {
-                document.getElementById('wheelSpinBtn').disabled = true;
-                document.getElementById('wheelSpinBtn').textContent = 'Завтра!';
-                document.getElementById('wheelSpinBtn').style.background = 'gray';
+                document.getElementById('wheelSpinBtn').disabled = true; document.getElementById('wheelSpinBtn').textContent = 'Завтра!'; document.getElementById('wheelSpinBtn').style.background = 'gray';
             } else {
-                document.getElementById('wheelSpinBtn').disabled = false;
-                document.getElementById('wheelSpinBtn').textContent = '🎲 КРУТИТЬ!';
-                document.getElementById('wheelSpinBtn').style.background = 'var(--primary)';
+                document.getElementById('wheelSpinBtn').disabled = false; document.getElementById('wheelSpinBtn').textContent = '🎲 КРУТИТЬ!'; document.getElementById('wheelSpinBtn').style.background = 'var(--primary)';
             }
         }
 
         function closeWheel() { 
-            document.getElementById('wheelScreen').style.display = 'none'; 
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.style.display = 'flex';
+            document.getElementById('wheelScreen').style.display = 'none'; const nav = document.getElementById('bottomNav'); if(nav) nav.style.display = 'flex';
         }
 
         let wheelRotation = 0;
         function spinWheel() {
-            const today = new Date().toDateString();
-            if (user.lastDaily === today) return;
-            
-            const btn = document.getElementById('wheelSpinBtn');
-            btn.disabled = true; 
-            btn.textContent = '🎰 Крутится...';
-            btn.style.background = 'gray';
-            
+            const today = new Date().toDateString(); if (user.lastDaily === today) return;
+            const btn = document.getElementById('wheelSpinBtn'); btn.disabled = true; btn.textContent = '🎰 Крутится...'; btn.style.background = 'gray';
             const prizeIndex = Math.floor(Math.random() * WHEEL_PRIZES.length);
             wheelRotation += (5 + Math.random() * 3) * 360 + (360 - (prizeIndex * (360 / WHEEL_PRIZES.length) + (360 / WHEEL_PRIZES.length) / 2)) - (wheelRotation % 360);
-            
-            document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
-            haptic('medium');
-            
+            document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`; haptic('medium');
             setTimeout(() => {
-                user.xp += WHEEL_PRIZES[prizeIndex].value; 
-                user.lastDaily = today;
-                saveUser(); 
-                updateUI();
-                
+                user.xp += WHEEL_PRIZES[prizeIndex].value; user.lastDaily = today; saveUser(); updateUI();
                 document.getElementById('wheelResultXp').textContent = `+${WHEEL_PRIZES[prizeIndex].value} XP`;
                 document.getElementById('wheelResult').style.display = 'block';
-                
-                btn.textContent = '✅ Готово!'; 
-                haptic('success');
+                btn.textContent = '✅ Готово!'; haptic('success');
                 sendResult('wheel_reward', WHEEL_PRIZES[prizeIndex].value);
             }, 4500);
         }
 
-        // ==================== УТИЛИТЫ ====================
-        function shuffle(arr) { 
-            const a = [...arr]; 
-            for (let i = a.length - 1; i > 0; i--) { 
-                const j = Math.floor(Math.random() * (i + 1)); 
-                [a[i], a[j]] = [a[j], a[i]]; 
-            } 
-            return a; 
+        function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+        function haptic(type) { if (!user.settings.vibration) return; try { if (type === 'success') tg.HapticFeedback.notificationOccurred('success'); else if (type === 'error') tg.HapticFeedback.notificationOccurred('error'); else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium'); else tg.HapticFeedback.impactOccurred('light'); } catch(e){} }
+
+        // ================= ОТПРАВКА ДАННЫХ (УНИВЕРСАЛЬНАЯ) =================
+        async function sendResult(type, score, detailedHistory = []) {
+            try {
+                if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
+                    let action = 'quiz_complete';
+                    let correct = score;
+                    let total = score;
+                    
+                    // Хак для рулетки: сервер умножает correct на 10, поэтому делим очки рулетки на 10
+                    if (type === 'wheel_reward') {
+                        correct = score / 10;
+                        total = score / 10;
+                    }
+                    
+                    await fetch(`${API_BASE}/api/progress`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' },
+                        body: JSON.stringify({ action: action, correct: correct, total: total, results: detailedHistory })
+                    });
+                }
+            } catch (e) { console.warn("API Error:", e); }
         }
 
-        function haptic(type) { 
-            if (!user.settings.vibration) return; 
-            try { 
-                if (type === 'success') tg.HapticFeedback.notificationOccurred('success'); 
-                else if (type === 'error') tg.HapticFeedback.notificationOccurred('error'); 
-                else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium'); 
-                else tg.HapticFeedback.impactOccurred('light'); 
-            } catch(e){} 
-        }
-
-        // Запуск
         init();
     </script>
 </body>
 </html>
-
-
-
-
-
