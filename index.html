@@ -2193,19 +2193,32 @@
                 `;
             });
             
-            document.getElementById('questsList').innerHTML = html;
+            const questsListEl = document.getElementById('questsList');
+            if (questsListEl) {
+                questsListEl.innerHTML = html;
+            } else {
+                console.warn("Элемент questsList не найден");
+            }
         }
 
         // ==================== ИНТЕРАКТИВНЫЕ ИСТОРИИ (РЕНДЕРИНГ) ====================
         function renderStories() {
             const container = document.getElementById('storiesList');
+            if (!container) {
+                console.warn("Элемент storiesList не найден");
+                return;
+            }
+            
             const completedStories = user.completedStories || [];
             const totalStories = INTERACTIVE_STORIES.length;
             const completedCount = completedStories.length;
             
             // Обновляем прогресс
-            document.getElementById('storiesProgress').textContent = `${completedCount}/${totalStories} историй`;
-            document.getElementById('storiesProgressBar').style.width = `${(completedCount / totalStories) * 100}%`;
+            const progressEl = document.getElementById('storiesProgress');
+            const progressBarEl = document.getElementById('storiesProgressBar');
+            
+            if (progressEl) progressEl.textContent = `${completedCount}/${totalStories} историй`;
+            if (progressBarEl) progressBarEl.style.width = `${(completedCount / totalStories) * 100}%`;
             
             let html = '';
             
@@ -2496,31 +2509,36 @@
         }
 
         function renderStudy() {
+            // В новом дизайне экрана словарей не нужен динамический контент
+            // Все категории уже определены в HTML
+            console.log('renderStudy: экран словарей уже отрендерен в HTML');
+            return;
+            
+            // Старый код (закомментирован для совместимости)
+            /*
             const categories = [
                 {id: 'kanji_n5', name:'Кандзи N5', desc:'103 базовых иероглифа', data: typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : {}},
                 {id: 'words_n5', name:'Слова N5', desc:'Базовая лексика', data: typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : {}},
                 {id: 'kanji_n4', name:'Кандзи N4', desc:'181 иероглиф', data: typeof KANJI_N4 !== 'undefined' ? KANJI_N4 : {}},
-                {id: 'kanji_n3', name:'Кандзи N3', desc:'Новый уровень N3', data: typeof KANJI_N3 !== 'undefined' ? KANJI_N3 : {}}
+                {id: 'words_n4', name:'Слова N4', desc:'Расширенная лексика', data: typeof WORDS_N4 !== 'undefined' ? WORDS_N4 : {}}
             ];
             
             let html = '';
             categories.forEach(cat => {
-                const total = Object.keys(cat.data).length || 100;
-                const progress = Math.floor(Math.random() * 60); 
+                const count = Object.keys(cat.data).length;
                 html += `
-                    <div class="progress-container" onclick="openCategory('${cat.id}')">
-                        <div class="progress-header">
-                            <span>${cat.name}</span>
-                            <span style="color:var(--primary);">${progress}%</span>
+                    <div class="category-card" onclick="openCategory('${cat.id}')">
+                        <div class="category-icon">🈷️</div>
+                        <div class="category-info">
+                            <div class="category-title">${cat.name}</div>
+                            <div class="category-desc">${cat.desc}</div>
                         </div>
-                        <div style="color:var(--text-hint); font-size:12px; margin-bottom:8px;">${cat.desc}</div>
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width: ${progress}%;"></div>
-                        </div>
+                        <div class="category-count">${count}</div>
                     </div>
                 `;
             });
             document.getElementById('studyContent').innerHTML = html;
+            */
         }
 
         function openCategory(id) {
@@ -3053,6 +3071,11 @@
         // ==================== РУЛЕТКА ====================
         function createWheel() {
             const svg = document.getElementById('wheel');
+            if (!svg) {
+                console.warn("Элемент wheel не найден");
+                return;
+            }
+            
             const angle = 360 / WHEEL_PRIZES.length;
             let html = '';
             
@@ -3060,19 +3083,24 @@
                 const startRad = (i * angle - 90) * Math.PI / 180;
                 const endRad = (i * angle + angle - 90) * Math.PI / 180;
                 
-                const x1 = 50 + 50 * Math.cos(startRad);
-                const y1 = 50 + 50 * Math.sin(startRad);
-                const x2 = 50 + 50 * Math.cos(endRad);
-                const y2 = 50 + 50 * Math.sin(endRad);
+                const x1 = 50 + 45 * Math.cos(startRad);
+                const y1 = 50 + 45 * Math.sin(startRad);
+                const x2 = 50 + 45 * Math.cos(endRad);
+                const y2 = 50 + 45 * Math.sin(endRad);
                 
-                html += `<path d="M 50 50 L ${x1} ${y1} A 50 50 0 0 1 ${x2} ${y2} Z" fill="${prize.color}"/>`;
+                const largeArc = angle > 180 ? 1 : 0;
                 
-                const textRad = (i * angle + angle / 2 - 90) * Math.PI / 180;
-                const tx = 50 + 32 * Math.cos(textRad);
-                const ty = 50 + 32 * Math.sin(textRad);
-                
-                html += `<text x="${tx}" y="${ty}" fill="white" font-size="7" font-weight="bold" text-anchor="middle" dominant-baseline="middle" transform="rotate(${i * angle + angle / 2}, ${tx}, ${ty})">${prize.value}</text>`;
+                html += `
+                    <path d="M 50 50 L ${x1} ${y1} A 45 45 0 ${largeArc} 1 ${x2} ${y2} Z"
+                          fill="${prize.color}" stroke="white" stroke-width="2"/>
+                    <text x="${50 + 25 * Math.cos((startRad + endRad) / 2)}" 
+                          y="${50 + 25 * Math.sin((startRad + endRad) / 2)}" 
+                          fill="white" font-size="10" font-weight="bold" text-anchor="middle">
+                          +${prize.value}
+                    </text>
+                `;
             });
+            
             svg.innerHTML = html;
         }
 
