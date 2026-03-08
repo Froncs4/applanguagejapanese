@@ -119,13 +119,30 @@
         let claimedReward = null; // Переменная для хранения награды
 
         // Функция отправки данных в бота (с защитой от ошибок)
-        function sendResult(type, score) {
+ async function sendResult(type, score) {
             try {
-                const data = { type: type, score: score, initData: tg.initData };
-                tg.sendData(JSON.stringify(data));
+                if (tg.initData) {
+                    // Передаем напрямую в базу данных. Делим на 10, так как бэкенд 
+                    // автоматически умножает score на 10 при выдаче опыта.
+                    await fetch(`${API_BASE}/api/progress`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-Telegram-Init-Data': tg.initData,
+                            'ngrok-skip-browser-warning': 'true'
+                        },
+                        body: JSON.stringify({ 
+                            action: 'quiz_complete', 
+                            correct: score / 10, 
+                            total: score / 10 
+                        })
+                    });
+                }
             } catch (e) {
-                console.error("sendData error:", e);
-                tg.close(); // Если открыто по инлайн кнопке, просто закрываем
+                console.error("Ошибка API:", e);
+            } finally {
+                // Закрываем окно рулетки после успешного получения награды
+                setTimeout(() => { tg.close(); }, 1500);
             }
         }
 
