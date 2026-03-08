@@ -2591,9 +2591,76 @@
         }
 
         function startStudy(type) {
-            // Заглушка для изучения кандзи и слов
-            showNotification(`🚧 Изучение ${type.replace('_', ' ')} в разработке`, 'info', 3000);
-            haptic('light');
+            let dataObj = {};
+            let title = '';
+            let description = '';
+            
+            // Определяем данные для изучения
+            if (type === 'kanji_n5') {
+                dataObj = typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : {};
+                title = '🈴 Кандзи N5';
+                description = '103 базовых иероглифа';
+            } else if (type === 'kanji_n4') {
+                dataObj = typeof KANJI_N4 !== 'undefined' ? KANJI_N4 : {};
+                title = '🈵 Кандзи N4';
+                description = '181 иероглиф';
+            } else if (type === 'words_n5') {
+                dataObj = typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : {};
+                title = '📝 Слова N5';
+                description = 'Базовая лексика';
+            } else if (type === 'words_n4') {
+                dataObj = typeof WORDS_N4 !== 'undefined' ? WORDS_N4 : {};
+                title = '📖 Слова N4';
+                description = 'Расширенная лексика';
+            } else {
+                showNotification('❌ Неизвестный тип изучения', 'error', 3000);
+                return;
+            }
+            
+            // Преобразуем данные в массив
+            let dataArray = [];
+            if (Array.isArray(dataObj)) {
+                dataArray = dataObj;
+            } else {
+                for (let key in dataObj) {
+                    if (dataObj.hasOwnProperty(key)) {
+                        const item = dataObj[key];
+                        if (typeof item === 'object' && item.char) {
+                            dataArray.push({ 
+                                char: item.char, 
+                                reading: item.reading || item.meaning || '', 
+                                meaning: item.meaning || '',
+                                type: type 
+                            });
+                        } else {
+                            dataArray.push({ 
+                                char: key, 
+                                reading: item, 
+                                meaning: '', 
+                                type: type 
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Перемешиваем для разнообразия
+            dataArray = shuffle(dataArray).slice(0, 20); // Ограничиваем 20 карточками
+            
+            if (dataArray && dataArray.length > 0) {
+                currentStudyList = dataArray;
+                currentStudyIndex = 0;
+                
+                // Показываем первую карточку
+                openModal(currentStudyList[0], 'study');
+                
+                // Показываем уведомление о начале изучения
+                showNotification(`📚 Начинаем изучать: ${title}`, 'success', 2000);
+                haptic('medium');
+            } else {
+                showNotification('⚠️ Данные еще не загружены', 'info', 3000);
+                haptic('error');
+            }
         }
 
         // ==================== ОСТАЛЬНЫЕ ФУНКЦИИ (АЗБУКА, СЛОВАРИ) ====================
@@ -2742,14 +2809,36 @@
                 const textVal = item.char || item.word || '';
                 charEl.textContent = textVal;
                 
-                document.getElementById('modalReading').textContent = item.reading || item.meaning || '';
+                // Показываем чтение (хирагана/катакана)
+                const readingEl = document.getElementById('modalReading');
+                if (item.reading) {
+                    readingEl.textContent = item.reading;
+                    readingEl.style.display = 'block';
+                } else {
+                    readingEl.style.display = 'none';
+                }
                 
+                // Показываем значение (перевод)
                 const meaningEl = document.getElementById('modalMeaning');
-                if (item.meaning && item.reading && item.meaning !== item.reading) {
+                if (item.meaning && item.meaning !== item.reading) {
                     meaningEl.textContent = item.meaning;
                     meaningEl.style.display = 'block';
                 } else {
                     meaningEl.style.display = 'none';
+                }
+                
+                // Показываем тип изучения
+                const typeEl = document.getElementById('modalType');
+                if (typeEl) {
+                    const typeNames = {
+                        'kanji_n5': 'Кандзи N5',
+                        'kanji_n4': 'Кандзи N4', 
+                        'words_n5': 'Слова N5',
+                        'words_n4': 'Слова N4',
+                        'kana': 'Азбука',
+                        'study': 'Изучение'
+                    };
+                    typeEl.textContent = typeNames[type] || 'Изучение';
                 }
                 
                 document.getElementById('modalHint').textContent = item.hint || '';
