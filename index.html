@@ -11,67 +11,1599 @@
     <style>
         :root {
             --primary: #667eea;
+            --primary-dark: #5a67d8;
             --secondary: #764ba2;
             --accent: #f093fb;
             --success: #4ade80;
             --error: #f87171;
             --warning: #fbbf24;
-            --bg: var(--tg-theme-bg-color, #131320);
-            --bg-secondary: var(--tg-theme-secondary-bg-color, #1e1e2e);
+            --bg: var(--tg-theme-bg-color, #1a1a2e);
+            --bg-secondary: var(--tg-theme-secondary-bg-color, #23233b);
             --text: var(--tg-theme-text-color, #ffffff);
-            --text-hint: rgba(255,255,255,0.6);
+            --text-hint: var(--tg-theme-hint-color, #999999);
+            --card-radius: 20px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg); color: var(--text);
-            min-height: 100vh; overflow-x: hidden; padding-bottom: 120px;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
         }
 
-        /* Фоны */
+        /* ========== ФОНОВЫЕ GIF ========== */
         .app-bg-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
-            background-size: cover; background-position: center; opacity: 0; transition: opacity 0.5s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
+
         .app-bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: linear-gradient(to bottom, rgba(19,19,32,0.85) 0%, rgba(19,19,32,0.5) 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: var(--bg);
+            opacity: 0.85; /* Затемнение чтобы текст читался */
         }
 
-        .japanese { font-family: 'Noto Sans JP', sans-serif; }
+        .japanese {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
 
-        /* Экраны */
-        .screen { display: none; min-height: 100vh; }
-        .screen.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ========== BOTTOM NAV ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            z-index: 100;
+        }
 
-        /* Вкладки */
-        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-hint); font-size: 14px; font-weight: 600; border-radius: 10px; }
-        .tab-btn.active { background: rgba(255,255,255,0.1); color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
-        .view-btn.active { background: white; color: var(--primary); }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 14px;
+            border: none;
+            background: none;
+            color: var(--text-hint);
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-        /* Настройки */
-        .color-circle { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; flex-shrink: 0; transition: 0.2s; cursor: pointer;}
-        .color-circle.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.5);}
-        .bg-option { width: 85px; height: 130px; border-radius: 14px; background-size: cover; background-position: center; border: 2px solid transparent; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; transition: 0.2s; cursor: pointer;}
-        .bg-option.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 15px var(--primary); }
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item .icon {
+            font-size: 22px;
+            margin-bottom: 3px;
+        }
+
+        /* ========== SCREENS ========== */
+        .screen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* ========== HOME SCREEN ========== */
+        .home-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 24px 20px 28px;
+            border-radius: 0 0 28px 28px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .user-info h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .user-rank {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stat-box {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.85;
+        }
+
+        /* ========== SECTIONS ========== */
+        .section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        /* ========== MENU GRID ========== */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .menu-card {
+            background: var(--bg-secondary);
+            border-radius: 18px;
+            padding: 18px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .menu-card:active {
+            transform: scale(0.97);
+            border-color: var(--primary);
+        }
+
+        .menu-card .card-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .menu-card .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .menu-card .card-subtitle {
+            font-size: 11px;
+            color: var(--text-hint);
+        }
+
+        .menu-card.wide {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .menu-card.wide .card-subtitle {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* ========== DAILY QUESTS ========== */
+        .quest-item {
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quest-icon {
+            font-size: 26px;
+        }
+
+        .quest-info {
+            flex: 1;
+        }
+
+        .quest-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .quest-bar {
+            height: 6px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .quest-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .quest-reward {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--warning);
+        }
+
+        .quest-item.done {
+            opacity: 0.6;
+        }
+
+        .quest-item.done .quest-reward {
+            color: var(--success);
+        }
+
+        /* ========== ALPHABET SCREEN ========== */
+        .alphabet-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px 16px;
+            color: white;
+            text-align: center;
+        }
+
+        .alphabet-header h2 {
+            font-size: 22px;
+            margin-bottom: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 14px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        .view-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 3px;
+        }
+
+        .view-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: var(--primary);
+        }
+
+        .alphabet-content {
+            padding: 16px;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .test-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+
+        .test-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+
+        .test-btn.secondary {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ========== KANA GRID ========== */
+        .kana-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .kana-cell {
+            aspect-ratio: 1;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .kana-cell:active {
+            transform: scale(0.95);
+            background: var(--primary);
+            color: white;
+        }
+
+        .kana-cell .char {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .kana-cell .reading {
+            font-size: 10px;
+            color: var(--text-hint);
+            margin-top: 2px;
+        }
+
+        .kana-cell:active .reading {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* ========== ROW VIEW ========== */
+        .kana-row {
+            margin-bottom: 18px;
+        }
+
+        .row-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .row-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .row-test-btn {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .row-cards {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+        }
+
+        .row-cards::-webkit-scrollbar {
+            display: none;
+        }
+
+        .row-card {
+            min-width: 60px;
+            height: 75px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .row-card:active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .row-card .char {
+            font-size: 26px;
+        }
+
+        .row-card .reading {
+            font-size: 11px;
+            color: var(--text-hint);
+        }
+
+        .row-card:active .reading {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* ========== STUDY SCREEN ========== */
+        .study-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px 16px;
+            color: white;
+        }
+
+        .study-header h2 {
+            font-size: 22px;
+        }
+
+        .study-content {
+            padding: 16px;
+        }
+
+        .category-card {
+            background: var(--bg-secondary);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+        }
+
+        .category-card:active {
+            transform: scale(0.98);
+        }
+
+        .category-icon {
+            font-size: 36px;
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .category-desc {
+            font-size: 12px;
+            color: var(--text-hint);
+            margin-bottom: 8px;
+        }
+
+        .category-bar {
+            height: 5px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .category-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .category-arrow {
+            font-size: 18px;
+            color: var(--text-hint);
+        }
+
+        /* ========== PROFILE SCREEN ========== */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 30px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .profile-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-rank-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .profile-settings-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .profile-edit-name {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: var(--bg);
+            margin: -20px 16px 0;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .profile-stat {
+            text-align: center;
+        }
+
+        .profile-stat-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .profile-stat-label {
+            font-size: 11px;
+            color: var(--text-hint);
+        }
+
+        .profile-section {
+            padding: 20px 16px;
+        }
+
+        .profile-section-title {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .achievement {
+            text-align: center;
+            cursor: pointer;
+        }
         
-        .toggle { width: 50px; height: 28px; background: rgba(0,0,0,0.4); border-radius: 14px; position: relative; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1);}
-        .toggle.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary);}
-        .toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 2px; left: 3px; transition: all 0.3s; }
-        .toggle.active::after { left: 23px; }
+        .achievement:active {
+            transform: scale(0.9);
+        }
 
-        /* Лоадер */
-        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
-        .loading-logo { font-size: 60px; margin-bottom: 16px; animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .loading-spinner { width: 36px; height: 36px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .achievement-icon {
+            width: 54px;
+            height: 54px;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            margin: 0 auto 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .achievement.locked .achievement-icon {
+            filter: grayscale(1);
+            opacity: 0.4;
+        }
+
+        .achievement-name {
+            font-size: 10px;
+            color: var(--text-hint);
+        }
+
+        /* ========== LEADERBOARD SCREEN ========== */
+        .leaderboard-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 20px 16px;
+            color: white;
+            text-align: center;
+        }
+
+        .leaderboard-header h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .leaderboard-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .leaderboard-list {
+            padding: 16px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        .leaderboard-rank {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .leaderboard-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            background-color: var(--primary);
+            position: relative;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+        }
+
+        .leaderboard-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .leaderboard-details {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+
+        .leaderboard-xp {
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .leaderboard-streak {
+            color: var(--error);
+        }
+
+        /* ========== SETTINGS SCREEN ========== */
+        .settings-header {
+            padding: 20px 16px;
+            background: var(--bg-secondary);
+        }
+
+        .settings-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .settings-content {
+            padding: 16px;
+        }
+
+        .settings-group {
+            background: var(--bg-secondary);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        .settings-item:last-child {
+            border-bottom: none;
+        }
+
+        .settings-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-icon {
+            font-size: 20px;
+        }
+
+        .settings-label {
+            font-size: 15px;
+        }
+
+        .settings-value {
+            font-size: 14px;
+            color: var(--text-hint);
+        }
+
+        .toggle {
+            width: 48px;
+            height: 28px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--primary);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle.active::after {
+            left: 23px;
+        }
+
+        /* Темы и Палитры */
+        .color-picker {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 10px 16px;
+            margin: 0 -16px;
+            scrollbar-width: none;
+        }
         
-        .hidden { display: none !important; }
+        .color-picker::-webkit-scrollbar {
+            display: none;
+        }
+
+        .color-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: 0.2s;
+        }
+
+        .color-circle.active {
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        .bg-picker {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 16px;
+            margin: 0 -16px;
+            scrollbar-width: none;
+        }
+        
+        .bg-picker::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bg-option {
+            width: 80px;
+            height: 120px;
+            border-radius: 12px;
+            border: 3px solid transparent;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--bg-secondary);
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-option.active {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* ========== MODAL ========== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg);
+            border-radius: 24px;
+            padding: 28px 22px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+            animation: modalIn 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-counter {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--text-hint);
+            display: none;
+        }
+        
+        @keyframes slideHint {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .modal-swipe-hint {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 18px;
+            opacity: 0.5;
+            display: none;
+            animation: slideHint 2s infinite;
+        }
+
+        .modal-char {
+            font-size: 80px;
+            margin-bottom: 10px;
+        }
+
+        .modal-reading {
+            font-size: 32px;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .modal-meaning {
+            font-size: 18px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .modal-hint {
+            font-size: 14px;
+            color: var(--text-hint);
+            margin-bottom: 20px;
+        }
+
+        .modal-gif {
+            margin: 14px 0;
+            display: none;
+            min-height: 80px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-gif.show {
+            display: flex;
+        }
+
+        .modal-gif img {
+            max-width: 150px;
+            border-radius: 12px;
+            background: white; /* Чтобы черные линии было видно */
+            padding: 5px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 14px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .modal-btn.sound {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .modal-btn.stroke {
+            background: linear-gradient(135deg, var(--accent), #f5576c);
+            color: white;
+        }
+
+        .modal-btn.close {
+            background: var(--bg-secondary);
+            color: white;
+            flex: 0.5;
+        }
+
+        /* ========== SWIPE SCREEN ========== */
+        .swipe-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: none;
+            flex-direction: column;
+            z-index: 150;
+            padding: 20px;
+        }
+
+        .swipe-screen.show {
+            display: flex;
+        }
+
+        .swipe-header {
+            text-align: center;
+            padding-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .swipe-header h2 {
+            font-size: 22px;
+            color: white;
+            margin-bottom: 14px;
+        }
+
+        .swipe-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: rgba(255,255,255,0.8);
+            font-size: 15px;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        .swipe-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .swipe-card {
+            width: 280px;
+            height: 380px;
+            background: linear-gradient(145deg, #ffffff, #f8f9ff);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .swipe-card .card-char {
+            font-size: 120px;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+        }
+
+        .swipe-card .card-hint {
+            font-size: 16px;
+            color: #999;
+        }
+
+        .swipe-card .card-answer {
+            font-size: 36px;
+            color: var(--primary);
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .swipe-card.revealed .card-answer {
+            opacity: 1;
+        }
+
+        .swipe-card.revealed .card-hint {
+            display: none;
+        }
+
+        .swipe-indicators {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .indicator {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .indicator.know {
+            background: var(--success);
+            color: white;
+        }
+
+        .indicator.learn {
+            background: var(--error);
+            color: white;
+        }
+
+        .swipe-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .swipe-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+        }
+
+        .swipe-btn:active {
+            transform: scale(0.95);
+        }
+
+        .swipe-btn.no {
+            background: var(--error);
+            color: white;
+        }
+
+        .swipe-btn.reveal {
+            background: var(--warning);
+            color: white;
+        }
+
+        .swipe-btn.yes {
+            background: var(--success);
+            color: white;
+        }
+
+        .swipe-hint-text {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            padding-bottom: 20px;
+        }
+
+        /* ========== QUIZ SCREEN ========== */
+        .quiz-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            display: none;
+            flex-direction: column;
+            z-index: 150;
+            padding: 20px;
+        }
+
+        .quiz-screen.show {
+            display: flex;
+        }
+
+        .quiz-header {
+            text-align: center;
+            padding-top: 20px;
+            margin-bottom: 24px;
+        }
+
+        .quiz-title {
+            font-size: 20px;
+            color: white;
+            margin-bottom: 14px;
+        }
+
+        .quiz-score {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .quiz-score .correct {
+            color: var(--success);
+        }
+
+        .quiz-score .wrong {
+            color: var(--error);
+        }
+
+        .quiz-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 26px;
+            padding: 45px 30px;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .quiz-char {
+            font-size: 90px;
+            color: white;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            padding: 18px;
+            background: rgba(255,255,255,0.95);
+            border: 3px solid transparent;
+            border-radius: 16px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .quiz-option:active {
+            transform: scale(0.97);
+        }
+
+        .quiz-option.correct {
+            background: var(--success);
+            color: white;
+        }
+
+        .quiz-option.wrong {
+            background: var(--error);
+            color: white;
+        }
+
+        .quiz-option.disabled {
+            pointer-events: none;
+        }
+
+        /* ========== RESULTS SCREEN ========== */
+        .results-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 150;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .results-screen.show {
+            display: flex;
+        }
+
+        .results-icon {
+            font-size: 90px;
+            margin-bottom: 20px;
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .results-title {
+            font-size: 30px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .results-score {
+            font-size: 52px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .results-xp {
+            font-size: 22px;
+            color: var(--warning);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .results-subtitle {
+            font-size: 16px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 36px;
+        }
+
+        .results-btn {
+            width: 100%;
+            max-width: 260px;
+            padding: 16px;
+            border: none;
+            border-radius: 28px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .results-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .results-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* ========== WHEEL SCREEN ========== */
+        .wheel-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 150;
+            padding: 20px;
+        }
+
+        .wheel-screen.show {
+            display: flex;
+        }
+
+        .wheel-title {
+            font-size: 26px;
+            color: white;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #f093fb, #f5576c, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .wheel-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-bottom: 30px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 40px rgba(102,126,234,0.3);
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 30px solid #ffd200;
+            z-index: 10;
+        }
+
+        .wheel-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #2d2d44, #1a1a2e);
+            border-radius: 50%;
+            border: 3px solid #ffd200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            z-index: 5;
+        }
+
+        .wheel-spin-btn {
+            padding: 16px 50px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+        }
+
+        .wheel-result {
+            margin-top: 24px;
+            padding: 18px 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 18px;
+            display: none;
+            text-align: center;
+        }
+
+        .wheel-result.show {
+            display: block;
+        }
+
+        .wheel-result-xp {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ffd200, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .wheel-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+        }
+
+        .loading-logo {
+            font-size: 60px;
+            margin-bottom: 16px;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .loading-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-top: 18px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -80,300 +1612,366 @@
 
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
-        <div style="color: white; font-size: 22px; font-weight: bold;">YomuBot</div>
+        <div class="loading-text">YomuBot</div>
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Главная -->
+    <!-- Home Screen -->
     <div class="screen active" id="homeScreen">
-        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center;">
-            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; text-align: left;">
-                <div id="userAvatar" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; border: 2px solid var(--primary);">👤</div>
-                <div>
-                    <h1 id="userName" style="font-size: 22px; font-weight: 700; margin-bottom: 4px; color: white;">Загрузка...</h1>
-                    <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); font-weight: 600;"><span id="userBadge">🥚</span> <span id="userRankName">Новичок</span></div>
+        <div class="home-header">
+            <div class="user-row">
+                <div class="avatar" id="userAvatar">👤</div>
+                <div class="user-info">
+                    <h1 id="userName">Загрузка...</h1>
+                    <div class="user-rank">
+                        <span id="userBadge">🥚</span>
+                        <span id="userRankName">Новичок</span>
+                    </div>
                 </div>
             </div>
-            <div style="display: flex; gap: 12px;">
-                <div style="flex: 1; padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div id="userXp" style="font-size: 20px; font-weight: 800; color: white;">0</div><div style="font-size: 11px; color: var(--text-hint); margin-top: 2px;">XP</div></div>
-                <div style="flex: 1; padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div id="userStreak" style="font-size: 20px; font-weight: 800; color: white;">0</div><div style="font-size: 11px; color: var(--text-hint); margin-top: 2px;">🔥 Серия</div></div>
-                <div style="flex: 1; padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div id="userCards" style="font-size: 20px; font-weight: 800; color: white;">0</div><div style="font-size: 11px; color: var(--text-hint); margin-top: 2px;">Карточек</div></div>
-            </div>
-        </div>
-
-        <div style="padding: 0 16px; margin-bottom: 24px;">
-            <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">📋 Ежедневные задания</div>
-            <div id="questsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
-        </div>
-
-        <div style="padding: 0 16px; margin-bottom: 24px;">
-            <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">📚 Обучение</div>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                <div style="grid-column: span 2; border-left: 4px solid var(--primary); background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border-top: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08);" onclick="goTo('alphabet')">
-                    <div style="font-size: 36px; margin-bottom: 10px;">🎌</div>
-                    <div style="font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">Японская Азбука</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">Хирагана и Катакана</div>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value" id="userXp">0</div>
+                    <div class="stat-label">XP</div>
                 </div>
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'kanji_n5')">
-                    <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N5</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">103 иероглифа</div>
+                <div class="stat-box">
+                    <div class="stat-value" id="userStreak">0</div>
+                    <div class="stat-label">🔥 Серия</div>
                 </div>
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'words_n5')">
-                    <div style="font-size: 36px; margin-bottom: 10px;">📝</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Слова N5</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">Базовая лексика</div>
-                </div>
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'kanji_n4')">
-                    <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N4</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">181 иероглиф</div>
-                </div>
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'kanji_n3')">
-                    <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N3</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">370 иероглифов</div>
+                <div class="stat-box">
+                    <div class="stat-value" id="userCards">0</div>
+                    <div class="stat-label">Карточек</div>
                 </div>
             </div>
         </div>
 
-        <div style="padding: 0 16px; margin-bottom: 24px;">
-            <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">🎮 Практика</div>
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="startQuiz('mixed')">
-                    <div style="font-size: 36px; margin-bottom: 10px;">🎯</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Быстрый тест</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">5 вопросов</div>
+        <div class="section">
+            <div class="section-title">📋 Ежедневные задания</div>
+            <div id="questsList"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📚 Обучение</div>
+            <div class="menu-grid">
+                <div class="menu-card wide" onclick="goTo('alphabet')">
+                    <div class="card-icon">🎌</div>
+                    <div class="card-title">Японская Азбука</div>
+                    <div class="card-subtitle">Хирагана и Катакана</div>
                 </div>
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="startSwipe()">
-                    <div style="font-size: 36px; margin-bottom: 10px;">🃏</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Карточки</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">Свайп-режим</div>
+                <div class="menu-card" onclick="goTo('study', 'kanji_n5')">
+                    <div class="card-icon">🈁</div>
+                    <div class="card-title">Кандзи N5</div>
+                    <div class="card-subtitle">103 иероглифа</div>
                 </div>
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="openWheel()">
-                    <div style="font-size: 36px; margin-bottom: 10px;">🎡</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Рулетка</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">Ежедневный бонус</div>
+                <div class="menu-card" onclick="goTo('study', 'words_n5')">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Слова N5</div>
+                    <div class="card-subtitle">Базовая лексика</div>
                 </div>
-                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="startQuiz('full')">
-                    <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
-                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Полный тест</div>
-                    <div style="font-size: 12px; color: var(--text-hint);">15 вопросов</div>
+                <div class="menu-card" onclick="goTo('study', 'kanji_n4')">
+                    <div class="card-icon">🈁</div>
+                    <div class="card-title">Кандзи N4</div>
+                    <div class="card-subtitle">181 иероглиф</div>
+                </div>
+                <div class="menu-card" onclick="goTo('study', 'kanji_n3')">
+                    <div class="card-icon">🈁</div>
+                    <div class="card-title">Кандзи N3</div>
+                    <div class="card-subtitle">370 иероглифов</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎮 Практика</div>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startQuiz('mixed')">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">Быстрый тест</div>
+                    <div class="card-subtitle">5 вопросов</div>
+                </div>
+                <div class="menu-card" onclick="startSwipe()">
+                    <div class="card-icon">🃏</div>
+                    <div class="card-title">Карточки</div>
+                    <div class="card-subtitle">Свайп-режим</div>
+                </div>
+                <div class="menu-card" onclick="openWheel()">
+                    <div class="card-icon">🎡</div>
+                    <div class="card-title">Рулетка</div>
+                    <div class="card-subtitle">Ежедневный бонус</div>
+                </div>
+                <div class="menu-card" onclick="startQuiz('full')">
+                    <div class="card-icon">📋</div>
+                    <div class="card-title">Полный тест</div>
+                    <div class="card-subtitle">15 вопросов</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Азбука -->
+    <!-- Alphabet Screen -->
     <div class="screen" id="alphabetScreen">
-        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;">
-            <h2 style="margin-bottom: 15px; color: white;">🎌 Японская Азбука</h2>
+        <div class="alphabet-header">
+            <h2>🎌 Японская Азбука</h2>
             <div class="tabs">
                 <button class="tab-btn active" onclick="setAlphabetTab('hiragana')">Хирагана</button>
                 <button class="tab-btn" onclick="setAlphabetTab('katakana')">Катакана</button>
             </div>
-            <div style="display: flex; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 3px;">
+            <div class="view-toggle">
                 <button class="view-btn active" onclick="setAlphabetView('grid')">📋 Сетка</button>
                 <button class="view-btn" onclick="setAlphabetView('rows')">📚 Строки</button>
             </div>
         </div>
-        <div style="padding: 0 16px;">
-            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
-                <button style="flex: 1; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 700; background: var(--primary); color: white;" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
-                <button style="flex: 1; padding: 14px; border: 1px solid var(--primary); border-radius: 14px; font-size: 14px; font-weight: 700; background: rgba(0,0,0,0.4); color: white;" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
+        <div class="alphabet-content">
+            <div class="test-buttons">
+                <button class="test-btn primary" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
+                <button class="test-btn secondary" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
             </div>
-            <div id="alphabetGrid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;"></div>
-            <div id="alphabetRows" style="display: none;"></div>
+            <div id="alphabetGrid" class="kana-grid"></div>
+            <div id="alphabetRows" class="hidden"></div>
         </div>
     </div>
 
-    <!-- Изучение -->
+    <!-- Study Screen -->
     <div class="screen" id="studyScreen">
-        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;"><h2 id="studyTitle" style="color: white;">📚 Изучение</h2></div>
-        <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 12px;" id="studyContent"></div>
+        <div class="study-header">
+            <h2 id="studyTitle">📚 Изучение</h2>
+        </div>
+        <div class="study-content" id="studyContent"></div>
     </div>
 
-    <!-- Профиль -->
+    <!-- Profile Screen -->
     <div class="screen" id="profileScreen">
-        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 30px 20px; border-radius: 0 0 30px 30px; margin-bottom: 15px; text-align: center; position: relative;">
-            <button style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.1); border:none; width:40px; height:40px; border-radius:50%; color:white; font-size:18px;" onclick="goTo('settings')">⚙️</button>
-            <button style="position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.1); border:none; width:40px; height:40px; border-radius:50%; color:white; font-size:18px;" onclick="promptChangeName()">✏️</button>
+        <div class="profile-header">
+            <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
+            <button class="profile-edit-name" onclick="promptChangeName()">✏️</button>
             
-            <div id="profileAvatar" style="margin: 0 auto 15px; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 38px; background-size: cover; background-position: center;">👤</div>
-            <h1 id="profileName" style="font-size: 24px; font-weight: 700; margin-bottom: 5px; color: white;">Пользователь</h1>
-            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.1); padding:6px 16px; border-radius:20px; font-size:14px; color:var(--primary); font-weight:bold;">
-                <span id="profileBadge">🥚</span> <span id="profileRankName">Новичок</span>
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div class="profile-name" id="profileName">Пользователь</div>
+            <div class="profile-rank-badge">
+                <span id="profileBadge">🥚</span>
+                <span id="profileRankName">Новичок</span>
             </div>
         </div>
         
-        <div style="display: flex; justify-content: space-around; padding: 20px; margin: -20px 16px 0; border-radius: 20px; background: rgba(30, 30, 46, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); position: relative;">
-            <div style="text-align: center;"><div id="profileXp" style="font-size: 26px; font-weight: 800; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">XP</div></div>
-            <div style="text-align: center;"><div id="profileStreak" style="font-size: 26px; font-weight: 800; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Серия</div></div>
-            <div style="text-align: center;"><div id="profileCards" style="font-size: 26px; font-weight: 800; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Карточек</div></div>
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <div class="profile-stat-value" id="profileXp">0</div>
+                <div class="profile-stat-label">XP</div>
+            </div>
+            <div class="profile-stat">
+                <div class="profile-stat-value" id="profileStreak">0</div>
+                <div class="profile-stat-label">Серия</div>
+            </div>
+            <div class="profile-stat">
+                <div class="profile-stat-value" id="profileCards">0</div>
+                <div class="profile-stat-label">Карточек</div>
+            </div>
         </div>
 
-        <div style="padding: 20px 16px;">
-            <div style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: white;">📊 Прогресс по разделам</div>
+        <div class="profile-section">
+            <div class="profile-section-title">📊 Прогресс по разделам</div>
+            <!-- Сюда подгружается подробная статистика -->
             <div id="progressDetails" style="margin-bottom: 20px;">
-                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Загрузка статистики...</div>
+                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 16px;">Загрузка статистики с сервера...</div>
             </div>
             
-            <div style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: white;">🎯 Дополнительно</div>
+            <div class="profile-section-title">🎯 Дополнительно</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileBestStreak" style="font-size: 20px; font-weight: bold; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Лучшая серия</div></div>
-                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileAccuracy" style="font-size: 20px; font-weight: bold; color: var(--primary);">0%</div><div style="font-size: 11px; color: var(--text-hint);">Точность</div></div>
-                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileBlitz" style="font-size: 20px; font-weight: bold; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Лучший блиц</div></div>
-                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileVoice" style="font-size: 20px; font-weight: bold; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Голосовых</div></div>
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Лучшая серия</div>
+                </div>
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div>
+                    <div class="stat-label">Точность</div>
+                </div>
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Лучший блиц</div>
+                </div>
+                <div class="stat-box" style="background: var(--bg-secondary);">
+                    <div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Голосовых</div>
+                </div>
             </div>
 
-            <div style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: white;">🏆 Достижения (Нажми)</div>
-            <div id="achievementsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;"></div>
+            <div class="profile-section-title">🏆 Достижения (Нажми)</div>
+            <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
     </div>
 
-    <!-- Рейтинг -->
+    <!-- Leaderboard Screen -->
     <div class="screen" id="leaderboardScreen">
-        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;">
-            <h2 style="color: white; margin-bottom: 5px;">🏆 Рейтинг игроков</h2>
-            <p style="color: var(--text-hint); font-size: 14px;">Топ-20 по опыту</p>
+        <div class="leaderboard-header">
+            <h2>🏆 Рейтинг игроков</h2>
+            <p>Топ-20 по опыту</p>
         </div>
-        <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 10px;" id="leaderboardList">
+        <div class="leaderboard-list" id="leaderboardList">
             <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
 
-    <!-- Настройки -->
+    <!-- Settings Screen -->
     <div class="screen" id="settingsScreen">
-        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;">
-            <h2 style="color: white;">⚙️ Настройки</h2>
+        <div class="settings-header">
+            <h2>⚙️ Настройки</h2>
         </div>
-        <div style="padding: 0 16px;">
-            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                <div style="padding: 16px; font-weight: bold; color: white;">🎨 Цвет интерфейса</div>
-                <div class="color-picker" id="colorPicker" style="padding: 0 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
+        <div class="settings-content">
+            
+            <div class="settings-group">
+                <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
+                    <div class="settings-left">
+                        <span class="settings-icon">🎨</span>
+                        <span class="settings-label" style="font-weight: bold;">Цвет интерфейса</span>
+                    </div>
+                </div>
+                <div class="color-picker" id="colorPicker"></div>
             </div>
 
-            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                <div style="padding: 16px; font-weight: bold; color: white;">🖼️ Тема (Фон)</div>
-                <div class="bg-picker" id="bgPicker" style="padding: 0 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
+            <div class="settings-group">
+                <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
+                    <div class="settings-left">
+                        <span class="settings-icon">🖼️</span>
+                        <span class="settings-label" style="font-weight: bold;">Тема оформления (Фон)</span>
+                    </div>
+                </div>
+                <div class="bg-picker" id="bgPicker"></div>
             </div>
             
-            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);" onclick="toggleSetting('sound')">
-                    <div style="display:flex; align-items:center; gap:12px; color: white;"><span style="font-size:20px;">🔊</span> Звуки</div>
+            <div class="settings-group">
+                <div class="settings-item" onclick="toggleSetting('sound')">
+                    <div class="settings-left">
+                        <span class="settings-icon">🔊</span>
+                        <span class="settings-label">Звуки</span>
+                    </div>
                     <div class="toggle active" id="soundToggle"></div>
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 16px;" onclick="toggleSetting('vibration')">
-                    <div style="display:flex; align-items:center; gap:12px; color: white;"><span style="font-size:20px;">📳</span> Вибрация</div>
+                <div class="settings-item" onclick="toggleSetting('vibration')">
+                    <div class="settings-left">
+                        <span class="settings-icon">📳</span>
+                        <span class="settings-label">Вибрация</span>
+                    </div>
                     <div class="toggle active" id="vibrationToggle"></div>
                 </div>
             </div>
             
-            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
-                <div style="padding: 18px 16px; display:flex; align-items:center; gap:12px; font-weight:bold; color: var(--error);" onclick="tg.close()">
-                    <span style="font-size:20px;">🚪</span> Закрыть приложение
+            <div class="settings-group">
+                <div class="settings-item" onclick="tg.close()">
+                    <div class="settings-left">
+                        <span class="settings-icon">🚪</span>
+                        <span class="settings-label">Вернуться в бота</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА СО СТРОГИМ STYLE="DISPLAY: NONE" -->
-    
+    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА (ЖЕСТКО СКРЫТЫ ЧЕРЕЗ STYLE) -->
+
     <!-- Modal (Изучение карточек) -->
-    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(10px); z-index: 500; align-items: center; justify-content: center; padding: 20px;">
-        <div id="modalBox" style="background: rgba(30, 30, 46, 0.95); border-radius: 28px; padding: 30px 20px; width: 100%; max-width: 340px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative;">
-            <div id="modalCounter" style="display: none; position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: white;">1/10</div>
-            <div id="modalSwipeHint" style="display: none; position: absolute; top: 15px; right: 15px; font-size: 18px; opacity: 0.5;">↔️</div>
+    <div class="modal" id="modal" style="display: none;">
+        <div class="modal-box" id="modalBox">
+            <div class="modal-counter" id="modalCounter" style="display: none;">1/10</div>
+            <div class="modal-swipe-hint" id="modalSwipeHint" style="display: none;">↔️</div>
             
-            <div id="modalChar" class="japanese" style="font-size: 80px; margin-bottom: 10px; color: white; transition: 0.2s;">あ</div>
-            <div id="modalReading" style="font-size: 32px; color: var(--primary); font-weight: 700; margin-bottom: 6px;">a</div>
-            <div id="modalMeaning" style="display: none; font-size: 18px; color: white; margin-bottom: 6px;"></div>
-            <div id="modalHint" style="margin-bottom: 20px; color: var(--text-hint); font-size: 14px;">Подсказка</div>
+            <div class="modal-char japanese" id="modalChar">あ</div>
+            <div class="modal-reading" id="modalReading">a</div>
+            <div class="modal-meaning" id="modalMeaning" style="display: none;"></div>
+            <div class="modal-hint" id="modalHint">Подсказка</div>
             
-            <div id="modalGif" style="display: none; margin: 15px 0;"><img id="gifImage" src="" style="max-width:140px; border-radius:12px; background:white; padding:5px;"></div>
+            <div class="modal-gif" id="modalGif" style="display: none;">
+                <img id="gifImage" src="" alt="">
+            </div>
             
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button style="flex: 1; padding: 16px; border: 1px solid var(--primary); border-radius: 16px; font-size: 24px; cursor: pointer; color: white; background: rgba(255,255,255,0.1);" onclick="playSound()">🔊</button>
-                <button id="modalStrokeBtn" style="flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 24px; cursor: pointer; color: white; background: var(--primary);" onclick="showGif()">✍️</button>
-                <button style="flex: 0.5; padding: 16px; border: none; border-radius: 16px; font-size: 24px; cursor: pointer; color: white; background: rgba(255,255,255,0.1);" onclick="closeModal()">✕</button>
+            <div class="modal-buttons">
+                <button class="modal-btn sound" onclick="playSound()">🔊</button>
+                <button class="modal-btn stroke" id="modalStrokeBtn" onclick="showGif()">✍️</button>
+                <button class="modal-btn close" onclick="closeModal()">✕</button>
             </div>
         </div>
     </div>
 
     <!-- Swipe Screen (Tinder) -->
-    <div id="swipeScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-        <h2 style="color: white; margin-bottom: 15px;">🃏 Карточки</h2>
-        <div style="display: flex; align-items: center; gap: 12px; color: white; margin-bottom: 20px; width: 100%; max-width: 300px;">
-            <span id="swipeCount">1 / 10</span>
-            <div style="flex:1; height:6px; background:rgba(255,255,255,0.2); border-radius:3px; overflow:hidden;"><div id="swipeProgress" style="height:100%; background:var(--primary); width:10%;"></div></div>
-        </div>
-        
-        <div id="swipeCard" style="width: 100%; max-width: 300px; height: 400px; background: rgba(30,30,46,0.95); border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
-            <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between;">
-                <div class="indicator learn" style="padding: 8px 16px; background: var(--error); border-radius: 20px; font-weight: bold; opacity: 0; color: white;">👎 Учить</div>
-                <div class="indicator know" style="padding: 8px 16px; background: var(--success); border-radius: 20px; font-weight: bold; opacity: 0; color: white;">👍 Знаю</div>
+    <div class="swipe-screen" id="swipeScreen" style="display: none;">
+        <div class="swipe-header">
+            <h2>🃏 Карточки</h2>
+            <div class="swipe-progress">
+                <span id="swipeCount">1 / 10</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="swipeProgress"></div>
+                </div>
             </div>
-            <div class="japanese" id="swipeChar" style="font-size: 120px; margin-bottom: 15px; color: white;">あ</div>
-            <div id="swipeHint" style="color: var(--text-hint);">Нажми 👁 чтобы увидеть</div>
-            <div id="swipeAnswer" style="font-size: 36px; font-weight: bold; color: var(--primary); opacity: 0;">a</div>
         </div>
         
-        <div style="display: flex; gap: 30px; margin-top: 30px;">
-            <button style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--error); font-size: 30px; background: rgba(0,0,0,0.5); color: white;" onclick="swipeNo()">👎</button>
-            <button style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--warning); font-size: 30px; background: rgba(0,0,0,0.5); color: white;" onclick="swipeReveal()">👁</button>
-            <button style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--success); font-size: 30px; background: rgba(0,0,0,0.5); color: white;" onclick="swipeYes()">👍</button>
+        <div class="swipe-area">
+            <div class="swipe-card" id="swipeCard">
+                <div class="swipe-indicators">
+                    <div class="indicator learn">👎 Учить</div>
+                    <div class="indicator know">👍 Знаю</div>
+                </div>
+                <div class="card-char japanese" id="swipeChar">あ</div>
+                <div class="card-hint" id="swipeHint">Нажми 👁 чтобы увидеть</div>
+                <div class="card-answer" id="swipeAnswer">a</div>
+            </div>
+        </div>
+        
+        <div class="swipe-buttons">
+            <button class="swipe-btn no" onclick="swipeNo()">👎</button>
+            <button class="swipe-btn reveal" onclick="swipeReveal()">👁</button>
+            <button class="swipe-btn yes" onclick="swipeYes()">👍</button>
         </div>
     </div>
 
     <!-- Quiz Screen -->
-    <div id="quizScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-        <h2 id="quizTitle" style="color: white; margin-bottom: 10px;">🎯 Тест</h2>
-        <div style="display: flex; gap: 30px; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
-            <span style="color: var(--success);">✓ <span id="quizCorrect">0</span></span>
-            <span style="color: var(--error);">✗ <span id="quizWrong">0</span></span>
+    <div class="quiz-screen" id="quizScreen" style="display: none;">
+        <div class="quiz-header">
+            <div class="quiz-title" id="quizTitle">🎯 Тест</div>
+            <div class="quiz-score">
+                <span class="correct">✓ <span id="quizCorrect">0</span></span>
+                <span class="wrong">✗ <span id="quizWrong">0</span></span>
+            </div>
         </div>
         
-        <div style="background: rgba(30,30,46,0.9); border: 1px solid var(--primary); border-radius: 28px; padding: 50px 20px; text-align: center; margin-bottom: 30px; width: 100%; max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-            <div id="quizChar" class="japanese" style="font-size: 90px; color: white;">あ</div>
+        <div class="quiz-card">
+            <div class="quiz-char japanese" id="quizChar">あ</div>
         </div>
-        
-        <div id="quizOptions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 300px;"></div>
+        <div class="quiz-options" id="quizOptions"></div>
     </div>
 
     <!-- Results Screen -->
-    <div id="resultsScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
-        <div id="resultsIcon" style="font-size: 90px; margin-bottom: 20px;">🎉</div>
-        <h1 id="resultsTitle" style="color: var(--primary); margin-bottom: 10px;">Отлично!</h1>
-        <div id="resultsScore" style="font-size: 50px; font-weight: 900; color: white; margin-bottom: 10px;">5 / 5</div>
-        <div id="resultsXp" style="font-size: 24px; color: var(--warning); font-weight: bold; margin-bottom: 10px;">+50 XP</div>
-        <div id="resultsSubtitle" style="color: var(--text-hint); margin-bottom: 40px;">Так держать!</div>
+    <div class="results-screen" id="resultsScreen" style="display: none;">
+        <div class="results-icon" id="resultsIcon">🎉</div>
+        <div class="results-title" id="resultsTitle">Отлично!</div>
+        <div class="results-score" id="resultsScore">5 / 5</div>
+        <div class="results-xp" id="resultsXp">+50 XP</div>
+        <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
         
-        <button style="width: 100%; max-width: 280px; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: bold; margin-bottom: 15px;" onclick="finishQuiz()">✨ Забрать награду</button>
-        <button style="width: 100%; max-width: 280px; padding: 18px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: bold;" onclick="retryQuiz()">🔄 Ещё раз</button>
+        <button class="results-btn primary" onclick="finishQuiz()">✨ Забрать награду</button>
+        <button class="results-btn secondary" onclick="retryQuiz()">🔄 Ещё раз</button>
     </div>
 
     <!-- Wheel Screen -->
-    <div id="wheelScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-        <button style="position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px;" onclick="closeWheel()">✕</button>
-        <h2 style="color: var(--primary); font-size: 30px; margin-bottom: 10px;">🎡 РУЛЕТКА</h2>
-        <p style="color: var(--text-hint); margin-bottom: 30px;">Крути раз в день!</p>
+    <div class="wheel-screen" id="wheelScreen" style="display: none;">
+        <button class="wheel-close" onclick="closeWheel()">✕</button>
+        <div class="wheel-title">🎡 РУЛЕТКА</div>
+        <div class="wheel-subtitle">Крути раз в день!</div>
         
-        <div style="position: relative; width: 300px; height: 300px; margin-bottom: 40px;">
-            <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--warning); z-index: 10;"></div>
-            <svg id="wheel" viewBox="0 0 100 100" style="width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 50px var(--primary); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);"></svg>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: var(--bg); border: 4px solid var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 5;">🎯</div>
+        <div class="wheel-container">
+            <div class="wheel-pointer"></div>
+            <svg class="wheel" id="wheel" viewBox="0 0 100 100"></svg>
+            <div class="wheel-center">🎯</div>
         </div>
         
-        <button id="wheelSpinBtn" style="padding: 18px 60px; background: var(--primary); border: none; border-radius: 30px; color: white; font-size: 20px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.5);" onclick="spinWheel()">🎲 КРУТИТЬ</button>
+        <button class="wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()">🎲 КРУТИТЬ</button>
         
-        <div id="wheelResult" style="display: none; margin-top: 30px; padding: 20px 40px; background: rgba(255,255,255,0.1); border-radius: 20px; text-align: center;">
-            <div id="wheelResultXp" style="font-size: 45px; font-weight: 900; color: var(--warning); margin-bottom: 5px;">+100 XP</div>
-            <div style="color: white; font-size: 16px;">Награда начислена!</div>
+        <div class="wheel-result" id="wheelResult" style="display: none;">
+            <div class="wheel-result-xp" id="wheelResultXp">+100 XP</div>
+            <div>Награда начислена!</div>
         </div>
     </div>
 
     <!-- Навигация -->
-    <nav class="bottom-nav" id="bottomNav" style="display: flex;">
+    <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" onclick="goTo('home')">
             <span class="icon">🏠</span><span>Главная</span>
         </button>
@@ -401,7 +1999,7 @@
         const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
-            id: null, name: '', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
+            id: null, name: 'Загрузка...', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
             settings: { sound: true, vibration: true, bg: 'default', themeColor: 'purple' }
         };
 
@@ -415,7 +2013,7 @@
         let currentStudyList = [];
         let currentStudyIndex = 0;
 
-        // ==================== 1. ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
+        // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
         const PALETTES = [
             { id: 'purple', name: 'Фиолетовый', p: '#667eea', s: '#764ba2', a: '#f093fb' },
             { id: 'blue', name: 'Океан', p: '#4facfe', s: '#00f2fe', a: '#43e97b' },
@@ -448,14 +2046,14 @@
             `).join('');
         }
 
-        // ==================== 2. ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
+        // ==================== ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
         const BACKGROUNDS = [
             { id: 'default', name: 'Тёмный', url: '' },
-            { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
-            { id: 'city', name: 'Кибер Сити', url: 'https://media.tenor.com/P5Wl2dCIf8kAAAAC/cyberpunk-city.gif' },
-            { id: 'rain', name: 'Дождь', url: 'https://media.tenor.com/8QzD2xQ-L0QAAAAC/rain-aesthetic.gif' },
-            { id: 'sunset', name: 'Закат', url: 'https://media.tenor.com/w1jUIt7wI7oAAAAC/sunset-pixel.gif' },
-            { id: 'forest', name: 'Лес', url: 'https://media.tenor.com/2Xy-C23R13YAAAAC/pixel-art.gif' }
+            { id: 'sakura', name: 'Сакура', url: 'sakura.gif' },
+            { id: 'city', name: 'Кибер Сити', url: 'city.gif' },
+            { id: 'rain', name: 'Дождь', url: 'rain.gif' },
+            { id: 'sunset', name: 'Закат', url: 'sunset.gif' },
+            { id: 'forest', name: 'Лес', url: 'forest.gif' }
         ];
 
         function applyBackground(bgId) {
@@ -463,7 +2061,7 @@
             const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
             if (bg.url) {
                 bgLayer.style.backgroundImage = `url('${bg.url}')`;
-                bgLayer.style.opacity = '0.4'; 
+                bgLayer.style.opacity = '0.35'; 
             } else {
                 bgLayer.style.opacity = '0';
             }
@@ -478,15 +2076,16 @@
             if(!picker) return;
             picker.innerHTML = BACKGROUNDS.map(bg => `
                 <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
-                     style="background-image: url('${bg.url || ''}'); background-color: rgba(255,255,255,0.05); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
+                     style="background-image: url('${bg.url || ''}'); background-color: var(--bg-secondary); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
                      <div style="background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: white; text-align:center;">${bg.name}</div>
                 </div>
             `).join('');
         }
 
-        // ==================== 3. ДОСТИЖЕНИЯ (57 ШТУК) ====================
+        // ==================== ДОСТИЖЕНИЯ ====================
         const ACHIEVEMENTS = [];
+        
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
         const xpNames = ["Первый шаг", "Ученик", "Искатель", "Странник", "Кохай", "Сэмпай", "Мечник", "Самурай", "Ронин", "Мастер", "Сенсей", "Шихан", "Даймё", "Сёгун", "Ками"];
         const xpIcons = ['🌱','🌿','🌳','🌲','🍄','🐚','🐌','🦋','🐛','🐝','🐞','🐠','🐟','🐬','🐲'];
@@ -540,6 +2139,7 @@
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
+                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ПРИОРИТЕТ ВЫШЕ ЧЕМ ТГ)
                     if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
                         user.name = data.user.name;
                     }
@@ -575,6 +2175,7 @@
                     method: 'GET',
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
+                
                 if (!response.ok) throw new Error(`HTTP ошибка`);
                 const data = await response.json();
                 
@@ -583,9 +2184,11 @@
                     data.players.forEach((p, index) => {
                         const rank = index + 1;
                         let safeName = p.name;
-                        if (!safeName || safeName === 'Test User' || safeName === 'User') {
-                            safeName = `Игрок ${p.id.toString().slice(-4)}`;
+                        // ЖЕСТКИЙ ПЕРЕХВАТ "Test User" или "Х"
+                        if (!safeName || safeName === 'Test User' || safeName === 'User' || safeName === 'Х') {
+                            safeName = `Ученик`;
                         }
+                        
                         const initial = safeName.charAt(0).toUpperCase();
                         const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
                         const avatarDivId = `lb-av-${p.id}-${index}`;
@@ -603,8 +2206,13 @@
                             </div>
                         </div>`;
                     });
+                    
                     container.innerHTML = html;
-                    data.players.forEach((p, index) => { loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`); });
+
+                    data.players.forEach((p, index) => {
+                        loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
+                    });
+
                 } else {
                     container.innerHTML = '<div style="text-align: center; color: var(--text-hint);">Нет данных</div>';
                 }
@@ -622,9 +2230,11 @@
                 const data = await response.json();
                 if (data.success) {
                     renderProfileStats(data.stats);
-                } else { throw new Error('No success flag'); }
+                } else {
+                    throw new Error('No success flag');
+                }
             } catch (e) { 
-                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.</div>`;
+                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.<br>Проверьте работу сервера.</div>`;
             }
         }
 
@@ -665,14 +2275,20 @@
                 user = {...user, ...JSON.parse(saved)};
                 if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
-            if (!user.name || user.name === 'Test User' || user.name === 'Пользователь') {
+
+            // ЖЕСТКИЙ ФОЛЛБЭК ИМЕНИ ИЗ ТЕЛЕГРАМА
+            if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...' || user.name === 'User' || user.name === 'Х') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
-                } else { user.name = 'Ученик'; }
+                } else {
+                    user.name = 'Ученик';
+                }
             }
         }
 
-        function saveUser() { localStorage.setItem('yomubot_user', JSON.stringify(user)); }
+        function saveUser() {
+            localStorage.setItem('yomubot_user', JSON.stringify(user));
+        }
 
         function setAvatar() {
             const tgUser = tg.initDataUnsafe?.user;
@@ -711,6 +2327,7 @@
 
         async function init() {
             loadUserFromStorage();
+            
             await fetchUserFromServer();
             
             applyBackground(user.settings.bg || 'default');
@@ -718,19 +2335,21 @@
 
             const today = new Date().toDateString();
             if (!user.questsDate || user.questsDate !== today) {
-                user.questsDate = today; user.quests = {};
+                user.questsDate = today;
+                user.quests = {};
             }
             if (!user.quests) user.quests = {};
             user.quests.login = 1;
-            saveUser(); updateUI(); setAvatar();
+            saveUser();
+            updateUI();
+            setAvatar();
 
             const bNav = document.getElementById('bottomNav');
             if(bNav) bNav.classList.remove('hidden');
 
             setTimeout(() => {
                 document.getElementById('loadingScreen').style.display = 'none';
-                createWheel();
-            }, 500);
+            }, 800);
         }
 
         function goTo(screen, param = null) {
@@ -752,12 +2371,20 @@
         }
 
         function updateUI() {
-            let rank = {name:'Новичок', badge:'🥚'};
-            if (typeof RANKS !== 'undefined') {
-                for (let r of RANKS) { if (user.xp >= r.min) rank = r; }
-            } else {
-                for (let r of LOCAL_RANKS) { if (user.xp >= r.min) rank = r; }
-            }
+            const LOCAL_RANKS = [
+                {min: 0, name: 'Новичок', badge: '🥚'}, {min: 100, name: 'Ученик', badge: '🐣'},
+                {min: 500, name: 'Искатель', badge: '🔍'}, {min: 1000, name: 'Странник', badge: '🚶'},
+                {min: 1500, name: 'Кохай', badge: '🎒'}, {min: 2500, name: 'Сэмпай', badge: '🎓'},
+                {min: 4800, name: 'Мечник', badge: '⚔️'}, {min: 8000, name: 'Самурай', badge: '🥷'},
+                {min: 12000, name: 'Ронин', badge: '🏯'}, {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
+                {min: 25000, name: 'Сенсей', badge: '🧙'}, {min: 35000, name: 'Шихан', badge: '📜'},
+                {min: 50000, name: 'Даймё', badge: '👑'}, {min: 70000, name: 'Сёгун', badge: '🏰'},
+                {min: 100000, name: 'Император', badge: '👘'}, {min: 150000, name: 'Легенда', badge: '🐉'},
+                {min: 250000, name: 'Ками', badge: '⛩️'}
+            ];
+
+            let rank = LOCAL_RANKS[0];
+            for (let r of LOCAL_RANKS) { if (user.xp >= r.min) rank = r; }
 
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
@@ -766,9 +2393,13 @@
             
             document.getElementById('userBadge').textContent = rank.badge;
             document.getElementById('userRankName').textContent = rank.name;
-            document.getElementById('profileBadge').textContent = rank.badge;
-            document.getElementById('profileRankName').textContent = rank.name;
-            document.getElementById('profileName').textContent = user.name;
+            
+            const profileBadge = document.getElementById('profileBadge');
+            const profileRankName = document.getElementById('profileRankName');
+            const profileName = document.getElementById('profileName');
+            if (profileBadge) profileBadge.textContent = rank.badge;
+            if (profileRankName) profileRankName.textContent = rank.name;
+            if (profileName) profileName.textContent = user.name;
             
             renderQuests();
         }
@@ -1054,11 +2685,14 @@
             tryLoad(0); haptic('light');
         }
 
+        // ==================== ПРОФИЛЬ И АЧИВКИ ====================
         function renderProfile() {
             document.getElementById('profileXp').textContent = user.xp;
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
+            
             fetchUserStats();
+
             const grid = document.getElementById('achievementsGrid');
             grid.innerHTML = ACHIEVEMENTS.map(a => {
                 const unlocked = a.check(user);
@@ -1075,6 +2709,7 @@
             tg.showAlert(`${status}\n\n🏆 ${name}\n📝 ${desc}`);
         }
 
+        // ==================== НАСТРОЙКИ ====================
         function toggleSetting(key) {
             user.settings[key] = !user.settings[key];
             document.getElementById(key + 'Toggle').classList.toggle('active', user.settings[key]);
@@ -1089,8 +2724,11 @@
             a.href = url; a.download = 'yomubot_progress.json'; a.click();
         }
 
-        function showAbout() { tg.showAlert('YomuBot v2.5\n\nЯпонский язык в твоем кармане.\n🎌 Сделано с любовью!'); }
+        function showAbout() {
+            tg.showAlert('YomuBot v2.5\n\nЯпонский язык в твоем кармане.\n🎌 Сделано с любовью!');
+        }
 
+        // ==================== КВИЗЫ ====================
         function startQuiz(type) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
@@ -1118,8 +2756,14 @@
             showQuizScreen(); renderQuizQuestion();
         }
 
-        function showQuizScreen() { document.getElementById('quizScreen').style.display = 'flex'; }
-        function hideQuizScreen() { document.getElementById('quizScreen').style.display = 'none'; document.getElementById('resultsScreen').style.display = 'none'; }
+        function showQuizScreen() {
+            document.getElementById('quizScreen').style.display = 'flex';
+        }
+
+        function hideQuizScreen() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'none';
+        }
 
         function renderQuizQuestion() {
             if (quiz.index >= quiz.items.length) { showResults(); return; }
@@ -1172,6 +2816,7 @@
         function finishQuiz() { sendResult('quiz_result', quiz.correct); setTimeout(() => { hideQuizScreen(); goTo('home'); }, 100); }
         function retryQuiz() { hideQuizScreen(); if (quiz.type === 'alphabet' || quiz.type === 'row') goTo('alphabet'); else startQuiz(quiz.type); }
 
+        // ==================== TINDER СВАЙПЫ ====================
         function startSwipe() {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
@@ -1238,6 +2883,7 @@
             sendResult('swipe_result', swipe.correct);
         }
 
+        // ==================== РУЛЕТКА ====================
         function createWheel() {
             const svg = document.getElementById('wheel');
             const angle = 360 / WHEEL_PRIZES.length;
@@ -1266,7 +2912,9 @@
             }
         }
 
-        function closeWheel() { document.getElementById('wheelScreen').style.display = 'none'; }
+        function closeWheel() { 
+            document.getElementById('wheelScreen').style.display = 'none'; 
+        }
 
         let wheelRotation = 0;
         function spinWheel() {
@@ -1289,19 +2937,6 @@
         }
 
         function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-        
-        // ВАЖНО: Вшитые локальные ранги, чтобы спасти UI если data.js сломался
-        const LOCAL_RANKS = [
-            {min: 0, name: 'Новичок', badge: '🥚'}, {min: 100, name: 'Ученик', badge: '🐣'},
-            {min: 500, name: 'Искатель', badge: '🔍'}, {min: 1000, name: 'Странник', badge: '🚶'},
-            {min: 1500, name: 'Кохай', badge: '🎒'}, {min: 2500, name: 'Сэмпай', badge: '🎓'},
-            {min: 4800, name: 'Мечник', badge: '⚔️'}, {min: 8000, name: 'Самурай', badge: '🥷'},
-            {min: 12000, name: 'Ронин', badge: '🏯'}, {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
-            {min: 25000, name: 'Сенсей', badge: '🧙'}, {min: 35000, name: 'Шихан', badge: '📜'},
-            {min: 50000, name: 'Даймё', badge: '👑'}, {min: 70000, name: 'Сёгун', badge: '🏰'},
-            {min: 100000, name: 'Император', badge: '👘'}, {min: 150000, name: 'Легенда', badge: '🐉'},
-            {min: 250000, name: 'Ками', badge: '⛩️'}
-        ];
 
         init();
     </script>
