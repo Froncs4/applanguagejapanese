@@ -47,14 +47,6 @@
         .screen.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Карточки меню */
-        .menu-card {
-            background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; transition: 0.2s;
-            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        .menu-card:active { transform: scale(0.95); border-color: var(--primary); background: rgba(0,0,0,0.6); }
-
         /* Вкладки */
         .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-hint); font-size: 14px; font-weight: 600; border-radius: 10px; }
         .tab-btn.active { background: rgba(255,255,255,0.1); color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
@@ -78,6 +70,8 @@
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         .loading-spinner { width: 36px; height: 36px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -109,33 +103,33 @@
 
         <div style="padding: 0 16px; margin-bottom: 24px;">
             <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">📋 Ежедневные задания</div>
-            <div id="questsList"></div>
+            <div id="questsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
 
         <div style="padding: 0 16px; margin-bottom: 24px;">
             <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">📚 Обучение</div>
-            <div class="menu-grid">
-                <div class="menu-card" style="grid-column: span 2; border-left: 4px solid var(--primary);" onclick="goTo('alphabet')">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <div style="grid-column: span 2; border-left: 4px solid var(--primary); background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border-top: 1px solid rgba(255,255,255,0.08); border-right: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08);" onclick="goTo('alphabet')">
                     <div style="font-size: 36px; margin-bottom: 10px;">🎌</div>
                     <div style="font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">Японская Азбука</div>
                     <div style="font-size: 12px; color: var(--text-hint);">Хирагана и Катакана</div>
                 </div>
-                <div class="menu-card" onclick="goTo('study', 'kanji_n5')">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'kanji_n5')">
                     <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N5</div>
                     <div style="font-size: 12px; color: var(--text-hint);">103 иероглифа</div>
                 </div>
-                <div class="menu-card" onclick="goTo('study', 'words_n5')">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'words_n5')">
                     <div style="font-size: 36px; margin-bottom: 10px;">📝</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Слова N5</div>
                     <div style="font-size: 12px; color: var(--text-hint);">Базовая лексика</div>
                 </div>
-                <div class="menu-card" onclick="goTo('study', 'kanji_n4')">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'kanji_n4')">
                     <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N4</div>
                     <div style="font-size: 12px; color: var(--text-hint);">181 иероглиф</div>
                 </div>
-                <div class="menu-card" onclick="goTo('study', 'kanji_n3')">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="goTo('study', 'kanji_n3')">
                     <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N3</div>
                     <div style="font-size: 12px; color: var(--text-hint);">370 иероглифов</div>
@@ -145,23 +139,23 @@
 
         <div style="padding: 0 16px; margin-bottom: 24px;">
             <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">🎮 Практика</div>
-            <div class="menu-grid">
-                <div class="menu-card" onclick="startQuiz('mixed')">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="startQuiz('mixed')">
                     <div style="font-size: 36px; margin-bottom: 10px;">🎯</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Быстрый тест</div>
                     <div style="font-size: 12px; color: var(--text-hint);">5 вопросов</div>
                 </div>
-                <div class="menu-card" onclick="startSwipe()">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="startSwipe()">
                     <div style="font-size: 36px; margin-bottom: 10px;">🃏</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Карточки</div>
                     <div style="font-size: 12px; color: var(--text-hint);">Свайп-режим</div>
                 </div>
-                <div class="menu-card" onclick="openWheel()">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="openWheel()">
                     <div style="font-size: 36px; margin-bottom: 10px;">🎡</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Рулетка</div>
                     <div style="font-size: 12px; color: var(--text-hint);">Ежедневный бонус</div>
                 </div>
-                <div class="menu-card" onclick="startQuiz('full')">
+                <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.08);" onclick="startQuiz('full')">
                     <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
                     <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Полный тест</div>
                     <div style="font-size: 12px; color: var(--text-hint);">15 вопросов</div>
@@ -196,7 +190,7 @@
     <!-- Изучение -->
     <div class="screen" id="studyScreen">
         <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;"><h2 id="studyTitle" style="color: white;">📚 Изучение</h2></div>
-        <div style="padding: 0 16px;" id="studyContent"></div>
+        <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 12px;" id="studyContent"></div>
     </div>
 
     <!-- Профиль -->
@@ -243,7 +237,7 @@
             <h2 style="color: white; margin-bottom: 5px;">🏆 Рейтинг игроков</h2>
             <p style="color: var(--text-hint); font-size: 14px;">Топ-20 по опыту</p>
         </div>
-        <div style="padding: 0 16px;" id="leaderboardList">
+        <div style="padding: 0 16px; display: flex; flex-direction: column; gap: 10px;" id="leaderboardList">
             <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
@@ -379,12 +373,22 @@
     </div>
 
     <!-- Навигация -->
-    <nav class="bottom-nav" id="bottomNav">
-        <button class="nav-item active" onclick="goTo('home')"><span class="icon">🏠</span><span>Главная</span></button>
-        <button class="nav-item" onclick="goTo('alphabet')"><span class="icon">🔤</span><span>Азбука</span></button>
-        <button class="nav-item" onclick="goTo('study')"><span class="icon">📚</span><span>Учить</span></button>
-        <button class="nav-item" onclick="goTo('profile')"><span class="icon">👤</span><span>Профиль</span></button>
-        <button class="nav-item" onclick="goTo('leaderboard')"><span class="icon">🏆</span><span>Рейтинг</span></button>
+    <nav class="bottom-nav" id="bottomNav" style="display: flex;">
+        <button class="nav-item active" onclick="goTo('home')">
+            <span class="icon">🏠</span><span>Главная</span>
+        </button>
+        <button class="nav-item" onclick="goTo('alphabet')">
+            <span class="icon">🔤</span><span>Азбука</span>
+        </button>
+        <button class="nav-item" onclick="goTo('study')">
+            <span class="icon">📚</span><span>Учить</span>
+        </button>
+        <button class="nav-item" onclick="goTo('profile')">
+            <span class="icon">👤</span><span>Профиль</span>
+        </button>
+        <button class="nav-item" onclick="goTo('leaderboard')">
+            <span class="icon">🏆</span><span>Рейтинг</span>
+        </button>
     </nav>
 
     <script>
@@ -397,8 +401,8 @@
         const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
-            id: null, name: 'Загрузка...', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
-            settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }
+            id: null, name: '', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
+            settings: { sound: true, vibration: true, bg: 'default', themeColor: 'purple' }
         };
 
         let currentScreen = 'home';
@@ -444,23 +448,25 @@
             `).join('');
         }
 
-        // ==================== 2. CSS-ГРАДИЕНТНЫЕ ТЕМЫ (100% РАБОТАЮТ) ====================
+        // ==================== 2. ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
         const BACKGROUNDS = [
-            { id: 'bg-dark', name: 'Тёмный', css: 'none' },
-            { id: 'bg-sakura', name: 'Сакура', css: 'linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)' },
-            { id: 'bg-ocean', name: 'Океан', css: 'linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%)' },
-            { id: 'bg-sunset', name: 'Закат', css: 'linear-gradient(to top, #ff0844 0%, #ffb199 100%)' },
-            { id: 'bg-forest', name: 'Лес', css: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)' },
-            { id: 'bg-night', name: 'Ночь', css: 'linear-gradient(to top, #09203f 0%, #537895 100%)' }
+            { id: 'default', name: 'Тёмный', url: '' },
+            { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
+            { id: 'city', name: 'Кибер Сити', url: 'https://media.tenor.com/P5Wl2dCIf8kAAAAC/cyberpunk-city.gif' },
+            { id: 'rain', name: 'Дождь', url: 'https://media.tenor.com/8QzD2xQ-L0QAAAAC/rain-aesthetic.gif' },
+            { id: 'sunset', name: 'Закат', url: 'https://media.tenor.com/w1jUIt7wI7oAAAAC/sunset-pixel.gif' },
+            { id: 'forest', name: 'Лес', url: 'https://media.tenor.com/2Xy-C23R13YAAAAC/pixel-art.gif' }
         ];
 
         function applyBackground(bgId) {
             const bgLayer = document.getElementById('appBgLayer');
             const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
-            
-            bgLayer.style.background = bg.css;
-            bgLayer.style.opacity = bg.css === 'none' ? '0' : '0.25';
-            
+            if (bg.url) {
+                bgLayer.style.backgroundImage = `url('${bg.url}')`;
+                bgLayer.style.opacity = '0.4'; 
+            } else {
+                bgLayer.style.opacity = '0';
+            }
             if (!user.settings) user.settings = {};
             user.settings.bg = bgId;
             saveUser();
@@ -471,38 +477,16 @@
             const picker = document.getElementById('bgPicker');
             if(!picker) return;
             picker.innerHTML = BACKGROUNDS.map(bg => `
-                <div class="bg-option ${(user.settings.bg || 'bg-dark') === bg.id ? 'active' : ''}" 
-                     style="background: ${bg.css !== 'none' ? bg.css : 'var(--bg-secondary)'}; display:flex; align-items:center; justify-content:center;"
+                <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
+                     style="background-image: url('${bg.url || ''}'); background-color: rgba(255,255,255,0.05); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
-                     <div style="background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: white;">${bg.name}</div>
+                     <div style="background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: white; text-align:center;">${bg.name}</div>
                 </div>
             `).join('');
         }
 
-        // ==================== 3. ЖЕСТКАЯ СИСТЕМА РАНГОВ (Мастер на 10 000 XP) ====================
-        const LOCAL_RANKS = [
-            {min: 0, name: 'Новичок', badge: '🥚'}, {min: 100, name: 'Ученик', badge: '🐣'},
-            {min: 500, name: 'Искатель', badge: '🔍'}, {min: 1000, name: 'Странник', badge: '🚶'},
-            {min: 1500, name: 'Кохай', badge: '🎒'}, {min: 2500, name: 'Сэмпай', badge: '🎓'},
-            {min: 4800, name: 'Мечник', badge: '⚔️'}, {min: 8000, name: 'Самурай', badge: '🥷'},
-            {min: 12000, name: 'Ронин', badge: '🏯'}, {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
-            {min: 25000, name: 'Сенсей', badge: '🧙'}, {min: 35000, name: 'Шихан', badge: '📜'},
-            {min: 50000, name: 'Даймё', badge: '👑'}, {min: 70000, name: 'Сёгун', badge: '🏰'},
-            {min: 100000, name: 'Император', badge: '👘'}, {min: 150000, name: 'Легенда', badge: '🐉'},
-            {min: 250000, name: 'Ками', badge: '⛩️'}
-        ];
-
-        function getRank(xp) {
-            let rank = LOCAL_RANKS[0];
-            for (let r of LOCAL_RANKS) {
-                if (xp >= r.min) rank = r;
-            }
-            return rank;
-        }
-
-        // ==================== 4. ДОСТИЖЕНИЯ (57 ШТУК с иконками) ====================
+        // ==================== 3. ДОСТИЖЕНИЯ (57 ШТУК) ====================
         const ACHIEVEMENTS = [];
-        
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
         const xpNames = ["Первый шаг", "Ученик", "Искатель", "Странник", "Кохай", "Сэмпай", "Мечник", "Самурай", "Ронин", "Мастер", "Сенсей", "Шихан", "Даймё", "Сёгун", "Ками"];
         const xpIcons = ['🌱','🌿','🌳','🌲','🍄','🐚','🐌','🦋','🐛','🐝','🐞','🐠','🐟','🐬','🐲'];
@@ -520,7 +504,6 @@
         const testIcons = ['🥉','🥈','🥇','🏅','🏆','🏵️','🎗️','🎫','🎟️','👑'];
         testMilestones.forEach((t, i) => ACHIEVEMENTS.push({ id: `pt_${t}`, name: `Снайпер ${t}`, icon: testIcons[i], desc: `Пройди ${t} тестов без ошибок.`, check: u => (u.perfectTests || 0) >= t }));
 
-
         const DAILY_QUESTS = [
             {id: 'cards10', name: 'Изучить 10 карточек', target: 10, xp: 30, icon: '📚'},
             {id: 'test', name: 'Пройти тест', target: 1, xp: 20, icon: '✅'},
@@ -533,7 +516,6 @@
             {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
-
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
         function sendResult(type, score) {
             try {
@@ -541,10 +523,9 @@
                     const data = { type, score, initData: AUTH_HEADER };
                     tg.sendData(JSON.stringify(data));
                 }
-            } catch (e) {}
+            } catch (e) { console.warn("sendData works only inside Telegram"); }
         }
 
-        // ЖЕСТКАЯ БЛОКИРОВКА ИМЕНИ "TEST USER"
         async function fetchUserFromServer() {
             if (!AUTH_HEADER) return false;
             try {
@@ -559,13 +540,8 @@
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
-                    // ЕСЛИ БД ВЕРНУЛА ХОРОШЕЕ ИМЯ - ОСТАВЛЯЕМ ЕГО
-                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User' && data.user.name !== 'User') {
+                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
                         user.name = data.user.name;
-                    } else if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                        user.name = tg.initDataUnsafe.user.first_name; // Если в БД мусор, берем из ТГ
-                    } else {
-                        user.name = 'Ученик';
                     }
                     return true;
                 }
@@ -592,14 +568,13 @@
         async function fetchLeaderboard() {
             const container = document.getElementById('leaderboardList');
             if (!container) return;
-            container.innerHTML = '<div style="text-align: center; padding: 30px;">Загрузка...</div>';
+            container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>';
             
             try {
                 const response = await fetch(`${API_BASE}/api/leaderboard`, {
                     method: 'GET',
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
-                
                 if (!response.ok) throw new Error(`HTTP ошибка`);
                 const data = await response.json();
                 
@@ -611,7 +586,6 @@
                         if (!safeName || safeName === 'Test User' || safeName === 'User') {
                             safeName = `Игрок ${p.id.toString().slice(-4)}`;
                         }
-                        
                         const initial = safeName.charAt(0).toUpperCase();
                         const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
                         const avatarDivId = `lb-av-${p.id}-${index}`;
@@ -629,16 +603,10 @@
                             </div>
                         </div>`;
                     });
-                    
                     container.innerHTML = html;
-
-                    // Скачиваем аватарки безопасно через BLOB
-                    data.players.forEach((p, index) => {
-                        loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
-                    });
-
+                    data.players.forEach((p, index) => { loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`); });
                 } else {
-                    container.innerHTML = '<div style="text-align: center;">Нет данных</div>';
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-hint);">Нет данных</div>';
                 }
             } catch (e) { container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; }
         }
@@ -654,11 +622,9 @@
                 const data = await response.json();
                 if (data.success) {
                     renderProfileStats(data.stats);
-                } else {
-                    throw new Error('No success flag');
-                }
+                } else { throw new Error('No success flag'); }
             } catch (e) { 
-                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 16px;">Сбой загрузки статистики.<br>Проверьте работу сервера.</div>`;
+                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.</div>`;
             }
         }
 
@@ -680,7 +646,7 @@
                 const percent = Math.min(100, Math.round(learned / sec.total * 100));
                 progressHtml += `
                     <div style="margin-bottom:12px;">
-                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; color: white;">
                             <span>${sec.name}</span><span>${learned}/${sec.total} (<span style="color:var(--primary); font-weight:bold;">${percent}%</span>)</span>
                         </div>
                         <div style="height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden;">
@@ -697,22 +663,16 @@
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
                 user = {...user, ...JSON.parse(saved)};
-                if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' };
+                if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
-
-            // ЖЕСТКИЙ ФОЛЛБЭК ИМЕНИ ИЗ ТЕЛЕГРАМА (если в памяти мусор)
-            if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...' || user.name === 'User') {
+            if (!user.name || user.name === 'Test User' || user.name === 'Пользователь') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
-                } else {
-                    user.name = 'Ученик';
-                }
+                } else { user.name = 'Ученик'; }
             }
         }
 
-        function saveUser() {
-            localStorage.setItem('yomubot_user', JSON.stringify(user));
-        }
+        function saveUser() { localStorage.setItem('yomubot_user', JSON.stringify(user)); }
 
         function setAvatar() {
             const tgUser = tg.initDataUnsafe?.user;
@@ -751,23 +711,21 @@
 
         async function init() {
             loadUserFromStorage();
-            
-            // Если сервер жив, обновим данные с него (в т.ч. имя из БД)
             await fetchUserFromServer();
             
-            applyBackground(user.settings.bg || 'bg-dark');
+            applyBackground(user.settings.bg || 'default');
             applyPalette(user.settings.themeColor || 'purple');
 
             const today = new Date().toDateString();
             if (!user.questsDate || user.questsDate !== today) {
-                user.questsDate = today;
-                user.quests = {};
+                user.questsDate = today; user.quests = {};
             }
             if (!user.quests) user.quests = {};
             user.quests.login = 1;
-            saveUser();
-            updateUI();
-            setAvatar();
+            saveUser(); updateUI(); setAvatar();
+
+            const bNav = document.getElementById('bottomNav');
+            if(bNav) bNav.classList.remove('hidden');
 
             setTimeout(() => {
                 document.getElementById('loadingScreen').style.display = 'none';
@@ -780,7 +738,9 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
             if (navBtn) navBtn.classList.add('active');
-            document.getElementById(screen + 'Screen').classList.add('active');
+            
+            const screenEl = document.getElementById(screen + 'Screen');
+            if(screenEl) screenEl.classList.add('active');
             currentScreen = screen;
             
             if (screen === 'alphabet') renderAlphabet();
@@ -792,7 +752,12 @@
         }
 
         function updateUI() {
-            const rank = getRank(user.xp);
+            let rank = {name:'Новичок', badge:'🥚'};
+            if (typeof RANKS !== 'undefined') {
+                for (let r of RANKS) { if (user.xp >= r.min) rank = r; }
+            } else {
+                for (let r of LOCAL_RANKS) { if (user.xp >= r.min) rank = r; }
+            }
 
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
@@ -862,7 +827,7 @@
                     <div class="kana-row">
                         <div class="row-header"><span class="row-title">${row.name}</span><button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button></div>
                         <div class="row-cards">${row.chars.map((c, ci) => `
-                            <div class="row-card" onclick="openKanaModalFromRow(${ri}, ci)">
+                            <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
                                 <div class="char japanese">${c.char}</div>
                                 <div class="reading">${c.reading}</div>
                             </div>`).join('')}
@@ -881,7 +846,7 @@
             openModal(rows[rowIndex].chars[charIndex], 'kana');
         }
 
-        // ==================== УЧЁБА (СО СВАЙПАМИ) ====================
+        // ==================== УЧЁБА ====================
         function renderStudy() {
             const categories = [
                 {id: 'kanji_n5', name:'Кандзи N5', icon:'🈁', desc:'103 базовых иероглифа', data: typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : []},
@@ -900,7 +865,7 @@
                             <div class="category-desc">${cat.desc}</div>
                             <div class="category-bar"><div class="category-bar-fill" style="width:${progress}%"></div></div>
                         </div>
-                        <div style="font-size:24px; opacity:0.5;">›</div>
+                        <div style="font-size:24px; opacity:0.5; color: white;">›</div>
                     </div>
                 `;
             }).join('');
@@ -933,7 +898,7 @@
             }
         }
 
-        // ==================== МОДАЛЬНОЕ ОКНО (СВАЙПЫ + СРЫТИЕ GIF) ====================
+        // ==================== МОДАЛЬНОЕ ОКНО ====================
         function openModal(item, type = 'kana', swipeAnim = null) {
             modalData = item;
             const charEl = document.getElementById('modalChar');
@@ -959,7 +924,6 @@
                 document.getElementById('modalHint').textContent = item.hint || '';
                 document.getElementById('modalGif').style.display = 'none';
                 
-                // Скрываем GIF если больше 1 символа
                 if (textVal.length > 1) {
                     document.getElementById('modalStrokeBtn').style.display = 'none';
                 } else {
@@ -996,7 +960,6 @@
             currentStudyList = []; 
         }
 
-        // ЛОГИКА СВАЙПА (TOUCH)
         let touchStartX = 0;
         const modalBox = document.getElementById('modalBox');
         
@@ -1065,6 +1028,15 @@
                 `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex4}.gif`
             ];
 
+            if (modalData.reading) {
+                let r = modalData.reading.split(' ')[0].toLowerCase();
+                r = r.replace('shi','si').replace('chi','ti').replace('tsu','tu').replace('fu','hu');
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_${r}_stroke_order_animation.gif`);
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_${r}_stroke_order_animation.gif`);
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_letter_${r}_stroke_order_animation.gif`);
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_letter_${r}_stroke_order_animation.gif`);
+            }
+
             let loaded = false;
             function tryLoad(i) {
                 if (i >= urls.length || loaded) {
@@ -1082,15 +1054,11 @@
             tryLoad(0); haptic('light');
         }
 
-        // ==================== ПРОФИЛЬ И АЧИВКИ ====================
         function renderProfile() {
             document.getElementById('profileXp').textContent = user.xp;
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
-            
-            // Если вкладка профиля активна - обновляем детальную стату
             fetchUserStats();
-
             const grid = document.getElementById('achievementsGrid');
             grid.innerHTML = ACHIEVEMENTS.map(a => {
                 const unlocked = a.check(user);
@@ -1107,7 +1075,6 @@
             tg.showAlert(`${status}\n\n🏆 ${name}\n📝 ${desc}`);
         }
 
-        // ==================== НАСТРОЙКИ ====================
         function toggleSetting(key) {
             user.settings[key] = !user.settings[key];
             document.getElementById(key + 'Toggle').classList.toggle('active', user.settings[key]);
@@ -1122,11 +1089,8 @@
             a.href = url; a.download = 'yomubot_progress.json'; a.click();
         }
 
-        function showAbout() {
-            tg.showAlert('YomuBot v2.5\n\nЯпонский язык в твоем кармане.\n🎌 Сделано с любовью!');
-        }
+        function showAbout() { tg.showAlert('YomuBot v2.5\n\nЯпонский язык в твоем кармане.\n🎌 Сделано с любовью!'); }
 
-        // ==================== КВИЗЫ ====================
         function startQuiz(type) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
@@ -1154,14 +1118,8 @@
             showQuizScreen(); renderQuizQuestion();
         }
 
-        function showQuizScreen() {
-            document.getElementById('quizScreen').style.display = 'flex';
-        }
-
-        function hideQuizScreen() {
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultsScreen').style.display = 'none';
-        }
+        function showQuizScreen() { document.getElementById('quizScreen').style.display = 'flex'; }
+        function hideQuizScreen() { document.getElementById('quizScreen').style.display = 'none'; document.getElementById('resultsScreen').style.display = 'none'; }
 
         function renderQuizQuestion() {
             if (quiz.index >= quiz.items.length) { showResults(); return; }
@@ -1214,7 +1172,6 @@
         function finishQuiz() { sendResult('quiz_result', quiz.correct); setTimeout(() => { hideQuizScreen(); goTo('home'); }, 100); }
         function retryQuiz() { hideQuizScreen(); if (quiz.type === 'alphabet' || quiz.type === 'row') goTo('alphabet'); else startQuiz(quiz.type); }
 
-        // ==================== TINDER СВАЙПЫ ====================
         function startSwipe() {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
@@ -1281,7 +1238,6 @@
             sendResult('swipe_result', swipe.correct);
         }
 
-        // ==================== РУЛЕТКА ====================
         function createWheel() {
             const svg = document.getElementById('wheel');
             const angle = 360 / WHEEL_PRIZES.length;
@@ -1310,9 +1266,7 @@
             }
         }
 
-        function closeWheel() { 
-            document.getElementById('wheelScreen').style.display = 'none'; 
-        }
+        function closeWheel() { document.getElementById('wheelScreen').style.display = 'none'; }
 
         let wheelRotation = 0;
         function spinWheel() {
@@ -1335,6 +1289,19 @@
         }
 
         function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+        
+        // ВАЖНО: Вшитые локальные ранги, чтобы спасти UI если data.js сломался
+        const LOCAL_RANKS = [
+            {min: 0, name: 'Новичок', badge: '🥚'}, {min: 100, name: 'Ученик', badge: '🐣'},
+            {min: 500, name: 'Искатель', badge: '🔍'}, {min: 1000, name: 'Странник', badge: '🚶'},
+            {min: 1500, name: 'Кохай', badge: '🎒'}, {min: 2500, name: 'Сэмпай', badge: '🎓'},
+            {min: 4800, name: 'Мечник', badge: '⚔️'}, {min: 8000, name: 'Самурай', badge: '🥷'},
+            {min: 12000, name: 'Ронин', badge: '🏯'}, {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
+            {min: 25000, name: 'Сенсей', badge: '🧙'}, {min: 35000, name: 'Шихан', badge: '📜'},
+            {min: 50000, name: 'Даймё', badge: '👑'}, {min: 70000, name: 'Сёгун', badge: '🏰'},
+            {min: 100000, name: 'Император', badge: '👘'}, {min: 150000, name: 'Легенда', badge: '🐉'},
+            {min: 250000, name: 'Ками', badge: '⛩️'}
+        ];
 
         init();
     </script>
