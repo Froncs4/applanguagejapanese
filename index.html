@@ -1568,66 +1568,167 @@
                 vocabulary: ["この", "リンゴ", "いくら", "です"]
             },
             {
-                id: "story_travel",
-                title: "🚃 Путешествие на поезде",
-                level: "N4",
+                id: "story_train",
+                title: "☕ Поездка на поезде",
+                level: "N5",
                 difficulty: "Средне",
-                duration: "12 мин",
-                xp: 100,
-                description: "Отправляйся в путешествие по Японии на скоростном поезде",
+                duration: "20 мин",
+                xp: 120,
+                description: "Отправляйся в путешествие на знаменитом японском поезде синкансэн",
                 preview: "新幹線で京都に行きます...",
-                image: "🚃",
+                image: "🚅",
                 isUnlocked: false,
                 isCompleted: false,
                 requirement: "XP 500+",
-                content: [
-                    {jp: "新幹線", kana: "しんかんせん", ru: "синкансэн (пуля)", interactive: true},
-                    {jp: "で", kana: "で", ru: "на (транспорте)", interactive: false},
-                    {jp: "京都", kana: "きょうと", ru: "Киото", interactive: true},
-                    {jp: "に", kana: "に", ru: "в (место)", interactive: false},
-                    {jp: "行きます", kana: "いきます", ru: "поеду", interactive: true},
-                    {jp: "。", kana: "", ru: "", interactive: false}
+                stages: [
+                    {
+                        id: "stage_1",
+                        title: "На вокзале",
+                        content: [
+                            {jp: "新幹線", kana: "しんかんせん", ru: "синкансэн (пуля)", interactive: true},
+                            {jp: "で", kana: "で", ru: "на (транспорте)", interactive: false},
+                            {jp: "京都", kana: "きょうと", ru: "Киото", interactive: true},
+                            {jp: "に", kana: "に", ru: "в (место)", interactive: false},
+                            {jp: "行きます", kana: "いきます", ru: "поеду", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "На чём едет герой?", 
+                            options: ["Автобус", "Машина", "Синкансэн", "Велосипед"], 
+                            correct: "Синкансэн",
+                            hint: "新幹線 - это знаменитый японский поезд"
+                        }
+                    },
+                    {
+                        id: "stage_2",
+                        title: "В вагоне",
+                        content: [
+                            {jp: "窓", kana: "まど", ru: "окно", interactive: true},
+                            {jp: "から", kana: "から", ru: "из", interactive: false},
+                            {jp: "富士山", kana: "ふじさん", ru: "Фудзияма", interactive: true},
+                            {jp: "が", kana: "が", ru: "подлежащее", interactive: false},
+                            {jp: "見えます", kana: "みえます", ru: "видно", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Что видно из окна?", 
+                            options: ["Фудзияма", "Токио", "Море", "Горы"], 
+                            correct: "Фудзияма",
+                            hint: "富士山 (ふじさん) - это знаменитая гора Японии"
+                        }
+                    },
+                    {
+                        id: "stage_3", 
+                        title: "Прибытие",
+                        content: [
+                            {jp: "京都", kana: "きょうと", ru: "Киото", interactive: true},
+                            {jp: "に", kana: "に", ru: "в (место)", interactive: false},
+                            {jp: "着きました", kana: "つきました", ru: "прибыл", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Куда прибыл герой?", 
+                            options: ["Токио", "Киото", "Осака", "Нагоя"], 
+                            correct: "Киото",
+                            hint: "京都 (きょうと) - это древняя столица Японии"
+                        }
+                    }
                 ],
-                quiz: { 
-                    question: "На чём едет герой?", 
-                    options: ["Автобус", "Машина", "Синкансэн", "Велосипед"], 
-                    correct: "Синкансэн",
-                    hint: "新幹線 - это знаменитый японский поезд"
-                },
                 achievements: ["Путешественник", "Скоростник"],
-                vocabulary: ["新幹線", "京都", "行きます"]
+                vocabulary: ["新幹線", "京都", "行きます", "窓", "富士山", "見えます", "着きました"]
             },
             {
                 id: "story_festival",
                 title: "🎌 Фестиваль Сакуры",
                 level: "N4",
                 difficulty: "Сложно",
-                duration: "15 мин",
-                xp: 150,
+                duration: "25 мин",
+                xp: 180,
                 description: "Участвуй в традиционном японском фестивале цветения сакуры",
                 preview: "春の桜祭りに参加しましょう...",
                 image: "🎌",
                 isUnlocked: false,
                 isCompleted: false,
                 requirement: "XP 1000+",
-                content: [
-                    {jp: "春", kana: "はる", ru: "весна", interactive: true},
-                    {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
-                    {jp: "桜", kana: "さくら", ru: "сакура", interactive: true},
-                    {jp: "祭り", kana: "まつり", ru: "фестиваль", interactive: true},
-                    {jp: "に", kana: "に", ru: "в (время)", interactive: false},
-                    {jp: "参加", kana: "さんか", ru: "участие", interactive: true},
-                    {jp: "します", kana: "します", ru: "буду участвовать", interactive: false},
-                    {jp: "。", kana: "", ru: "", interactive: false}
+                stages: [
+                    {
+                        id: "stage_1",
+                        title: "Подготовка к фестивалю",
+                        content: [
+                            {jp: "春", kana: "はる", ru: "весна", interactive: true},
+                            {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
+                            {jp: "桜", kana: "さくら", ru: "сакура", interactive: true},
+                            {jp: "祭り", kana: "まつり", ru: "фестиваль", interactive: true},
+                            {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
+                            {jp: "準備", kana: "じゅんび", ru: "подготовка", interactive: true},
+                            {jp: "を", kana: "を", ru: "объект", interactive: false},
+                            {jp: "します", kana: "します", ru: "делаю", interactive: false},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Что готовит герой?", 
+                            options: ["Новогодний праздник", "Фестиваль сакуры", "День рождения", "Свадьбу"], 
+                            correct: "Фестиваль сакуры",
+                            hint: "桜 (さくら) - это сакура/вишнёвый цвет"
+                        }
+                    },
+                    {
+                        id: "stage_2",
+                        title: "На фестивале",
+                        content: [
+                            {jp: "公園", kana: "こうえん", ru: "парк", interactive: true},
+                            {jp: "で", kana: "で", ru: "в (месте)", interactive: false},
+                            {jp: "たくさん", kana: "たくさん", ru: "много", interactive: true},
+                            {jp: "の", kana: "の", ru: "частиц", interactive: false},
+                            {jp: "人", kana: "ひと", ru: "людей", interactive: true},
+                            {jp: "が", kana: "が", ru: "подлежащее", interactive: false},
+                            {jp: "集まります", kana: "あつまります", ru: "собираются", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Где происходит действие?", 
+                            options: ["В школе", "В ресторане", "В парке", "В магазине"], 
+                            correct: "В парке",
+                            hint: "公園 (こうえん) - это парк"
+                        }
+                    },
+                    {
+                        id: "stage_3",
+                        title: "Танцы под сакурой",
+                        content: [
+                            {jp: "美しい", kana: "うつくしい", ru: "красивый", interactive: true},
+                            {jp: "音楽", kana: "おんがく", ru: "музыка", interactive: true},
+                            {jp: "を", kana: "を", ru: "Объект", interactive: false},
+                            {jp: "聴きながら", kana: "ききながら", ru: "слушая", interactive: true},
+                            {jp: "踊ります", kana: "おどります", ru: "танцую", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Что делает герой под сакурой?", 
+                            options: ["Поёт", "Танцует", "Рисует", "Читает"], 
+                            correct: "Танцует",
+                            hint: "踊ります (おどります) - это танцевать"
+                        }
+                    },
+                    {
+                        id: "stage_4",
+                        title: "Завершение фестиваля",
+                        content: [
+                            {jp: "楽しい", kana: "たのしい", ru: "весёлый", interactive: true},
+                            {jp: "一日", kana: "いちにち", ru: "один день", interactive: true},
+                            {jp: "でした", kana: "でした", ru: "был (прошлое время)", interactive: false},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Как прошёл день фестиваля?", 
+                            options: ["Скучно", "Грустно", "Весело", "Обычно"], 
+                            correct: "Весело",
+                            hint: "楽しい (たのしい) - это весёлый/радостный"
+                        }
+                    }
                 ],
-                quiz: { 
-                    question: "Какой фестиваль посещает герой?", 
-                    options: ["Фестиваль огней", "Фестиваль сакуры", "Фестиваль льда", "Фестиваль музыки"], 
-                    correct: "Фестиваль сакуры",
-                    hint: "桜 (さくら) - это сакура/вишнёвый цвет"
-                },
-                achievements: ["Фестивальщик", "Любитель весны", "Мастер культуры"],
-                vocabulary: ["春", "桜", "祭り", "参加", "します"]
+                achievements: ["Фестивальщик", "Любитель весны", "Мастер культуры", "Танцор"],
+                vocabulary: ["春", "桜", "祭り", "準備", "公園", "集まります", "美しい", "音楽", "聴きながら", "踊ります", "楽しい", "一日"]
             }
         ];
 
@@ -2028,6 +2129,7 @@
             currentScreen = screen;
             
             if (screen === 'alphabet') renderAlphabet();
+            if (screen === 'stories') renderStories(); // Обновляем истории при каждом переходе
             if (screen === 'profile') renderProfile();
             if (screen === 'leaderboard') fetchLeaderboard();
             if (screen === 'shop') updateShopUI();
@@ -2298,10 +2400,38 @@
             if (!story) return;
             
             currentStory = story;
-            document.getElementById('readingTitle').textContent = story.title;
+            currentStory.currentStage = 0; // Текущий этап
+            currentStory.correctAnswers = 0; // Правильные ответы
             
+            // Показываем первый этап
+            showStoryStage(story, 0);
+        }
+        
+        function showStoryStage(story, stageIndex) {
+            const stage = story.stages ? story.stages[stageIndex] : story;
+            
+            if (!stage) {
+                // Если это старая история с одним этапом
+                renderStoryContent(story.content, story.quiz);
+                return;
+            }
+            
+            // Обновляем заголовок с прогрессом
+            const titleEl = document.querySelector('#readingScreen h2');
+            if (titleEl) {
+                titleEl.innerHTML = `📖 ${story.title} - Этап ${stageIndex + 1}/${story.stages.length}`;
+            }
+            
+            // Показываем контент этапа
+            renderStoryContent(stage.content, stage.quiz);
+            
+            // Сохраняем текущий этап
+            currentStory.currentStage = stageIndex;
+        }
+        
+        function renderStoryContent(content, quiz) {
             let textHtml = '';
-            story.content.forEach((word, index) => {
+            content.forEach((word, index) => {
                 if (word.jp === '。') {
                     textHtml += `<span style="color:white;">。</span><br><br>`;
                 } else {
@@ -2322,12 +2452,12 @@
             document.getElementById('readingText').innerHTML = textHtml;
             
             // Обновляем викторину
-            document.getElementById('readingQuestion').textContent = story.quiz.question;
+            document.getElementById('readingQuestion').textContent = quiz.question;
             let optionsHtml = '';
-            story.quiz.options.forEach(opt => {
+            quiz.options.forEach(opt => {
                 optionsHtml += `
                     <button class="story-option-btn" 
-                            onclick="checkStoryAnswer(this, '${opt}', '${story.quiz.correct}', '${story.quiz.hint}')" 
+                            onclick="checkStoryAnswer(this, '${opt}', '${quiz.correct}', '${quiz.hint}')" 
                             style="font-size: 16px; padding: 15px; width: 100%; text-align: left; 
                                    background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); 
                                    margin-bottom: 10px; border-radius: 12px; color: white;
@@ -2380,10 +2510,24 @@
                 btn.style.color = 'white';
                 haptic('success');
                 
-                // Начисляем XP и отмечаем завершение
-                setTimeout(() => {
-                    completeStory(currentStory.id);
-                }, 1500);
+                // Увеличиваем счетчик правильных ответов
+                if (!currentStory.correctAnswers) currentStory.correctAnswers = 0;
+                currentStory.correctAnswers++;
+                
+                // Проверяем, есть ли еще этапы
+                if (currentStory.stages && currentStory.currentStage < currentStory.stages.length - 1) {
+                    // Переходим к следующему этапу
+                    setTimeout(() => {
+                        const nextStage = currentStory.currentStage + 1;
+                        showStoryStage(currentStory, nextStage);
+                        showNotification(`✅ Правильно! Переходим к этапу ${nextStage + 1}`, 'success', 2000);
+                    }, 1500);
+                } else {
+                    // История завершена
+                    setTimeout(() => {
+                        completeStory(currentStory.id);
+                    }, 1500);
+                }
             } else {
                 btn.style.background = 'var(--error)';
                 btn.style.color = 'white';
@@ -2401,6 +2545,15 @@
                         b.style.color = 'white';
                     }
                 });
+                
+                // При ошибке даем возможность попробовать еще раз
+                setTimeout(() => {
+                    buttons.forEach(b => {
+                        b.style.pointerEvents = 'auto';
+                        b.style.background = 'rgba(0,0,0,0.5)';
+                        b.style.color = 'white';
+                    });
+                }, 3000);
             }
         }
         
@@ -2426,6 +2579,10 @@
                     }, 2000);
                 }
             }
+            
+            // Немедленно обновляем список историй и квесты
+            renderStories();
+            renderQuests();
             
             // Возвращаемся к списку историй
             setTimeout(() => {
