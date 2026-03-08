@@ -670,7 +670,7 @@
         .row-card .reading { font-size: 11px; color: var(--text-hint); }
 
         /* ========== УЧЕБА (ПРОГРЕСС И КАТЕГОРИИ) ========== */
-        .progress-container { margin-bottom: 12px; background: rgba(30, 30, 46, 0.7); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: transform 0.2s;}
+        .progress-container { margin-bottom: 12px; background: rgba(30, 30, 46, 0.7); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: transform 0.2s; pointer-events: auto; }
         .progress-container:active { transform: scale(0.98); }
         .progress-header { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px; }
         .progress-track { height: 8px; background: rgba(0,0,0,0.6); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
@@ -886,15 +886,12 @@
         <div class="section">
             <div class="section-title">🎌 Японская Азбука</div>
             <div class="menu-grid">
-                <div class="menu-card" onclick="goTo('alphabet', 'hiragana')" style="border-left: 4px solid var(--primary);">
-                    <div class="card-icon">あ</div>
-                    <div class="card-title">Хирагана</div>
-                    <div class="card-subtitle">46 символов</div>
-                </div>
-                <div class="menu-card" onclick="goTo('alphabet', 'katakana')" style="border-left: 4px solid var(--accent);">
-                    <div class="card-icon">ア</div>
-                    <div class="card-title">Катакана</div>
-                    <div class="card-subtitle">46 символов</div>
+                <div class="menu-card wide" onclick="goTo('alphabet')" style="border-left: 4px solid var(--primary);">
+                    <div class="card-icon" style="margin-bottom: 0; font-size: 45px;">🎌</div>
+                    <div style="text-align: left;">
+                        <div class="card-title" style="font-size: 18px; color: var(--primary);">Японская Азбука</div>
+                        <div class="card-subtitle">Хирагана и Катакана (92 символа)</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1375,6 +1372,7 @@
         let swipe = { items: [], index: 0, correct: 0, wrong: 0, history: [] };
         let currentStudyList = [];
         let currentStudyIndex = 0;
+        let currentStory = null; // Для интерактивных историй
 
         // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
         const PALETTES = [
@@ -1955,6 +1953,7 @@
                 setAvatar();
                 renderStudy();
                 renderStories();
+                createWheel(); // Инициализация рулетки
 
                 const bNav = document.getElementById('bottomNav');
                 if(bNav) bNav.style.display = 'flex';
