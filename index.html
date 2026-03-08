@@ -591,6 +591,9 @@
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
         .loading-spinner { width: 44px; height: 44px; border: 4px solid rgba(255, 255, 255, 0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-top: 25px; box-shadow: 0 0 15px var(--primary); }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
     </style>
 </head>
 <body>
@@ -1022,9 +1025,109 @@
         tg.expand();
         tg.ready();
 
-        // ======= ВАЖНО: ВСТАВЬТЕ СЮДА СВОЙ NGROK =======
-        const API_BASE = 'https://endless-max-jowly.ngrok-free.dev'; 
+        // ======= НАСТРОЙКИ API С РЕЗЕРВНЫМИ СЕРВЕРАМИ =======
+        const API_ENDPOINTS = [
+            'https://endless-max-jowly.ngrok-free.dev',  // Основной
+            'https://your-backup-server.herokuapp.com',   // Резервный 1
+            'https://another-backup-server.glitch.me'     // Резервный 2
+        ];
+        
+        let currentApiIndex = 0;
+        let API_BASE = API_ENDPOINTS[0];
         const AUTH_HEADER = tg.initData || 'user_id=12345';
+        
+        // Определение сетевого подключения
+        let isOnline = navigator.onLine;
+        let apiAvailable = false;
+
+        // Мониторинг сетевого подключения
+        window.addEventListener('online', () => {
+            isOnline = true;
+            showNotification('🌐 Соединение восстановлено', 'success');
+            checkApiAvailability();
+        });
+        
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            showNotification('📵 Нет соединения с интернетом', 'error');
+        });
+
+        // Проверка доступности API
+        async function checkApiAvailability() {
+            if (!isOnline) return false;
+            
+            for (let i = 0; i < API_ENDPOINTS.length; i++) {
+                try {
+                    const response = await fetch(`${API_ENDPOINTS[i]}/api/health`, {
+                        method: 'GET',
+                        headers: { 'ngrok-skip-browser-warning': 'true' },
+                        timeout: 3000
+                    });
+                    if (response.ok) {
+                        API_BASE = API_ENDPOINTS[i];
+                        currentApiIndex = i;
+                        apiAvailable = true;
+                        return true;
+                    }
+                } catch (e) {
+                    console.warn(`API ${API_ENDPOINTS[i]} недоступен`);
+                }
+            }
+            apiAvailable = false;
+            return false;
+        }
+
+        // Улучшенная функция fetch с обработкой ошибок
+        async function safeFetch(url, options = {}) {
+            if (!isOnline) {
+                throw new Error('OFFLINE');
+            }
+            
+            if (!apiAvailable) {
+                await checkApiAvailability();
+            }
+            
+            let lastError;
+            for (let i = 0; i < API_ENDPOINTS.length; i++) {
+                try {
+                    const apiEndpoint = API_ENDPOINTS[(currentApiIndex + i) % API_ENDPOINTS.length];
+                    const fullUrl = url.replace(API_BASE, apiEndpoint);
+                    
+                    const response = await fetch(fullUrl, {
+                        ...options,
+                        timeout: options.timeout || 8000
+                    });
+                    
+                    if (response.ok) {
+                        return response;
+                    }
+                } catch (e) {
+                    lastError = e;
+                    console.warn(`Ошибка при запросе к ${API_ENDPOINTS[(currentApiIndex + i) % API_ENDPOINTS.length]}:`, e);
+                }
+            }
+            throw lastError || new Error('All API endpoints failed');
+        }
+
+        // Система уведомлений
+        function showNotification(message, type = 'info', duration = 3000) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 60px; left: 20px; right: 20px; z-index: 10000;
+                padding: 15px; border-radius: 12px; text-align: center; font-weight: 600;
+                animation: slideDown 0.3s ease; backdrop-filter: blur(10px);
+                ${type === 'error' ? 'background: rgba(248, 113, 113, 0.9); color: white;' : ''}
+                ${type === 'success' ? 'background: rgba(74, 222, 128, 0.9); color: white;' : ''}
+                ${type === 'info' ? 'background: rgba(102, 126, 234, 0.9); color: white;' : ''}
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+        }
 
         let user = {
             id: null, 
@@ -1229,7 +1332,7 @@
         async function fetchUserFromServer() {
             if (!AUTH_HEADER) return false;
             try {
-                const response = await fetch(`${API_BASE}/api/user`, {
+                const response = await safeFetch(`${API_BASE}/api/user`, {
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
                 
@@ -1253,6 +1356,11 @@
                     return true;
                 }
             } catch (e) { 
+                if (e.message === 'OFFLINE') {
+                    console.log('Работаем в оффлайн режиме');
+                    return false;
+                }
+                console.warn('Ошибка загрузки данных с сервера:', e);
                 return false; 
             }
         }
@@ -1471,9 +1579,18 @@
             try {
                 loadUserFromStorage();
                 
-                const fetchPromise = fetchUserFromServer();
-                const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2000));
-                await Promise.race([fetchPromise, timeoutPromise]);
+                // Проверяем доступность API
+                showNotification('🔄 Проверка соединения...', 'info', 2000);
+                const apiOk = await checkApiAvailability();
+                
+                if (apiOk) {
+                    showNotification('✅ Сервер доступен', 'success', 2000);
+                    const fetchPromise = fetchUserFromServer();
+                    const timeoutPromise = new Promise(resolve => setTimeout(resolve, 3000));
+                    await Promise.race([fetchPromise, timeoutPromise]);
+                } else {
+                    showNotification('📱 Работаем в оффлайн режиме', 'info', 3000);
+                }
                 
                 applyBackground(user.settings?.bg || 'bg-dark');
                 applyPalette(user.settings?.themeColor || 'purple');
@@ -1484,7 +1601,6 @@
                     user.quests = {};
                 }
                 if (!user.quests) user.quests = {};
-                // Отмечаем только сам факт входа, награду не выдаём сразу — она зависит от XP с сервера
                 user.quests.login = Math.min(1, user.quests.login || 0);
                 
                 saveUser();
@@ -1498,6 +1614,7 @@
                 
             } catch (e) {
                 console.error("Ошибка при инициализации:", e);
+                showNotification('⚠️ Ошибка запуска приложения', 'error', 5000);
             } finally {
                 document.getElementById('loadingScreen').style.display = 'none';
             }
@@ -1527,7 +1644,49 @@
             haptic('light');
         }
 
-        function updateUI() {
+        // ==================== ОПТИМИЗАЦИЯ ПРОИЗВОДИТЕЛЬНОСТИ ====================
+        
+        // Ленивая загрузка экранов
+        function lazyLoadScreen(screenId) {
+            const screen = document.getElementById(screenId + 'Screen');
+            if (screen && !screen.dataset.loaded) {
+                screen.dataset.loaded = 'true';
+                // Добавляем индикатор загрузки
+                const loader = document.createElement('div');
+                loader.style.cssText = 'text-align: center; padding: 50px; color: var(--text-hint);';
+                loader.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">⏳</div>Загрузка...';
+                screen.appendChild(loader);
+                
+                setTimeout(() => {
+                    if (loader.parentNode) loader.remove();
+                }, 500);
+            }
+        }
+        
+        // Кэширование DOM элементов
+        const domCache = {};
+        function getElement(id) {
+            if (!domCache[id]) {
+                domCache[id] = document.getElementById(id);
+            }
+            return domCache[id];
+        }
+        
+        // Оптимизированная отрисовка
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // Оптимизированное обновление UI
+        const updateUI = debounce(function() {
             const LOCAL_RANKS = [
                 {min: 0, name: 'Новичок', badge: '🥚'}, 
                 {min: 100, name: 'Ученик', badge: '🐣'},
@@ -1546,23 +1705,36 @@
                 if (user.xp >= r.min) rank = r; 
             }
 
-            document.getElementById('userName').textContent = user.name;
-            document.getElementById('userXp').textContent = user.xp;
-            document.getElementById('userStreak').textContent = user.streak;
-            document.getElementById('userFreezes').textContent = user.freezes || 0;
+            // Используем кэшированные элементы
+            const userName = getElement('userName');
+            const userXp = getElement('userXp');
+            const userStreak = getElement('userStreak');
+            const userFreezes = getElement('userFreezes');
+            const topCoins = getElement('topCoins');
             
-            document.getElementById('topCoins').textContent = user.coins || 0;
-            if (document.getElementById('shopCoinsBig')) document.getElementById('shopCoinsBig').textContent = user.coins || 0;
+            if (userName) userName.textContent = user.name;
+            if (userXp) userXp.textContent = user.xp;
+            if (userStreak) userStreak.textContent = user.streak;
+            if (userFreezes) userFreezes.textContent = user.freezes || 0;
+            if (topCoins) topCoins.textContent = user.coins || 0;
             
-            document.getElementById('userBadge').textContent = rank.badge;
-            document.getElementById('userRankName').textContent = rank.name;
+            const shopCoinsBig = getElement('shopCoinsBig');
+            if (shopCoinsBig) shopCoinsBig.textContent = user.coins || 0;
             
-            if (document.getElementById('profileBadge')) document.getElementById('profileBadge').textContent = rank.badge;
-            if (document.getElementById('profileRankName')) document.getElementById('profileRankName').textContent = rank.name;
-            if (document.getElementById('profileName')) document.getElementById('profileName').textContent = user.name;
+            const userBadge = getElement('userBadge');
+            const userRankName = getElement('userRankName');
+            if (userBadge) userBadge.textContent = rank.badge;
+            if (userRankName) userRankName.textContent = rank.name;
+            
+            const profileBadge = getElement('profileBadge');
+            const profileRankName = getElement('profileRankName');
+            const profileName = getElement('profileName');
+            if (profileBadge) profileBadge.textContent = rank.badge;
+            if (profileRankName) profileRankName.textContent = rank.name;
+            if (profileName) profileName.textContent = user.name;
             
             renderQuests();
-        }
+        }, 100);
 
         function updateShopUI() {
             document.getElementById('shopCoinsBig').textContent = user.coins || 0;
