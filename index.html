@@ -2414,10 +2414,10 @@
                 // Начисляем XP
                 user.xp += story.xp;
                 saveUser();
-                updateUI();
+                updateUI(); // Немедленное обновление счетчика
                 
-                // Показываем уведомление
-                showNotification(`🎉 История завершена! +${story.xp} XP`, 'success', 3000);
+                // Показываем красивое уведомление
+                showNotification(`📖 История завершена! +${story.xp} XP`, 'success', 3000);
                 
                 // Показываем достижения
                 if (story.achievements && story.achievements.length > 0) {
@@ -2905,6 +2905,14 @@
             const pct = Math.round(score / total * 100);
             const xp = score * 10;
             
+            // Немедленно начисляем очки и обновляем UI
+            if (xp > 0) {
+                user.xp += xp;
+                saveUser();
+                updateUI(); // Немедленное обновление счетчика
+                showNotification(`🎉 +${xp} XP получено!`, 'success', 2000);
+            }
+            
             let icon, title, subtitle;
             if (pct === 100) { 
                 icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; 
@@ -2923,8 +2931,6 @@
             document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
             document.getElementById('resultsSubtitle').textContent = subtitle;
             
-            // Экономика и квесты считаются на сервере через /api/progress,
-            // здесь только отображаем результат.
             haptic('success');
         }
 
@@ -3055,8 +3061,14 @@
             document.getElementById('swipeScreen').style.display = 'none';
             const xp = swipe.correct * 10;
             
-            // Экономика (XP/монеты) считается на сервере через /api/progress,
-            // здесь только показываем визуальный результат.
+            // Немедленно начисляем очки и обновляем UI
+            if (xp > 0) {
+                user.xp += xp;
+                saveUser();
+                updateUI(); // Немедленное обновление счетчика
+                showNotification(`🎯 +${xp} XP за карточки!`, 'success', 2000);
+            }
+            
             document.getElementById('resultsScreen').style.display = 'flex';
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
@@ -3150,7 +3162,10 @@
                 user.coins += Math.floor(xpWon / 5);
                 user.lastDaily = today;
                 saveUser(); 
-                updateUI();
+                updateUI(); // Немедленное обновление счетчика
+                
+                // Показываем анимированное уведомление
+                showNotification(`🎡 Выиграли +${xpWon} XP и +${Math.floor(xpWon / 5)} 🪙!`, 'success', 4000);
                 
                 document.getElementById('wheelResultXp').textContent = `+${xpWon} XP`;
                 document.getElementById('wheelResult').style.display = 'block';
