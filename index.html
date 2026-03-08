@@ -1261,8 +1261,43 @@
             'https://another-backup-server.glitch.me'     // Резервный 2
         ];
         
-        let currentApiIndex = 0;
         let API_BASE = API_ENDPOINTS[0];
+        
+        // Функция для получения актуальных данных пользователя
+        function getCurrentUserData() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                return {
+                    id: tg.initDataUnsafe.user.id,
+                    name: tg.initDataUnsafe.user.first_name,
+                    username: tg.initDataUnsafe.user.username
+                };
+            }
+            return null;
+        }
+        
+        // Очищаем localStorage при смене пользователя
+        function clearUserDataIfDifferent() {
+            const currentUser = getCurrentUserData();
+            if (currentUser) {
+                const storedUserId = localStorage.getItem('telegram_user_id');
+                const storedUserName = localStorage.getItem('telegram_user_name');
+                
+                if (storedUserId && storedUserId !== currentUser.id.toString()) {
+                    console.log('Смена пользователя detected, очищаем данные');
+                    localStorage.clear();
+                    localStorage.setItem('telegram_user_id', currentUser.id.toString());
+                    localStorage.setItem('telegram_user_name', currentUser.name);
+                    return true;
+                }
+                
+                if (!storedUserId) {
+                    localStorage.setItem('telegram_user_id', currentUser.id.toString());
+                    localStorage.setItem('telegram_user_name', currentUser.name);
+                }
+            }
+            return false;
+        }
+        
         const AUTH_HEADER = tg.initData || 'user_id=12345';
         
         // Определение сетевого подключения
@@ -1374,27 +1409,9 @@
             }
         }
 
-        let user = {
-            id: null, 
-            name: '', 
-            xp: 0, 
-            streak: 0, 
-            cardsLearned: 0, 
-            perfectTests: 0, 
-            coins: 0,
-            freezes: 0,
-            league: 1,
-            quests: {},
-            questsDate: null,
-            settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }
-        };
-
-        let currentScreen = 'home';
-        let alphabetTab = 'hiragana';
-        let alphabetView = 'grid';
-        let modalData = null;
-
-        let quiz = { items: [], index: 0, correct: 0, wrong: 0, type: 'mixed' };
+        function loadUserFromStorage() {
+            // Проверяем смену пользователя и очищаем данные если нужно
+            const userChanged = clearUserDataIfDifferent();
         let swipe = { items: [], index: 0, correct: 0, wrong: 0, history: [] };
         let currentStudyList = [];
         let currentStudyIndex = 0;
