@@ -928,7 +928,7 @@
             margin-top: 10px;
         }
         /* =============================== */
-        .quiz-card {
+                .quiz-card {
             background: rgba(30, 30, 46, 0.9);
             border: 2px solid var(--primary);
             border-radius: 35px;
@@ -940,18 +940,31 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
 
+        /* ===== ВСТАВИТЬ ЭТО ===== */
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
         .quiz-option {
-            padding: 20px;
+            padding: 20px 10px;
             background: rgba(0, 0, 0, 0.5);
             border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
             color: white;
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
+        /* ======================== */
         .quiz-option.correct {
             background: var(--success);
             border-color: var(--success);
@@ -1578,16 +1591,29 @@
         ];
 
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
-        function sendResult(type, score) {
+        async function sendResult(type, score) {
             try {
                 if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
-                    const data = { type: type, score: score, initData: AUTH_HEADER };
-                    tg.sendData(JSON.stringify(data));
+                    // Сохраняем напрямую через ваш API сервер
+                    await fetch(`${API_BASE}/api/progress`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-Telegram-Init-Data': AUTH_HEADER,
+                            'ngrok-skip-browser-warning': 'true'
+                        },
+                        body: JSON.stringify({ 
+                            action: 'quiz_complete', 
+                            correct: score, 
+                            total: score 
+                        })
+                    });
                 }
             } catch (e) {
-                console.warn("sendData works only inside Telegram");
+                console.warn("Ошибка сохранения API:", e);
             }
         }
+
 
         async function fetchUserFromServer() {
             if (!AUTH_HEADER) return false;
@@ -2705,4 +2731,5 @@
     </script>
 </body>
 </html>
+
 
