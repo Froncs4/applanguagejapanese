@@ -1859,33 +1859,41 @@
         }
 
         async function init() {
-            loadUserFromStorage();
-            
-            await fetchUserFromServer();
-            
-            applyBackground(user.settings.bg || 'bg-dark');
-            applyPalette(user.settings.themeColor || 'purple');
+            try {
+                loadUserFromStorage();
+                
+                // Даем серверу максимум 2 секунды на ответ. Если не успел - идем дальше!
+                const fetchPromise = fetchUserFromServer();
+                const timeoutPromise = new Promise(resolve => setTimeout(resolve, 2000));
+                await Promise.race([fetchPromise, timeoutPromise]);
+                
+                applyBackground(user.settings?.bg || 'bg-dark');
+                applyPalette(user.settings?.themeColor || 'purple');
 
-            const today = new Date().toDateString();
-            if (!user.questsDate || user.questsDate !== today) {
-                user.questsDate = today;
-                user.quests = {};
-            }
-            if (!user.quests) user.quests = {};
-            user.quests.login = 1;
-            
-            saveUser();
-            updateUI();
-            setAvatar();
+                const today = new Date().toDateString();
+                if (!user.questsDate || user.questsDate !== today) {
+                    user.questsDate = today;
+                    user.quests = {};
+                }
+                if (!user.quests) user.quests = {};
+                user.quests.login = 1;
+                
+                saveUser();
+                updateUI();
+                setAvatar();
 
-            // Гарантируем, что панель навигации видна при старте
-            const bNav = document.getElementById('bottomNav');
-            if(bNav) bNav.style.display = 'flex';
-
-            setTimeout(() => {
+                // Гарантируем, что панель навигации видна при старте
+                const bNav = document.getElementById('bottomNav');
+                if(bNav) bNav.style.display = 'flex';
+                
+            } catch (e) {
+                console.error("Ошибка при инициализации:", e);
+            } finally {
+                // ГАРАНТИРОВАННО убираем экран загрузки в любом случае!
                 document.getElementById('loadingScreen').style.display = 'none';
-            }, 800);
+            }
         }
+
 
         function goTo(screen, param = null) {
             // Прячем все экраны
@@ -2765,6 +2773,7 @@
     </script>
 </body>
 </html>
+
 
 
 
