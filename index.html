@@ -30,10 +30,7 @@
             min-height: 100vh; overflow-x: hidden; padding-bottom: 120px;
         }
 
-        .hidden { display: none !important; }
-        .show-flex { display: flex !important; }
-
-        /* ========== ФОНЫ ========== */
+        /* Фоны */
         .app-bg-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
             background-size: cover; background-position: center; opacity: 0; transition: opacity 0.5s ease;
@@ -45,211 +42,129 @@
 
         .japanese { font-family: 'Noto Sans JP', sans-serif; }
 
-        /* ========== НАВИГАЦИЯ ========== */
-        .bottom-nav {
-            position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-            height: 75px; background: rgba(30, 30, 46, 0.9) !important;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.1) !important;
-            display: flex !important; justify-content: space-around !important; align-items: center !important;
-            padding-bottom: env(safe-area-inset-bottom) !important; z-index: 9999 !important;
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; color: var(--text-hint);
-            font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s; background: none; border: none;
-        }
-        .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 15px var(--primary); }
-        .nav-item .icon { font-size: 24px; margin-bottom: 4px; }
-
-        /* ========== ЭКРАНЫ ========== */
+        /* Экраны */
         .screen { display: none; min-height: 100vh; }
         .screen.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========== ШАПКИ И БЛОКИ ========== */
-        .glass-header {
-            background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            padding: 25px 20px; border-radius: 0 0 30px 30px; color: white; margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            text-align: center; position: relative; overflow: hidden;
-        }
-        .glass-header::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at top, var(--primary) 0%, transparent 60%); opacity: 0.2; pointer-events: none;
-        }
-
-        .user-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; text-align: left; }
-        .avatar { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 26px; background-size: cover; background-position: center; border: 2px solid var(--primary); }
-        .user-info h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-        .user-rank { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); font-weight: 600; }
-
-        .stats-row { display: flex; gap: 12px; }
-        .stat-box { flex: 1; padding: 12px; text-align: center; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); }
-        .stat-value { font-size: 20px; font-weight: 800; color: white; }
-        .stat-label { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
-
-        .section { padding: 0 16px; margin-bottom: 24px; }
-        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; padding-left: 4px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-
-        /* ========== КАРТОЧКИ МЕНЮ ========== */
-        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        /* Карточки меню */
         .menu-card {
             background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; transition: 0.2s;
             border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         .menu-card:active { transform: scale(0.95); border-color: var(--primary); background: rgba(0,0,0,0.6); }
-        .menu-card .card-icon { font-size: 36px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4)); }
-        .menu-card .card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: white; }
-        .menu-card .card-subtitle { font-size: 12px; color: var(--text-hint); }
-        
-        .menu-card.wide { grid-column: span 2; border-left: 4px solid var(--primary); }
-        .menu-card.wide .card-title { color: var(--primary); font-size: 17px; }
 
-        /* ========== АЗБУКА И УЧЕБА ========== */
-        .tabs { display: flex; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 4px; margin-bottom: 14px; }
+        /* Вкладки */
         .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-hint); font-size: 14px; font-weight: 600; border-radius: 10px; }
         .tab-btn.active { background: rgba(255,255,255,0.1); color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        
-        .test-buttons { display: flex; gap: 10px; margin-bottom: 16px; }
-        .test-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; color: white; }
-        .test-btn.primary { background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 4px 15px rgba(var(--primary), 0.4); }
-        .test-btn.secondary { background: rgba(0,0,0,0.4); border: 1px solid var(--primary); }
+        .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
+        .view-btn.active { background: white; color: var(--primary); }
 
-        .kana-cell { background: rgba(30, 30, 46, 0.7); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); padding: 10px 0;}
-        .kana-cell:active { background: var(--primary); }
-        .kana-cell .char { font-size: 26px; font-weight: 600; color: white; }
-        .kana-cell .reading { font-size: 11px; color: var(--text-hint); margin-top: 4px; }
-
-        /* ========== НАСТРОЙКИ ========== */
-        .settings-group { background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .color-circle { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; flex-shrink: 0; transition: 0.2s;}
+        /* Настройки */
+        .color-circle { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; flex-shrink: 0; transition: 0.2s; cursor: pointer;}
         .color-circle.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.5);}
-        .bg-option { width: 85px; height: 130px; border-radius: 14px; background-size: cover; background-position: center; border: 2px solid transparent; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; transition: 0.2s; }
+        .bg-option { width: 85px; height: 130px; border-radius: 14px; background-size: cover; background-position: center; border: 2px solid transparent; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; transition: 0.2s; cursor: pointer;}
         .bg-option.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 15px var(--primary); }
-
-        /* ========== ПОПАПЫ (МОДАЛКИ) - ЖЕСТКИЙ СТИЛЬ ========== */
-        .overlay-screen {
-            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
-            background: rgba(10, 10, 15, 0.85) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
-            z-index: 500 !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; padding: 20px !important;
-        }
-
-        .modal-box {
-            background: rgba(30, 30, 46, 0.95) !important; border-radius: 28px !important; padding: 30px 20px !important;
-            width: 100% !important; max-width: 340px !important; text-align: center !important;
-            border: 1px solid var(--primary) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important; position: relative !important;
-        }
         
-        .modal-char { font-size: 80px; margin-bottom: 10px; color: white; transition: 0.2s; }
-        .modal-reading { font-size: 32px; color: var(--primary); font-weight: 700; margin-bottom: 6px; }
-        .modal-meaning { font-size: 18px; color: white; margin-bottom: 6px; }
-        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 24px; cursor: pointer; color: white; }
-
-        .quiz-card { background: rgba(30,30,46,0.9); border: 1px solid var(--primary); border-radius: 28px; padding: 50px 20px; text-align: center; margin-bottom: 30px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
-        .quiz-option { padding: 20px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; font-size: 20px; font-weight: 700; color: white; }
-        .quiz-option.correct { background: var(--success); border-color: var(--success); }
-        .quiz-option.wrong { background: var(--error); border-color: var(--error); }
-
-        .swipe-card { width: 100%; max-width: 300px; height: 400px; background: rgba(30,30,46,0.95); border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .swipe-buttons { display: flex; gap: 30px; margin-top: 30px; }
-        .swipe-btn { width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 30px; background: rgba(0,0,0,0.5); color: white; }
+        .toggle { width: 50px; height: 28px; background: rgba(0,0,0,0.4); border-radius: 14px; position: relative; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1);}
+        .toggle.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary);}
+        .toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 2px; left: 3px; transition: all 0.3s; }
+        .toggle.active::after { left: 23px; }
 
         /* Лоадер */
         .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
-        .loading-spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
+        .loading-logo { font-size: 60px; margin-bottom: 16px; animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .loading-spinner { width: 36px; height: 36px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-    <!-- Фоновые слои CSS -->
     <div class="app-bg-layer" id="appBgLayer"></div>
     <div class="app-bg-overlay"></div>
 
     <div class="loading-screen" id="loadingScreen">
-        <div style="font-size: 70px; margin-bottom: 10px;">🎌</div>
+        <div class="loading-logo">🎌</div>
         <div style="color: white; font-size: 22px; font-weight: bold;">YomuBot</div>
         <div class="loading-spinner"></div>
     </div>
 
     <!-- Главная -->
     <div class="screen active" id="homeScreen">
-        <div class="glass-header">
-            <div class="user-row">
-                <div class="avatar" id="userAvatar">👤</div>
-                <div class="user-info">
-                    <h1 id="userName">Загрузка...</h1>
-                    <div class="user-rank"><span id="userBadge">🥚</span> <span id="userRankName">Новичок</span></div>
+        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: center;">
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; text-align: left;">
+                <div id="userAvatar" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; background-size: cover; background-position: center; border: 2px solid var(--primary);">👤</div>
+                <div>
+                    <h1 id="userName" style="font-size: 22px; font-weight: 700; margin-bottom: 4px; color: white;">Загрузка...</h1>
+                    <div style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); font-weight: 600;"><span id="userBadge">🥚</span> <span id="userRankName">Новичок</span></div>
                 </div>
             </div>
-            <div class="stats-row">
-                <div class="stat-box"><div class="stat-value" id="userXp">0</div><div class="stat-label">XP</div></div>
-                <div class="stat-box"><div class="stat-value" id="userStreak">0</div><div class="stat-label">🔥 Серия</div></div>
-                <div class="stat-box"><div class="stat-value" id="userCards">0</div><div class="stat-label">Карточек</div></div>
+            <div style="display: flex; gap: 12px;">
+                <div style="flex: 1; padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div id="userXp" style="font-size: 20px; font-weight: 800; color: white;">0</div><div style="font-size: 11px; color: var(--text-hint); margin-top: 2px;">XP</div></div>
+                <div style="flex: 1; padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div id="userStreak" style="font-size: 20px; font-weight: 800; color: white;">0</div><div style="font-size: 11px; color: var(--text-hint); margin-top: 2px;">🔥 Серия</div></div>
+                <div style="flex: 1; padding: 12px; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div id="userCards" style="font-size: 20px; font-weight: 800; color: white;">0</div><div style="font-size: 11px; color: var(--text-hint); margin-top: 2px;">Карточек</div></div>
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-title">📋 Ежедневные задания</div>
+        <div style="padding: 0 16px; margin-bottom: 24px;">
+            <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">📋 Ежедневные задания</div>
             <div id="questsList"></div>
         </div>
 
-        <div class="section">
-            <div class="section-title">📚 Обучение</div>
+        <div style="padding: 0 16px; margin-bottom: 24px;">
+            <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">📚 Обучение</div>
             <div class="menu-grid">
-                <div class="menu-card wide" onclick="goTo('alphabet')">
-                    <div class="card-icon">🎌</div>
-                    <div class="card-title">Японская Азбука</div>
-                    <div class="card-subtitle">Хирагана и Катакана</div>
+                <div class="menu-card" style="grid-column: span 2; border-left: 4px solid var(--primary);" onclick="goTo('alphabet')">
+                    <div style="font-size: 36px; margin-bottom: 10px;">🎌</div>
+                    <div style="font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 4px;">Японская Азбука</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">Хирагана и Катакана</div>
                 </div>
                 <div class="menu-card" onclick="goTo('study', 'kanji_n5')">
-                    <div class="card-icon">🈁</div>
-                    <div class="card-title">Кандзи N5</div>
-                    <div class="card-subtitle">103 иероглифа</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N5</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">103 иероглифа</div>
                 </div>
                 <div class="menu-card" onclick="goTo('study', 'words_n5')">
-                    <div class="card-icon">📝</div>
-                    <div class="card-title">Слова N5</div>
-                    <div class="card-subtitle">Базовая лексика</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">📝</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Слова N5</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">Базовая лексика</div>
                 </div>
                 <div class="menu-card" onclick="goTo('study', 'kanji_n4')">
-                    <div class="card-icon">🈁</div>
-                    <div class="card-title">Кандзи N4</div>
-                    <div class="card-subtitle">181 иероглиф</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N4</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">181 иероглиф</div>
                 </div>
                 <div class="menu-card" onclick="goTo('study', 'kanji_n3')">
-                    <div class="card-icon">🈁</div>
-                    <div class="card-title">Кандзи N3</div>
-                    <div class="card-subtitle">370 иероглифов</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">🈁</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Кандзи N3</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">370 иероглифов</div>
                 </div>
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-title">🎮 Практика</div>
+        <div style="padding: 0 16px; margin-bottom: 24px;">
+            <div style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: white;">🎮 Практика</div>
             <div class="menu-grid">
                 <div class="menu-card" onclick="startQuiz('mixed')">
-                    <div class="card-icon">🎯</div>
-                    <div class="card-title">Быстрый тест</div>
-                    <div class="card-subtitle">5 вопросов</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">🎯</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Быстрый тест</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">5 вопросов</div>
                 </div>
                 <div class="menu-card" onclick="startSwipe()">
-                    <div class="card-icon">🃏</div>
-                    <div class="card-title">Карточки</div>
-                    <div class="card-subtitle">Свайп-режим</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">🃏</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Карточки</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">Свайп-режим</div>
                 </div>
                 <div class="menu-card" onclick="openWheel()">
-                    <div class="card-icon">🎡</div>
-                    <div class="card-title">Рулетка</div>
-                    <div class="card-subtitle">Ежедневный бонус</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">🎡</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Рулетка</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">Ежедневный бонус</div>
                 </div>
                 <div class="menu-card" onclick="startQuiz('full')">
-                    <div class="card-icon">📋</div>
-                    <div class="card-title">Полный тест</div>
-                    <div class="card-subtitle">15 вопросов</div>
+                    <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
+                    <div style="font-size: 15px; font-weight: 700; color: white; margin-bottom: 4px;">Полный тест</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">15 вопросов</div>
                 </div>
             </div>
         </div>
@@ -257,184 +172,182 @@
 
     <!-- Азбука -->
     <div class="screen" id="alphabetScreen">
-        <div class="glass-header" style="padding-bottom: 15px;">
-            <h2 style="margin-bottom: 15px;">🎌 Японская Азбука</h2>
+        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;">
+            <h2 style="margin-bottom: 15px; color: white;">🎌 Японская Азбука</h2>
             <div class="tabs">
                 <button class="tab-btn active" onclick="setAlphabetTab('hiragana')">Хирагана</button>
                 <button class="tab-btn" onclick="setAlphabetTab('katakana')">Катакана</button>
             </div>
-            <div class="view-toggle" style="background: rgba(0,0,0,0.3);">
+            <div style="display: flex; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 3px;">
                 <button class="view-btn active" onclick="setAlphabetView('grid')">📋 Сетка</button>
                 <button class="view-btn" onclick="setAlphabetView('rows')">📚 Строки</button>
             </div>
         </div>
-        <div class="section">
-            <div class="test-buttons">
-                <button class="test-btn primary" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
-                <button class="test-btn secondary" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
+        <div style="padding: 0 16px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                <button style="flex: 1; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 700; background: var(--primary); color: white;" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
+                <button style="flex: 1; padding: 14px; border: 1px solid var(--primary); border-radius: 14px; font-size: 14px; font-weight: 700; background: rgba(0,0,0,0.4); color: white;" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
             </div>
-            <!-- СТИЛИ СЕТКИ ВШИТЫ НАПРЯМУЮ, ЧТОБЫ ИЗБЕЖАТЬ ПОЛОМКИ -->
             <div id="alphabetGrid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;"></div>
-            <div id="alphabetRows" class="hidden"></div>
+            <div id="alphabetRows" style="display: none;"></div>
         </div>
     </div>
 
     <!-- Изучение -->
     <div class="screen" id="studyScreen">
-        <div class="glass-header"><h2 id="studyTitle">📚 Изучение</h2></div>
-        <div class="section" id="studyContent"></div>
+        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;"><h2 id="studyTitle" style="color: white;">📚 Изучение</h2></div>
+        <div style="padding: 0 16px;" id="studyContent"></div>
     </div>
 
     <!-- Профиль -->
     <div class="screen" id="profileScreen">
-        <div class="glass-header">
+        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 30px 20px; border-radius: 0 0 30px 30px; margin-bottom: 15px; text-align: center; position: relative;">
             <button style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.1); border:none; width:40px; height:40px; border-radius:50%; color:white; font-size:18px;" onclick="goTo('settings')">⚙️</button>
             <button style="position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.1); border:none; width:40px; height:40px; border-radius:50%; color:white; font-size:18px;" onclick="promptChangeName()">✏️</button>
             
-            <div class="avatar" id="profileAvatar" style="margin: 0 auto 15px; width: 80px; height: 80px;">👤</div>
-            <h1 id="profileName" style="font-size: 24px; margin-bottom: 5px;">Пользователь</h1>
+            <div id="profileAvatar" style="margin: 0 auto 15px; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 38px; background-size: cover; background-position: center;">👤</div>
+            <h1 id="profileName" style="font-size: 24px; font-weight: 700; margin-bottom: 5px; color: white;">Пользователь</h1>
             <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.1); padding:6px 16px; border-radius:20px; font-size:14px; color:var(--primary); font-weight:bold;">
                 <span id="profileBadge">🥚</span> <span id="profileRankName">Новичок</span>
             </div>
         </div>
         
-        <div class="profile-stats">
-            <div class="stat-box" style="background:none; border:none;"><div class="stat-value" id="profileXp" style="color:var(--primary);">0</div><div class="stat-label">XP</div></div>
-            <div class="stat-box" style="background:none; border:none;"><div class="stat-value" id="profileStreak" style="color:var(--primary);">0</div><div class="stat-label">Серия</div></div>
-            <div class="stat-box" style="background:none; border:none;"><div class="stat-value" id="profileCards" style="color:var(--primary);">0</div><div class="stat-label">Карточек</div></div>
+        <div style="display: flex; justify-content: space-around; padding: 20px; margin: -20px 16px 0; border-radius: 20px; background: rgba(30, 30, 46, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); position: relative;">
+            <div style="text-align: center;"><div id="profileXp" style="font-size: 26px; font-weight: 800; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">XP</div></div>
+            <div style="text-align: center;"><div id="profileStreak" style="font-size: 26px; font-weight: 800; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Серия</div></div>
+            <div style="text-align: center;"><div id="profileCards" style="font-size: 26px; font-weight: 800; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Карточек</div></div>
         </div>
 
-        <div class="section" style="margin-top: 30px;">
-            <div class="section-title">📊 Прогресс по разделам</div>
+        <div style="padding: 20px 16px;">
+            <div style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: white;">📊 Прогресс по разделам</div>
             <div id="progressDetails" style="margin-bottom: 20px;">
                 <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Загрузка статистики...</div>
             </div>
             
-            <div class="section-title">🎯 Дополнительно</div>
+            <div style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: white;">🎯 Дополнительно</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                <div class="stat-box"><div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div><div class="stat-label">Лучшая серия</div></div>
-                <div class="stat-box"><div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div><div class="stat-label">Точность</div></div>
-                <div class="stat-box"><div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div><div class="stat-label">Лучший блиц</div></div>
-                <div class="stat-box"><div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div><div class="stat-label">Голосовых</div></div>
+                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileBestStreak" style="font-size: 20px; font-weight: bold; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Лучшая серия</div></div>
+                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileAccuracy" style="font-size: 20px; font-weight: bold; color: var(--primary);">0%</div><div style="font-size: 11px; color: var(--text-hint);">Точность</div></div>
+                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileBlitz" style="font-size: 20px; font-weight: bold; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Лучший блиц</div></div>
+                <div style="background: rgba(30,30,46,0.6); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 14px; text-align: center;"><div id="profileVoice" style="font-size: 20px; font-weight: bold; color: var(--primary);">0</div><div style="font-size: 11px; color: var(--text-hint);">Голосовых</div></div>
             </div>
 
-            <div class="section-title">🏆 Достижения (Нажми)</div>
-            <div class="achievements-grid" id="achievementsGrid"></div>
+            <div style="font-size: 17px; font-weight: 700; margin-bottom: 14px; color: white;">🏆 Достижения (Нажми)</div>
+            <div id="achievementsGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;"></div>
         </div>
     </div>
 
     <!-- Рейтинг -->
     <div class="screen" id="leaderboardScreen">
-        <div class="glass-header">
-            <h2>🏆 Рейтинг игроков</h2>
+        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;">
+            <h2 style="color: white; margin-bottom: 5px;">🏆 Рейтинг игроков</h2>
             <p style="color: var(--text-hint); font-size: 14px;">Топ-20 по опыту</p>
         </div>
-        <div class="section" id="leaderboardList">
+        <div style="padding: 0 16px;" id="leaderboardList">
             <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
 
     <!-- Настройки -->
     <div class="screen" id="settingsScreen">
-        <div class="glass-header"><h2>⚙️ Настройки</h2></div>
-        <div class="section">
-            <div class="settings-group">
-                <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
-                    <div style="display:flex; align-items:center; gap:12px; font-weight:bold;"><span style="font-size:20px;">🎨</span> Цвет интерфейса</div>
-                </div>
-                <div class="color-picker" id="colorPicker" style="padding: 10px 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
+        <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); padding: 25px 20px; border-radius: 0 0 30px 30px; margin-bottom: 20px; text-align: center;">
+            <h2 style="color: white;">⚙️ Настройки</h2>
+        </div>
+        <div style="padding: 0 16px;">
+            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="padding: 16px; font-weight: bold; color: white;">🎨 Цвет интерфейса</div>
+                <div class="color-picker" id="colorPicker" style="padding: 0 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
             </div>
 
-            <div class="settings-group">
-                <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
-                    <div style="display:flex; align-items:center; gap:12px; font-weight:bold;"><span style="font-size:20px;">🖼️</span> Тема (Фон)</div>
-                </div>
-                <div class="bg-picker" id="bgPicker" style="padding: 10px 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
+            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="padding: 16px; font-weight: bold; color: white;">🖼️ Тема (Фон)</div>
+                <div class="bg-picker" id="bgPicker" style="padding: 0 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
             </div>
             
-            <div class="settings-group">
-                <div class="settings-item" onclick="toggleSetting('sound')">
-                    <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px;">🔊</span> Звуки</div>
+            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);" onclick="toggleSetting('sound')">
+                    <div style="display:flex; align-items:center; gap:12px; color: white;"><span style="font-size:20px;">🔊</span> Звуки</div>
                     <div class="toggle active" id="soundToggle"></div>
                 </div>
-                <div class="settings-item" onclick="toggleSetting('vibration')">
-                    <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px;">📳</span> Вибрация</div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 16px;" onclick="toggleSetting('vibration')">
+                    <div style="display:flex; align-items:center; gap:12px; color: white;"><span style="font-size:20px;">📳</span> Вибрация</div>
                     <div class="toggle active" id="vibrationToggle"></div>
                 </div>
             </div>
             
-            <div class="settings-group">
-                <div class="settings-item" onclick="tg.close()">
-                    <div style="display:flex; align-items:center; gap:12px; font-weight:bold; color: var(--error);"><span style="font-size:20px;">🚪</span> Закрыть приложение</div>
+            <div style="background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="padding: 18px 16px; display:flex; align-items:center; gap:12px; font-weight:bold; color: var(--error);" onclick="tg.close()">
+                    <span style="font-size:20px;">🚪</span> Закрыть приложение
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА (ЖЕСТКО СКРЫТЫ ЧЕРЕЗ STYLE) -->
-
+    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА СО СТРОГИМ STYLE="DISPLAY: NONE" -->
+    
     <!-- Modal (Изучение карточек) -->
-    <div class="overlay-screen" id="modal" style="display: none;">
-        <div class="modal-box" id="modalBox">
-            <div id="modalCounter" style="position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: white;">1/10</div>
-            <div id="modalSwipeHint" style="position: absolute; top: 15px; right: 15px; font-size: 18px; opacity: 0.5;">↔️</div>
+    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(10px); z-index: 500; align-items: center; justify-content: center; padding: 20px;">
+        <div id="modalBox" style="background: rgba(30, 30, 46, 0.95); border-radius: 28px; padding: 30px 20px; width: 100%; max-width: 340px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative;">
+            <div id="modalCounter" style="display: none; position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: white;">1/10</div>
+            <div id="modalSwipeHint" style="display: none; position: absolute; top: 15px; right: 15px; font-size: 18px; opacity: 0.5;">↔️</div>
             
-            <div class="modal-char japanese" id="modalChar">あ</div>
-            <div class="modal-reading" id="modalReading">a</div>
-            <div class="modal-meaning" id="modalMeaning" style="display: none;"></div>
-            <div class="modal-hint" id="modalHint" style="margin-bottom: 20px; color: var(--text-hint); font-size: 14px;">Подсказка</div>
+            <div id="modalChar" class="japanese" style="font-size: 80px; margin-bottom: 10px; color: white; transition: 0.2s;">あ</div>
+            <div id="modalReading" style="font-size: 32px; color: var(--primary); font-weight: 700; margin-bottom: 6px;">a</div>
+            <div id="modalMeaning" style="display: none; font-size: 18px; color: white; margin-bottom: 6px;"></div>
+            <div id="modalHint" style="margin-bottom: 20px; color: var(--text-hint); font-size: 14px;">Подсказка</div>
             
             <div id="modalGif" style="display: none; margin: 15px 0;"><img id="gifImage" src="" style="max-width:140px; border-radius:12px; background:white; padding:5px;"></div>
             
-            <div class="modal-buttons">
-                <button class="modal-btn" style="background: rgba(255,255,255,0.1); border: 1px solid var(--primary);" onclick="playSound()">🔊</button>
-                <button class="modal-btn" id="modalStrokeBtn" style="background: var(--primary);" onclick="showGif()">✍️</button>
-                <button class="modal-btn" style="background: rgba(255,255,255,0.1); flex: 0.5;" onclick="closeModal()">✕</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button style="flex: 1; padding: 16px; border: 1px solid var(--primary); border-radius: 16px; font-size: 24px; cursor: pointer; color: white; background: rgba(255,255,255,0.1);" onclick="playSound()">🔊</button>
+                <button id="modalStrokeBtn" style="flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 24px; cursor: pointer; color: white; background: var(--primary);" onclick="showGif()">✍️</button>
+                <button style="flex: 0.5; padding: 16px; border: none; border-radius: 16px; font-size: 24px; cursor: pointer; color: white; background: rgba(255,255,255,0.1);" onclick="closeModal()">✕</button>
             </div>
         </div>
     </div>
 
     <!-- Swipe Screen (Tinder) -->
-    <div class="overlay-screen" id="swipeScreen" style="display: none;">
+    <div id="swipeScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
         <h2 style="color: white; margin-bottom: 15px;">🃏 Карточки</h2>
         <div style="display: flex; align-items: center; gap: 12px; color: white; margin-bottom: 20px; width: 100%; max-width: 300px;">
             <span id="swipeCount">1 / 10</span>
             <div style="flex:1; height:6px; background:rgba(255,255,255,0.2); border-radius:3px; overflow:hidden;"><div id="swipeProgress" style="height:100%; background:var(--primary); width:10%;"></div></div>
         </div>
         
-        <div class="swipe-card" id="swipeCard">
+        <div id="swipeCard" style="width: 100%; max-width: 300px; height: 400px; background: rgba(30,30,46,0.95); border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
             <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between;">
-                <div class="indicator learn" style="padding: 8px 16px; background: var(--error); border-radius: 20px; font-weight: bold; opacity: 0;">👎 Учить</div>
-                <div class="indicator know" style="padding: 8px 16px; background: var(--success); border-radius: 20px; font-weight: bold; opacity: 0;">👍 Знаю</div>
+                <div class="indicator learn" style="padding: 8px 16px; background: var(--error); border-radius: 20px; font-weight: bold; opacity: 0; color: white;">👎 Учить</div>
+                <div class="indicator know" style="padding: 8px 16px; background: var(--success); border-radius: 20px; font-weight: bold; opacity: 0; color: white;">👍 Знаю</div>
             </div>
-            <div class="card-char japanese" id="swipeChar" style="font-size: 120px; margin-bottom: 15px;">あ</div>
-            <div class="card-hint" id="swipeHint" style="color: var(--text-hint);">Нажми 👁 чтобы увидеть</div>
-            <div class="card-answer" id="swipeAnswer" style="font-size: 36px; font-weight: bold; color: var(--primary); opacity: 0;">a</div>
+            <div class="japanese" id="swipeChar" style="font-size: 120px; margin-bottom: 15px; color: white;">あ</div>
+            <div id="swipeHint" style="color: var(--text-hint);">Нажми 👁 чтобы увидеть</div>
+            <div id="swipeAnswer" style="font-size: 36px; font-weight: bold; color: var(--primary); opacity: 0;">a</div>
         </div>
         
-        <div class="swipe-buttons">
-            <button class="swipe-btn" style="border: 2px solid var(--error);" onclick="swipeNo()">👎</button>
-            <button class="swipe-btn" style="border: 2px solid var(--warning);" onclick="swipeReveal()">👁</button>
-            <button class="swipe-btn" style="border: 2px solid var(--success);" onclick="swipeYes()">👍</button>
+        <div style="display: flex; gap: 30px; margin-top: 30px;">
+            <button style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--error); font-size: 30px; background: rgba(0,0,0,0.5); color: white;" onclick="swipeNo()">👎</button>
+            <button style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--warning); font-size: 30px; background: rgba(0,0,0,0.5); color: white;" onclick="swipeReveal()">👁</button>
+            <button style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--success); font-size: 30px; background: rgba(0,0,0,0.5); color: white;" onclick="swipeYes()">👍</button>
         </div>
     </div>
 
     <!-- Quiz Screen -->
-    <div class="overlay-screen" id="quizScreen" style="display: none;">
+    <div id="quizScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
         <h2 id="quizTitle" style="color: white; margin-bottom: 10px;">🎯 Тест</h2>
         <div style="display: flex; gap: 30px; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
             <span style="color: var(--success);">✓ <span id="quizCorrect">0</span></span>
             <span style="color: var(--error);">✗ <span id="quizWrong">0</span></span>
         </div>
         
-        <div class="quiz-card">
-            <div class="quiz-char japanese" id="quizChar">あ</div>
+        <div style="background: rgba(30,30,46,0.9); border: 1px solid var(--primary); border-radius: 28px; padding: 50px 20px; text-align: center; margin-bottom: 30px; width: 100%; max-width: 300px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div id="quizChar" class="japanese" style="font-size: 90px; color: white;">あ</div>
         </div>
-        <div class="quiz-options" id="quizOptions"></div>
+        
+        <div id="quizOptions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 300px;"></div>
     </div>
 
     <!-- Results Screen -->
-    <div class="overlay-screen" id="resultsScreen" style="display: none;">
+    <div id="resultsScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;">
         <div id="resultsIcon" style="font-size: 90px; margin-bottom: 20px;">🎉</div>
         <h1 id="resultsTitle" style="color: var(--primary); margin-bottom: 10px;">Отлично!</h1>
         <div id="resultsScore" style="font-size: 50px; font-weight: 900; color: white; margin-bottom: 10px;">5 / 5</div>
@@ -446,7 +359,7 @@
     </div>
 
     <!-- Wheel Screen -->
-    <div class="overlay-screen" id="wheelScreen" style="display: none;">
+    <div id="wheelScreen" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.95); backdrop-filter: blur(10px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
         <button style="position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px;" onclick="closeWheel()">✕</button>
         <h2 style="color: var(--primary); font-size: 30px; margin-bottom: 10px;">🎡 РУЛЕТКА</h2>
         <p style="color: var(--text-hint); margin-bottom: 30px;">Крути раз в день!</p>
@@ -465,23 +378,13 @@
         </div>
     </div>
 
-    <!-- УСИЛЕННЫЙ БЛОК НАВИГАЦИИ -->
+    <!-- Навигация -->
     <nav class="bottom-nav" id="bottomNav">
-        <button class="nav-item active" onclick="goTo('home')">
-            <span class="icon">🏠</span><span>Главная</span>
-        </button>
-        <button class="nav-item" onclick="goTo('alphabet')">
-            <span class="icon">🔤</span><span>Азбука</span>
-        </button>
-        <button class="nav-item" onclick="goTo('study')">
-            <span class="icon">📚</span><span>Учить</span>
-        </button>
-        <button class="nav-item" onclick="goTo('profile')">
-            <span class="icon">👤</span><span>Профиль</span>
-        </button>
-        <button class="nav-item" onclick="goTo('leaderboard')">
-            <span class="icon">🏆</span><span>Рейтинг</span>
-        </button>
+        <button class="nav-item active" onclick="goTo('home')"><span class="icon">🏠</span><span>Главная</span></button>
+        <button class="nav-item" onclick="goTo('alphabet')"><span class="icon">🔤</span><span>Азбука</span></button>
+        <button class="nav-item" onclick="goTo('study')"><span class="icon">📚</span><span>Учить</span></button>
+        <button class="nav-item" onclick="goTo('profile')"><span class="icon">👤</span><span>Профиль</span></button>
+        <button class="nav-item" onclick="goTo('leaderboard')"><span class="icon">🏆</span><span>Рейтинг</span></button>
     </nav>
 
     <script>
@@ -508,7 +411,7 @@
         let currentStudyList = [];
         let currentStudyIndex = 0;
 
-        // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
+        // ==================== 1. ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
         const PALETTES = [
             { id: 'purple', name: 'Фиолетовый', p: '#667eea', s: '#764ba2', a: '#f093fb' },
             { id: 'blue', name: 'Океан', p: '#4facfe', s: '#00f2fe', a: '#43e97b' },
@@ -541,25 +444,23 @@
             `).join('');
         }
 
-        // ==================== ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
+        // ==================== 2. CSS-ГРАДИЕНТНЫЕ ТЕМЫ (100% РАБОТАЮТ) ====================
         const BACKGROUNDS = [
-            { id: 'default', name: 'Тёмный', url: '' },
-            { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
-            { id: 'city', name: 'Кибер Сити', url: 'https://media.tenor.com/P5Wl2dCIf8kAAAAC/cyberpunk-city.gif' },
-            { id: 'rain', name: 'Дождь', url: 'https://media.tenor.com/8QzD2xQ-L0QAAAAC/rain-aesthetic.gif' },
-            { id: 'sunset', name: 'Закат', url: 'https://media.tenor.com/w1jUIt7wI7oAAAAC/sunset-pixel.gif' },
-            { id: 'forest', name: 'Лес', url: 'https://media.tenor.com/2Xy-C23R13YAAAAC/pixel-art.gif' }
+            { id: 'bg-dark', name: 'Тёмный', css: 'none' },
+            { id: 'bg-sakura', name: 'Сакура', css: 'linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%)' },
+            { id: 'bg-ocean', name: 'Океан', css: 'linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%)' },
+            { id: 'bg-sunset', name: 'Закат', css: 'linear-gradient(to top, #ff0844 0%, #ffb199 100%)' },
+            { id: 'bg-forest', name: 'Лес', css: 'linear-gradient(to right, #43e97b 0%, #38f9d7 100%)' },
+            { id: 'bg-night', name: 'Ночь', css: 'linear-gradient(to top, #09203f 0%, #537895 100%)' }
         ];
 
         function applyBackground(bgId) {
             const bgLayer = document.getElementById('appBgLayer');
             const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
-            if (bg.url) {
-                bgLayer.style.backgroundImage = `url('${bg.url}')`;
-                bgLayer.style.opacity = '0.35'; 
-            } else {
-                bgLayer.style.opacity = '0';
-            }
+            
+            bgLayer.style.background = bg.css;
+            bgLayer.style.opacity = bg.css === 'none' ? '0' : '0.25';
+            
             if (!user.settings) user.settings = {};
             user.settings.bg = bgId;
             saveUser();
@@ -570,15 +471,36 @@
             const picker = document.getElementById('bgPicker');
             if(!picker) return;
             picker.innerHTML = BACKGROUNDS.map(bg => `
-                <div class="bg-option ${(user.settings.bg || 'default') === bg.id ? 'active' : ''}" 
-                     style="background-image: url('${bg.url || ''}'); background-color: var(--bg-secondary); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
+                <div class="bg-option ${(user.settings.bg || 'bg-dark') === bg.id ? 'active' : ''}" 
+                     style="background: ${bg.css !== 'none' ? bg.css : 'var(--bg-secondary)'}; display:flex; align-items:center; justify-content:center;"
                      onclick="applyBackground('${bg.id}'); haptic('light');">
-                     <div style="background: rgba(0,0,0,0.7); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: white; text-align:center;">${bg.name}</div>
+                     <div style="background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: white;">${bg.name}</div>
                 </div>
             `).join('');
         }
 
-        // ==================== ДОСТИЖЕНИЯ (57 ШТУК) ====================
+        // ==================== 3. ЖЕСТКАЯ СИСТЕМА РАНГОВ (Мастер на 10 000 XP) ====================
+        const LOCAL_RANKS = [
+            {min: 0, name: 'Новичок', badge: '🥚'}, {min: 100, name: 'Ученик', badge: '🐣'},
+            {min: 500, name: 'Искатель', badge: '🔍'}, {min: 1000, name: 'Странник', badge: '🚶'},
+            {min: 1500, name: 'Кохай', badge: '🎒'}, {min: 2500, name: 'Сэмпай', badge: '🎓'},
+            {min: 4800, name: 'Мечник', badge: '⚔️'}, {min: 8000, name: 'Самурай', badge: '🥷'},
+            {min: 12000, name: 'Ронин', badge: '🏯'}, {min: 18000, name: 'Мастер', badge: '👨‍🏫'},
+            {min: 25000, name: 'Сенсей', badge: '🧙'}, {min: 35000, name: 'Шихан', badge: '📜'},
+            {min: 50000, name: 'Даймё', badge: '👑'}, {min: 70000, name: 'Сёгун', badge: '🏰'},
+            {min: 100000, name: 'Император', badge: '👘'}, {min: 150000, name: 'Легенда', badge: '🐉'},
+            {min: 250000, name: 'Ками', badge: '⛩️'}
+        ];
+
+        function getRank(xp) {
+            let rank = LOCAL_RANKS[0];
+            for (let r of LOCAL_RANKS) {
+                if (xp >= r.min) rank = r;
+            }
+            return rank;
+        }
+
+        // ==================== 4. ДОСТИЖЕНИЯ (57 ШТУК с иконками) ====================
         const ACHIEVEMENTS = [];
         
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
@@ -598,6 +520,7 @@
         const testIcons = ['🥉','🥈','🥇','🏅','🏆','🏵️','🎗️','🎫','🎟️','👑'];
         testMilestones.forEach((t, i) => ACHIEVEMENTS.push({ id: `pt_${t}`, name: `Снайпер ${t}`, icon: testIcons[i], desc: `Пройди ${t} тестов без ошибок.`, check: u => (u.perfectTests || 0) >= t }));
 
+
         const DAILY_QUESTS = [
             {id: 'cards10', name: 'Изучить 10 карточек', target: 10, xp: 30, icon: '📚'},
             {id: 'test', name: 'Пройти тест', target: 1, xp: 20, icon: '✅'},
@@ -610,6 +533,7 @@
             {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
+
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
         function sendResult(type, score) {
             try {
@@ -617,9 +541,10 @@
                     const data = { type, score, initData: AUTH_HEADER };
                     tg.sendData(JSON.stringify(data));
                 }
-            } catch (e) { console.warn("sendData работает только внутри Telegram"); }
+            } catch (e) {}
         }
 
+        // ЖЕСТКАЯ БЛОКИРОВКА ИМЕНИ "TEST USER"
         async function fetchUserFromServer() {
             if (!AUTH_HEADER) return false;
             try {
@@ -634,9 +559,13 @@
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
-                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ПРИОРИТЕТ ВЫШЕ ЧЕМ ТГ)
-                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
+                    // ЕСЛИ БД ВЕРНУЛА ХОРОШЕЕ ИМЯ - ОСТАВЛЯЕМ ЕГО
+                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User' && data.user.name !== 'User') {
                         user.name = data.user.name;
+                    } else if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                        user.name = tg.initDataUnsafe.user.first_name; // Если в БД мусор, берем из ТГ
+                    } else {
+                        user.name = 'Ученик';
                     }
                     return true;
                 }
@@ -657,7 +586,7 @@
                         if(el) el.style.backgroundImage = `url('${url}')`;
                     }
                 }
-            } catch (e) { console.warn('Avatar download failed'); }
+            } catch (e) {}
         }
 
         async function fetchLeaderboard() {
@@ -671,23 +600,28 @@
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
                 
-                if (!response.ok) throw new Error(`HTTP ошибка ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP ошибка`);
                 const data = await response.json();
                 
                 if (data.success && Array.isArray(data.players) && data.players.length > 0) {
                     let html = '';
                     data.players.forEach((p, index) => {
                         const rank = index + 1;
-                        const initial = p.name ? p.name.charAt(0).toUpperCase() : '?';
+                        let safeName = p.name;
+                        if (!safeName || safeName === 'Test User' || safeName === 'User') {
+                            safeName = `Игрок ${p.id.toString().slice(-4)}`;
+                        }
+                        
+                        const initial = safeName.charAt(0).toUpperCase();
                         const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
                         const avatarDivId = `lb-av-${p.id}-${index}`;
 
                         html += `
                         <div class="leaderboard-item">
                             <div class="leaderboard-rank">#${rank}</div>
-                            <div class="leaderboard-avatar" id="${avatarDivId}" style="background-image: url('${fallbackUrl}'); background-size: cover;"></div>
+                            <div class="leaderboard-avatar" id="${avatarDivId}" style="background-image: url('${fallbackUrl}');"></div>
                             <div class="leaderboard-info">
-                                <div class="leaderboard-name">${p.name}</div>
+                                <div class="leaderboard-name">${safeName}</div>
                                 <div class="leaderboard-details">
                                     <span class="leaderboard-xp">${p.xp} XP</span>
                                     <span class="leaderboard-streak">🔥 ${p.streak}</span>
@@ -698,6 +632,7 @@
                     
                     container.innerHTML = html;
 
+                    // Скачиваем аватарки безопасно через BLOB
                     data.players.forEach((p, index) => {
                         loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
                     });
@@ -762,11 +697,11 @@
             const saved = localStorage.getItem('yomubot_user');
             if (saved) {
                 user = {...user, ...JSON.parse(saved)};
-                if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
+                if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' };
             }
 
-            // ПРИНУДИТЕЛЬНО ИСПРАВЛЯЕМ ИМЯ ИЗ ТЕЛЕГРАМА
-            if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...') {
+            // ЖЕСТКИЙ ФОЛЛБЭК ИМЕНИ ИЗ ТЕЛЕГРАМА (если в памяти мусор)
+            if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...' || user.name === 'User') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
                 } else {
@@ -817,10 +752,10 @@
         async function init() {
             loadUserFromStorage();
             
-            // Загрузка с сервера
+            // Если сервер жив, обновим данные с него (в т.ч. имя из БД)
             await fetchUserFromServer();
             
-            applyBackground(user.settings.bg || 'default');
+            applyBackground(user.settings.bg || 'bg-dark');
             applyPalette(user.settings.themeColor || 'purple');
 
             const today = new Date().toDateString();
@@ -834,12 +769,8 @@
             updateUI();
             setAvatar();
 
-            // Гарантируем, что нижняя панель видна
-            const bNav = document.getElementById('bottomNav');
-            if(bNav) bNav.classList.remove('hidden');
-
             setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('loadingScreen').style.display = 'none';
                 createWheel();
             }, 500);
         }
@@ -847,13 +778,9 @@
         function goTo(screen, param = null) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
             const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
             if (navBtn) navBtn.classList.add('active');
-            
-            const screenEl = document.getElementById(screen + 'Screen');
-            if(screenEl) screenEl.classList.add('active');
-            
+            document.getElementById(screen + 'Screen').classList.add('active');
             currentScreen = screen;
             
             if (screen === 'alphabet') renderAlphabet();
@@ -865,10 +792,7 @@
         }
 
         function updateUI() {
-            let rank = {name:'Новичок', badge:'🥚'};
-            if (typeof RANKS !== 'undefined') {
-                for (let r of RANKS) { if (user.xp >= r.min) rank = r; }
-            }
+            const rank = getRank(user.xp);
 
             document.getElementById('userName').textContent = user.name;
             document.getElementById('userXp').textContent = user.xp;
@@ -877,13 +801,9 @@
             
             document.getElementById('userBadge').textContent = rank.badge;
             document.getElementById('userRankName').textContent = rank.name;
-            
-            const profileBadge = document.getElementById('profileBadge');
-            const profileRankName = document.getElementById('profileRankName');
-            const profileName = document.getElementById('profileName');
-            if (profileBadge) profileBadge.textContent = rank.badge;
-            if (profileRankName) profileRankName.textContent = rank.name;
-            if (profileName) profileName.textContent = user.name;
+            document.getElementById('profileBadge').textContent = rank.badge;
+            document.getElementById('profileRankName').textContent = rank.name;
+            document.getElementById('profileName').textContent = user.name;
             
             renderQuests();
         }
@@ -927,8 +847,8 @@
             const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
             const allChars = rows.flatMap(r => r.chars);
             if (alphabetView === 'grid') {
-                document.getElementById('alphabetGrid').classList.remove('hidden');
-                document.getElementById('alphabetRows').classList.add('hidden');
+                document.getElementById('alphabetGrid').style.display = 'grid';
+                document.getElementById('alphabetRows').style.display = 'none';
                 document.getElementById('alphabetGrid').innerHTML = allChars.map((c, i) => `
                     <div class="kana-cell" onclick="openKanaModal(${i})">
                         <div class="char japanese">${c.char}</div>
@@ -936,13 +856,13 @@
                     </div>
                 `).join('');
             } else {
-                document.getElementById('alphabetGrid').classList.add('hidden');
-                document.getElementById('alphabetRows').classList.remove('hidden');
+                document.getElementById('alphabetGrid').style.display = 'none';
+                document.getElementById('alphabetRows').style.display = 'block';
                 document.getElementById('alphabetRows').innerHTML = rows.map((row, ri) => `
                     <div class="kana-row">
                         <div class="row-header"><span class="row-title">${row.name}</span><button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button></div>
                         <div class="row-cards">${row.chars.map((c, ci) => `
-                            <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
+                            <div class="row-card" onclick="openKanaModalFromRow(${ri}, ci)">
                                 <div class="char japanese">${c.char}</div>
                                 <div class="reading">${c.reading}</div>
                             </div>`).join('')}
@@ -961,7 +881,7 @@
             openModal(rows[rowIndex].chars[charIndex], 'kana');
         }
 
-        // ==================== УЧЁБА ====================
+        // ==================== УЧЁБА (СО СВАЙПАМИ) ====================
         function renderStudy() {
             const categories = [
                 {id: 'kanji_n5', name:'Кандзи N5', icon:'🈁', desc:'103 базовых иероглифа', data: typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : []},
@@ -1037,21 +957,22 @@
                 }
                 
                 document.getElementById('modalHint').textContent = item.hint || '';
-                document.getElementById('modalGif').classList.remove('show-flex');
+                document.getElementById('modalGif').style.display = 'none';
                 
+                // Скрываем GIF если больше 1 символа
                 if (textVal.length > 1) {
-                    document.getElementById('modalStrokeBtn').classList.add('hidden');
+                    document.getElementById('modalStrokeBtn').style.display = 'none';
                 } else {
-                    document.getElementById('modalStrokeBtn').classList.remove('hidden');
+                    document.getElementById('modalStrokeBtn').style.display = 'block';
                 }
 
                 if (type === 'study' && currentStudyList.length > 0) {
-                    document.getElementById('modalCounter').classList.remove('hidden');
-                    document.getElementById('modalSwipeHint').classList.remove('hidden');
+                    document.getElementById('modalCounter').style.display = 'block';
+                    document.getElementById('modalSwipeHint').style.display = 'block';
                     document.getElementById('modalCounter').textContent = `${currentStudyIndex + 1} / ${currentStudyList.length}`;
                 } else {
-                    document.getElementById('modalCounter').classList.add('hidden');
-                    document.getElementById('modalSwipeHint').classList.add('hidden');
+                    document.getElementById('modalCounter').style.display = 'none';
+                    document.getElementById('modalSwipeHint').style.display = 'none';
                 }
 
                 if (swipeAnim) {
@@ -1065,12 +986,12 @@
                 }
             }, swipeAnim ? 150 : 0);
 
-            document.getElementById('modal').classList.add('show-flex');
+            document.getElementById('modal').style.display = 'flex';
             if (!swipeAnim) haptic('light');
         }
 
         function closeModal() {
-            document.getElementById('modal').classList.remove('show-flex');
+            document.getElementById('modal').style.display = 'none';
             modalData = null;
             currentStudyList = []; 
         }
@@ -1134,7 +1055,7 @@
 
             const container = document.getElementById('modalGif');
             container.innerHTML = '<span style="color:var(--text-hint);">Загрузка...</span>';
-            container.classList.add('show-flex');
+            container.style.display = 'flex';
             
             const hex4 = char.charCodeAt(0).toString(16).toLowerCase();
             const hex5 = char.padStart(5, '0');
@@ -1143,15 +1064,6 @@
                 `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex4}.gif`,
                 `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex4}.gif`
             ];
-
-            if (modalData.reading) {
-                let r = modalData.reading.split(' ')[0].toLowerCase();
-                r = r.replace('shi','si').replace('chi','ti').replace('tsu','tu').replace('fu','hu');
-                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_${r}_stroke_order_animation.gif`);
-                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_${r}_stroke_order_animation.gif`);
-                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_letter_${r}_stroke_order_animation.gif`);
-                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_letter_${r}_stroke_order_animation.gif`);
-            }
 
             let loaded = false;
             function tryLoad(i) {
@@ -1176,6 +1088,7 @@
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
             
+            // Если вкладка профиля активна - обновляем детальную стату
             fetchUserStats();
 
             const grid = document.getElementById('achievementsGrid');
@@ -1242,12 +1155,12 @@
         }
 
         function showQuizScreen() {
-            document.getElementById('quizScreen').classList.add('show-flex');
+            document.getElementById('quizScreen').style.display = 'flex';
         }
 
         function hideQuizScreen() {
-            document.getElementById('quizScreen').classList.remove('show-flex');
-            document.getElementById('resultsScreen').classList.remove('show-flex');
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'none';
         }
 
         function renderQuizQuestion() {
@@ -1274,8 +1187,8 @@
         }
 
         function showResults() {
-            document.getElementById('quizScreen').classList.remove('show-flex');
-            document.getElementById('resultsScreen').classList.add('show-flex');
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'flex';
             const score = quiz.correct, total = quiz.items.length, pct = Math.round(score / total * 100), xp = score * 10;
             let icon, title, subtitle;
             if (pct === 100) { icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; user.perfectTests = (user.perfectTests || 0) + 1; }
@@ -1306,7 +1219,7 @@
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             swipe = { items: shuffle(allKana).slice(0,10), index:0, correct:0, wrong:0 };
-            document.getElementById('swipeScreen').classList.add('show-flex');
+            document.getElementById('swipeScreen').style.display = 'flex';
             renderSwipeCard();
         }
 
@@ -1349,7 +1262,7 @@
         }
 
         function showSwipeResults() {
-            document.getElementById('swipeScreen').classList.remove('show-flex');
+            document.getElementById('swipeScreen').style.display = 'none';
             const xp = swipe.correct * 10;
             quiz = { correct: swipe.correct, items: swipe.items, type: 'swipe' };
             if (xp > 0) {
@@ -1358,7 +1271,7 @@
                 user.quests.cards10 = (user.quests.cards10 || 0) + swipe.correct;
                 saveUser(); updateUI();
             }
-            document.getElementById('resultsScreen').classList.add('show-flex');
+            document.getElementById('resultsScreen').style.display = 'flex';
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
             document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
@@ -1386,8 +1299,7 @@
         }
 
         function openWheel() {
-            document.getElementById('wheelScreen').classList.add('show-flex');
-            document.getElementById('wheelResult').classList.remove('show-flex');
+            document.getElementById('wheelScreen').style.display = 'flex';
             document.getElementById('wheelResult').style.display = 'none';
             if (user.lastDaily === new Date().toDateString()) {
                 document.getElementById('wheelSpinBtn').disabled = true;
@@ -1399,7 +1311,7 @@
         }
 
         function closeWheel() { 
-            document.getElementById('wheelScreen').classList.remove('show-flex'); 
+            document.getElementById('wheelScreen').style.display = 'none'; 
         }
 
         let wheelRotation = 0;
@@ -1417,7 +1329,6 @@
                 saveUser(); updateUI();
                 document.getElementById('wheelResultXp').textContent = `+${WHEEL_PRIZES[prizeIndex].value} XP`;
                 document.getElementById('wheelResult').style.display = 'block';
-                document.getElementById('wheelResult').classList.add('show-flex');
                 btn.textContent = '✅ Готово!'; haptic('success');
                 sendResult('wheel_reward', WHEEL_PRIZES[prizeIndex].value);
             }, 4500);
