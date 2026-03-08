@@ -7,7 +7,17 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- Если ваши словари лежат прямо в этом файле, они должны быть ниже в теге script. 
          Если они в отдельном файле, оставляем эту строку: -->
-    <script src="data.js"></script>
+    <script src="data.js" onerror="console.warn('data.js не загружен, используем резервные данные'); window.dataLoaded=false;"></script>
+    <script>
+        // Резервные данные, если data.js не загрузился
+        if (typeof window.dataLoaded === 'undefined') {
+            window.KANJI_N5 = window.KANJI_N5 || {};
+            window.WORDS_N5 = window.WORDS_N5 || {};
+            window.KANJI_N4 = window.KANJI_N4 || {};
+            window.WORDS_N4 = window.WORDS_N4 || {};
+            console.log('Используются резервные данные');
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -1277,11 +1287,17 @@
             
             for (let i = 0; i < API_ENDPOINTS.length; i++) {
                 try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    
                     const response = await fetch(`${API_ENDPOINTS[i]}/api/health`, {
                         method: 'GET',
                         headers: { 'ngrok-skip-browser-warning': 'true' },
-                        timeout: 3000
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
+                    
                     if (response.ok) {
                         API_BASE = API_ENDPOINTS[i];
                         currentApiIndex = i;
@@ -1289,7 +1305,7 @@
                         return true;
                     }
                 } catch (e) {
-                    console.warn(`API ${API_ENDPOINTS[i]} недоступен`);
+                    console.warn(`API ${API_ENDPOINTS[i]} недоступен:`, e.message);
                 }
             }
             apiAvailable = false;
@@ -1330,22 +1346,32 @@
 
         // Система уведомлений
         function showNotification(message, type = 'info', duration = 3000) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed; top: 60px; left: 20px; right: 20px; z-index: 10000;
-                padding: 15px; border-radius: 12px; text-align: center; font-weight: 600;
-                animation: slideDown 0.3s ease; backdrop-filter: blur(10px);
-                ${type === 'error' ? 'background: rgba(248, 113, 113, 0.9); color: white;' : ''}
-                ${type === 'success' ? 'background: rgba(74, 222, 128, 0.9); color: white;' : ''}
-                ${type === 'info' ? 'background: rgba(102, 126, 234, 0.9); color: white;' : ''}
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideUp 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, duration);
+            try {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed; top: 60px; left: 20px; right: 20px; z-index: 10000;
+                    padding: 15px; border-radius: 12px; text-align: center; font-weight: 600;
+                    animation: slideDown 0.3s ease; backdrop-filter: blur(10px);
+                    ${type === 'error' ? 'background: rgba(248, 113, 113, 0.9); color: white;' : ''}
+                    ${type === 'success' ? 'background: rgba(74, 222, 128, 0.9); color: white;' : ''}
+                    ${type === 'info' ? 'background: rgba(102, 126, 234, 0.9); color: white;' : ''}
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }, duration);
+            } catch (e) {
+                console.warn("Ошибка showNotification:", e);
+                // Резервный вариант - console.log
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
         }
 
         let user = {
@@ -1949,11 +1975,31 @@
                 user.quests.login = Math.min(1, user.quests.login || 0);
                 
                 saveUser();
-                updateUI();
-                setAvatar();
-                renderStudy();
-                renderStories();
-                createWheel(); // Инициализация рулетки
+                try {
+                    updateUI();
+                } catch (e) {
+                    console.warn("Ошибка updateUI:", e);
+                }
+                try {
+                    setAvatar();
+                } catch (e) {
+                    console.warn("Ошибка setAvatar:", e);
+                }
+                try {
+                    renderStudy();
+                } catch (e) {
+                    console.warn("Ошибка renderStudy:", e);
+                }
+                try {
+                    renderStories();
+                } catch (e) {
+                    console.warn("Ошибка renderStories:", e);
+                }
+                try {
+                    createWheel(); // Инициализация рулетки
+                } catch (e) {
+                    console.warn("Ошибка createWheel:", e);
+                }
 
                 const bNav = document.getElementById('bottomNav');
                 if(bNav) bNav.style.display = 'flex';
@@ -1962,7 +2008,10 @@
                 console.error("Ошибка при инициализации:", e);
                 showNotification('⚠️ Ошибка запуска приложения', 'error', 5000);
             } finally {
-                document.getElementById('loadingScreen').style.display = 'none';
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
             }
         }
 
@@ -3131,7 +3180,13 @@
         }
 
         // Запуск
-        init();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(init, 100); // Небольшая задержка для стабильности
+            });
+        } else {
+            setTimeout(init, 100); // Небольшая задержка для стабильности
+        }
     </script>
 </body>
 </html>
