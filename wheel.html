@@ -259,9 +259,8 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+        const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : { initData: '', expand(){}, ready(){}, sendData(){}, HapticFeedback: { notificationOccurred(){}, impactOccurred(){} }, colorScheme: 'dark' };
+        try { tg.expand(); tg.ready(); } catch(e){}
 
         const prizes = [
             { value: 10, label: '10', color: '#e74c3c' },
