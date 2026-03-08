@@ -1298,9 +1298,8 @@
     </nav>
 <!-- КОНЕЦ ПЕРВОЙ ЧАСТИ -->
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+        const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : { initData: '', initDataUnsafe: {}, expand(){}, ready(){}, showAlert(m){ try{ alert(m) }catch(e){} }, sendData(){}, HapticFeedback: { notificationOccurred(){}, impactOccurred(){} }, colorScheme: 'dark' };
+        try { tg.expand(); tg.ready(); } catch(e){}
 
         // ======= НАСТРОЙКИ API С РЕЗЕРВНЫМИ СЕРВЕРАМИ =======
         const API_ENDPOINTS = [
@@ -1310,6 +1309,11 @@
         ];
         
         let API_BASE = API_ENDPOINTS[0];
+        let currentApiIndex = 0;
+        let user = { id: null, name: 'Ученик', xp: 0, streak: 0, cardsLearned: 0, coins: 0, freezes: 0, league: 1, settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }, quests: {}, questsDate: null, completedStories: [], lastDaily: null, perfectTests: 0 };
+        let currentScreen = 'home';
+        function storageKey(){ const uid = localStorage.getItem('telegram_user_id') || 'anon'; return 'yomubot_user_' + uid; }
+        function getLeagueByXp(xp){ if(xp>=5000) return 5; if(xp>=3000) return 4; if(xp>=1500) return 3; if(xp>=500) return 2; return 1; }
         
         // Функция для получения актуальных данных пользователя
         function getCurrentUserData() {
@@ -1346,7 +1350,7 @@
             return false;
         }
         
-        const AUTH_HEADER = tg.initData || 'user_id=12345';
+        const AUTH_HEADER = tg.initData || '';
         
         // Определение сетевого подключения
         let isOnline = navigator.onLine;
@@ -1460,6 +1464,13 @@
         function loadUserFromStorage() {
             // Проверяем смену пользователя и очищаем данные если нужно
             const userChanged = clearUserDataIfDifferent();
+            const saved = localStorage.getItem(storageKey());
+            if (saved) {
+                try { user = { ...user, ...JSON.parse(saved) }; } catch(e){}
+                if (!user.settings) {
+                    user.settings = { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' };
+                }
+            }
         let swipe = { items: [], index: 0, correct: 0, wrong: 0, history: [] };
         let currentStudyList = [];
         let currentStudyIndex = 0;
@@ -1941,6 +1952,7 @@
                     } else if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                         user.name = tg.initDataUnsafe.user.first_name;
                     }
+                    saveUser();
                     return true;
                 }
             } catch (e) { 
@@ -2000,17 +2012,17 @@
                         const initial = safeName.charAt(0).toUpperCase();
                         const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
                         const avatarDivId = `lb-av-${p.id}-${index}`;
-                        
-                        const leagueStr = leagueNames[p.league] || "Бронза";
+                        const leagueId = p.league || getLeagueByXp(p.xp);
+                        const leagueStr = leagueNames[leagueId] || "Бронза";
 
                         html += `
-                        <div class="leaderboard-item league-${p.league || 1}">
+                        <div class="leaderboard-item league-${leagueId}">
                             <div class="leaderboard-rank">#${index + 1}</div>
                             <div class="leaderboard-avatar" id="${avatarDivId}" style="background-image: url('${fallbackUrl}'); border-color: inherit;"></div>
                             <div class="leaderboard-info">
                                 <div class="leaderboard-name">
                                     ${safeName}
-                                    <span class="league-badge l-badge-${p.league || 1}">${leagueStr}</span>
+                                    <span class="league-badge l-badge-${leagueId}">${leagueStr}</span>
                                 </div>
                                 <div class="leaderboard-details">
                                     <span class="leaderboard-xp">${p.xp} XP</span>
@@ -2095,7 +2107,7 @@
 
         // ==================== ЛОГИКА ПОЛЬЗОВАТЕЛЯ ====================
         function loadUserFromStorage() {
-            const saved = localStorage.getItem('yomubot_user');
+            const saved = localStorage.getItem(storageKey());
             if (saved) {
                 user = { ...user, ...JSON.parse(saved) };
                 if (!user.settings) {
@@ -2114,7 +2126,7 @@
         }
 
         function saveUser() {
-            localStorage.setItem('yomubot_user', JSON.stringify(user));
+            localStorage.setItem(storageKey(), JSON.stringify(user));
         }
 
         function setAvatar() {
@@ -3620,7 +3632,7 @@
 
         async function sendResult(type, score, detailedHistory = []) {
             try {
-                if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
+                if (AUTH_HEADER) {
                     let action = 'quiz_complete';
                     let correct = score;
                     let total = score;
