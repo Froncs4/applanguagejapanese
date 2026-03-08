@@ -2641,36 +2641,48 @@
         }
 
         let touchStartX = 0;
+        let touchStartY = 0;
         const modalBox = document.getElementById('modalBox');
         
-        modalBox.addEventListener('touchstart', (e) => { 
-            touchStartX = e.changedTouches[0].screenX; 
-        }, {passive: true});
-        
-        modalBox.addEventListener('touchend', (e) => {
-            if (!currentStudyList || currentStudyList.length === 0) return; 
+        if (modalBox) {
+            modalBox.addEventListener('touchstart', (e) => { 
+                touchStartX = e.changedTouches[0].screenX; 
+                touchStartY = e.changedTouches[0].screenY;
+            }, {passive: true});
             
-            let touchEndX = e.changedTouches[0].screenX;
-            let diff = touchStartX - touchEndX;
-            
-            if (diff > 50) { 
-                if (currentStudyIndex < currentStudyList.length - 1) {
-                    currentStudyIndex++; 
-                    openModal(currentStudyList[currentStudyIndex], 'study', 'left'); 
-                    haptic('light');
-                } else { 
-                    haptic('error'); 
+            modalBox.addEventListener('touchend', (e) => {
+                if (!currentStudyList || currentStudyList.length === 0) return; 
+                
+                let touchEndX = e.changedTouches[0].screenX;
+                let touchEndY = e.changedTouches[0].screenY;
+                
+                let diffX = touchStartX - touchEndX;
+                let diffY = touchStartY - touchEndY;
+                
+                // Игнорируем вертикальные свайпы и слишком короткие свайпы
+                if (Math.abs(diffY) > Math.abs(diffX) || Math.abs(diffX) < 30) return;
+                
+                if (diffX > 50) { 
+                    // Свайп влево - НЕ ЗНАЮ
+                    if (currentStudyIndex > 0) {
+                        currentStudyIndex--; 
+                        openModal(currentStudyList[currentStudyIndex], 'study', 'right'); 
+                        haptic('light');
+                    } else { 
+                        haptic('error'); 
+                    }
+                } else if (diffX < -50) { 
+                    // Свайп вправо - ЗНАЮ
+                    if (currentStudyIndex < currentStudyList.length - 1) {
+                        currentStudyIndex++; 
+                        openModal(currentStudyList[currentStudyIndex], 'study', 'left'); 
+                        haptic('light');
+                    } else { 
+                        haptic('error'); 
+                    }
                 }
-            } else if (diff < -50) { 
-                if (currentStudyIndex > 0) {
-                    currentStudyIndex--; 
-                    openModal(currentStudyList[currentStudyIndex], 'study', 'right'); 
-                    haptic('light');
-                } else { 
-                    haptic('error'); 
-                }
-            }
-        }, {passive: true});
+            }, {passive: true});
+        }
 
         // ==================== ЗВУК И GIF ====================
         async function playSound() {
@@ -2965,19 +2977,25 @@
         }
 
         async function startSwipe() {
-            document.getElementById('swipeScreen').style.display = 'flex';
+            const swipeScreenEl = document.getElementById('swipeScreen');
             const nav = document.getElementById('bottomNav');
+            
+            if (swipeScreenEl) swipeScreenEl.style.display = 'flex';
             if(nav) nav.style.display = 'none';
             
-            document.getElementById('swipeChar').textContent = "⏳";
-            document.getElementById('swipeHint').textContent = "Ищем забытые карточки...";
+            const swipeCharEl = document.getElementById('swipeChar');
+            const swipeHintEl = document.getElementById('swipeHint');
+            
+            if (swipeCharEl) swipeCharEl.textContent = "⏳";
+            if (swipeHintEl) swipeHintEl.textContent = "Ищем забытые карточки...";
             
             let reviewCards = await fetchDueReviews();
             let items = [];
             
             if (reviewCards && reviewCards.length > 0) {
                 items = reviewCards; // ИСПОЛЬЗУЕМ УМНЫЕ КАРТОЧКИ!
-                document.querySelector('#swipeScreen h2').innerHTML = '🧠 Повторение';
+                const titleEl = document.querySelector('#swipeScreen h2');
+                if (titleEl) titleEl.innerHTML = '🧠 Повторение';
             } else {
                 // Если нечего повторять, даем случайные
                 let allKana = [];
@@ -2985,7 +3003,8 @@
                     allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
                 }
                 items = shuffle(allKana).slice(0, 10);
-                document.querySelector('#swipeScreen h2').innerHTML = '🃏 Практика';
+                const titleEl = document.querySelector('#swipeScreen h2');
+                if (titleEl) titleEl.innerHTML = '🃏 Практика';
             }
             
             swipe = { items: shuffle(items).slice(0,15), index: 0, correct: 0, wrong: 0, history: [] };
@@ -3001,17 +3020,37 @@
             const item = swipe.items[swipe.index];
             const card = document.getElementById('swipeCard');
             
-            document.getElementById('swipeChar').textContent = item.char;
-            document.getElementById('swipeAnswer').textContent = item.reading;
-            document.getElementById('swipeHint').style.display = 'block';
-            document.getElementById('swipeAnswer').style.opacity = '0';
+            // Проверяем существование элементов
+            const swipeCharEl = document.getElementById('swipeChar');
+            const swipeAnswerEl = document.getElementById('swipeAnswer');
+            const swipeHintEl = document.getElementById('swipeHint');
+            const swipeCountEl = document.getElementById('swipeCount');
+            const swipeProgressEl = document.getElementById('swipeProgress');
             
-            card.style.transform = ''; 
+            if (!card || !swipeCharEl || !swipeAnswerEl) {
+                console.warn("Элементы свайпа не найдены");
+                return;
+            }
+            
+            // Устанавливаем текст
+            swipeCharEl.textContent = item.char || '';
+            swipeAnswerEl.textContent = item.reading || '';
+            
+            // Сбрасываем стили и анимации
+            card.style.transition = 'none';
+            card.style.transform = 'translateX(0) rotate(0) scale(1)';
             card.style.opacity = '1';
+            card.style.left = '0';
+            card.style.top = '0';
             
-            document.getElementById('swipeCount').textContent = `${swipe.index+1} / ${swipe.items.length}`;
-            document.getElementById('swipeProgress').style.width = `${swipe.index / swipe.items.length * 100}%`;
+            if (swipeHintEl) swipeHintEl.style.display = 'block';
+            if (swipeAnswerEl) swipeAnswerEl.style.opacity = '0';
             
+            // Обновляем прогресс
+            if (swipeCountEl) swipeCountEl.textContent = `${swipe.index+1} / ${swipe.items.length}`;
+            if (swipeProgressEl) swipeProgressEl.style.width = `${swipe.index / swipe.items.length * 100}%`;
+            
+            // Сбрасываем индикаторы
             document.querySelectorAll('.indicator').forEach(i => {
                 i.style.opacity = '0';
             });
@@ -3027,34 +3066,52 @@
             if (!swipe.items || swipe.items.length === 0 || swipe.index >= swipe.items.length) return;
             
             swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: true });
-            const indicator = document.querySelector('.indicator.know');
-            if (indicator) indicator.style.opacity = '1';
             
             const card = document.getElementById('swipeCard');
+            const indicator = document.querySelector('.indicator.know');
+            
             if (card) {
-                card.style.transform = 'translateX(300px) rotate(15deg)'; 
+                // Правильная анимация свайпа вправо
+                card.style.transition = 'all 0.3s ease-out';
+                card.style.transform = 'translateX(150px) rotate(10deg) scale(0.8)';
                 card.style.opacity = '0';
             }
             
-            swipe.correct++; haptic('medium');
-            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+            if (indicator) indicator.style.opacity = '1';
+            
+            swipe.correct++; 
+            haptic('medium');
+            
+            setTimeout(() => { 
+                swipe.index++; 
+                renderSwipeCard(); 
+            }, 300);
         }
 
         function swipeNo() {
             if (!swipe.items || swipe.items.length === 0 || swipe.index >= swipe.items.length) return;
 
             swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: false });
-            const indicator = document.querySelector('.indicator.learn');
-            if (indicator) indicator.style.opacity = '1';
             
             const card = document.getElementById('swipeCard');
+            const indicator = document.querySelector('.indicator.learn');
+            
             if (card) {
-                card.style.transform = 'translateX(-300px) rotate(-15deg)'; 
+                // Правильная анимация свайпа влево
+                card.style.transition = 'all 0.3s ease-out';
+                card.style.transform = 'translateX(-150px) rotate(-10deg) scale(0.8)';
                 card.style.opacity = '0';
             }
             
-            swipe.wrong++; haptic('medium');
-            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+            if (indicator) indicator.style.opacity = '1';
+            
+            swipe.wrong++; 
+            haptic('medium');
+            
+            setTimeout(() => { 
+                swipe.index++; 
+                renderSwipeCard(); 
+            }, 300);
         }
 
         function showSwipeResults() {
