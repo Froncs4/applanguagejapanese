@@ -63,7 +63,7 @@
             font-family: 'Noto Sans JP', sans-serif;
         }
 
-        /* ========== ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ ========== */
+        /* ========== ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ И СТАТУСОМ ========== */
         .top-bar {
             position: fixed;
             top: 0;
@@ -75,10 +75,52 @@
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             padding: 0 20px;
             z-index: 1000;
+        }
+
+        .server-status {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-hint);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .server-status:hover {
+            background: rgba(0, 0, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online {
+            background: var(--success);
+            animation: none;
+        }
+
+        .status-dot.offline {
+            background: var(--error);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .coin-display {
@@ -789,8 +831,12 @@
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ -->
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ И СТАТУСОМ -->
     <div class="top-bar">
+        <div class="server-status" id="serverStatus">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Проверка...</span>
+        </div>
         <div class="coin-display" onclick="goTo('shop')">
             🪙 <span id="topCoins">0</span>
         </div>
@@ -799,6 +845,7 @@
     <!-- ГЛАВНЫЙ ЭКРАН -->
     <div class="screen active" id="homeScreen">
         <div class="glass-header">
+            <!-- ... -->
             <div class="user-row">
                 <div class="avatar" id="userAvatar">👤</div>
                 <div class="user-info">
@@ -1817,6 +1864,57 @@
             {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
         ];
 
+        // ==================== УПРАВЛЕНИЕ СТАТУСОМ СЕРВЕРА ====================
+        function updateServerStatus(isOnline, details = '') {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const serverStatus = document.getElementById('serverStatus');
+            
+            if (!statusDot || !statusText || !serverStatus) return;
+            
+            if (isOnline) {
+                statusDot.className = 'status-dot online';
+                statusText.textContent = 'Онлайн';
+                serverStatus.style.color = 'var(--success)';
+            } else {
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = 'Оффлайн';
+                serverStatus.style.color = 'var(--error)';
+            }
+            
+            // Добавляем детальную информацию при клике
+            serverStatus.onclick = () => {
+                const message = isOnline 
+                    ? `✅ Сервер доступен\n${details}\n\nПоследняя проверка: ${new Date().toLocaleTimeString()}`
+                    : `❌ Сервер недоступен\n${details}\n\nПоследняя проверка: ${new Date().toLocaleTimeString()}\n\nПриложение работает в оффлайн-режиме`;
+                tg.showAlert(message);
+            };
+        }
+
+        // Автоматическая проверка статуса сервера
+        async function startServerStatusMonitoring() {
+            // Первая проверка
+            await updateServerStatusFromApi();
+            
+            // Регулярная проверка каждые 30 секунд
+            setInterval(async () => {
+                await updateServerStatusFromApi();
+            }, 30000);
+        }
+
+        async function updateServerStatusFromApi() {
+            try {
+                const isAvailable = await checkApiAvailability();
+                if (isAvailable) {
+                    updateServerStatus(true, `API: ${API_BASE}`);
+                } else {
+                    updateServerStatus(false, 'Все серверы недоступны');
+                }
+            } catch (error) {
+                updateServerStatus(false, `Ошибка: ${error.message}`);
+            }
+        }
+
         // ==================== СЕТЬ И ЗАГРУЗКА ====================
         async function fetchUserFromServer() {
             if (!AUTH_HEADER) return false;
@@ -2067,6 +2165,9 @@
         async function init() {
             try {
                 loadUserFromStorage();
+                
+                // Запускаем мониторинг статуса сервера
+                startServerStatusMonitoring();
                 
                 // Проверяем доступность API
                 showNotification('🔄 Проверка соединения...', 'info', 2000);
@@ -3553,4 +3654,3 @@
     </script>
 </body>
 </html>
-
