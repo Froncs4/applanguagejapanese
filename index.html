@@ -10,17 +10,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Базовые цвета (меняются через JS) */
             --primary: #667eea;
             --secondary: #764ba2;
             --accent: #f093fb;
-            
             --success: #4ade80;
             --error: #f87171;
             --warning: #fbbf24;
-            --bg: var(--tg-theme-bg-color, #0f0f1a); /* Сделали фон чуть темнее для контраста */
+            --bg: var(--tg-theme-bg-color, #131320);
+            --bg-secondary: var(--tg-theme-secondary-bg-color, #1e1e2e);
             --text: var(--tg-theme-text-color, #ffffff);
-            --text-hint: rgba(255, 255, 255, 0.6);
+            --text-hint: rgba(255,255,255,0.6);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -31,203 +30,137 @@
             min-height: 100vh; overflow-x: hidden; padding-bottom: 120px;
         }
 
-        /* ========== GIF ФОН И СВЕТ ИЗНУТРИ ========== */
+        .hidden { display: none !important; }
+        .show-flex { display: flex !important; }
+
+        /* ========== ФОНЫ ========== */
         .app-bg-layer {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2;
-            background-size: cover; background-position: center;
-            opacity: 0; transition: opacity 0.5s ease, background-image 0.5s ease;
+            background-size: cover; background-position: center; opacity: 0; transition: opacity 0.5s ease;
         }
-        
         .app-bg-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            /* Плавное затемнение: сверху темнее, чтобы читался текст, снизу прозрачнее */
-            background: linear-gradient(to bottom, rgba(15,15,26,0.8) 0%, rgba(15,15,26,0.4) 100%);
-            transition: background 0.5s;
+            background: linear-gradient(to bottom, rgba(19,19,32,0.85) 0%, rgba(19,19,32,0.5) 100%);
         }
 
         .japanese { font-family: 'Noto Sans JP', sans-serif; }
 
-        /* ========== GLASSMORPHISM (СТЕКЛЯННЫЕ ПАНЕЛИ) ========== */
-        .glass-panel {
-            background: rgba(30, 30, 45, 0.5); /* Полупрозрачный темный */
-            backdrop-filter: blur(12px); /* Размытие заднего фона */
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        /* ========== BOTTOM NAV ========== */
+        /* ========== НАВИГАЦИЯ ========== */
         .bottom-nav {
             position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important;
-            height: 70px; display: flex !important; justify-content: space-around !important; align-items: center !important;
-            padding-bottom: env(safe-area-inset-bottom) !important; z-index: 9999 !important; 
-            border-top: 1px solid rgba(255,255,255,0.1);
-            background: rgba(15, 15, 26, 0.8) !important;
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            height: 75px; background: rgba(30, 30, 46, 0.9) !important;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255,255,255,0.1) !important;
+            display: flex !important; justify-content: space-around !important; align-items: center !important;
+            padding-bottom: env(safe-area-inset-bottom) !important; z-index: 9999 !important;
         }
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; padding: 6px 14px;
-            border: none; background: none; color: var(--text-hint); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; color: var(--text-hint);
+            font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.2s; background: none; border: none;
         }
-        .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 10px var(--primary); }
-        .nav-item .icon { font-size: 24px; margin-bottom: 4px; transition: 0.2s; }
+        .nav-item.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 15px var(--primary); }
+        .nav-item .icon { font-size: 24px; margin-bottom: 4px; }
 
-        /* ========== SCREENS ========== */
+        /* ========== ЭКРАНЫ ========== */
         .screen { display: none; min-height: 100vh; }
         .screen.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========== HOME SCREEN (ПЕРЕДЕЛАННАЯ ШАПКА) ========== */
-        .home-header {
-            padding: 24px 20px 28px;
-            border-radius: 0 0 30px 30px;
-            color: white; margin-bottom: 20px;
-            /* Стеклянная шапка вместо глухой цветной */
-            background: rgba(20, 20, 35, 0.6);
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative; overflow: hidden;
+        /* ========== ШАПКИ И БЛОКИ ========== */
+        .glass-header {
+            background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            padding: 25px 20px; border-radius: 0 0 30px 30px; color: white; margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center; position: relative; overflow: hidden;
         }
-        /* Легкий цветной блик сверху шапки */
-        .home-header::before {
+        .glass-header::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at top, var(--primary) 0%, transparent 60%);
-            opacity: 0.15; z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at top, var(--primary) 0%, transparent 60%); opacity: 0.2; pointer-events: none;
         }
 
-        .user-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-        .avatar {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; background-size: cover; background-position: center;
-            border: 2px solid var(--primary); /* Рамка аватара в цвет темы */
-        }
-
-        .user-info h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; letter-spacing: 0.5px;}
-        .user-rank { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); font-weight: 600;}
+        .user-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; text-align: left; }
+        .avatar { width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 26px; background-size: cover; background-position: center; border: 2px solid var(--primary); }
+        .user-info h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .user-rank { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--primary); font-weight: 600; }
 
         .stats-row { display: flex; gap: 12px; }
-        .stat-box { 
-            flex: 1; padding: 12px; text-align: center; border-radius: 16px;
-            background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.05);
-        }
+        .stat-box { flex: 1; padding: 12px; text-align: center; border-radius: 16px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); }
         .stat-value { font-size: 20px; font-weight: 800; color: white; }
         .stat-label { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
 
         .section { padding: 0 16px; margin-bottom: 24px; }
-        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; padding-left: 4px; color: white; }
+        .section-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; padding-left: 4px; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
-        /* ========== MENU GRID (КАРТОЧКИ УРОКОВ) ========== */
+        /* ========== КАРТОЧКИ МЕНЮ ========== */
         .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .menu-card {
-            border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; transition: all 0.2s;
-            /* Применяем стекло к карточкам */
-            background: rgba(30, 30, 45, 0.6);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px; padding: 20px 14px; text-align: center; cursor: pointer; transition: 0.2s;
+            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .menu-card:active { transform: scale(0.95); border-color: var(--primary); background: rgba(0,0,0,0.5); }
-        .menu-card .card-icon { font-size: 32px; margin-bottom: 10px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-        .menu-card .card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: white; }
-        .menu-card .card-subtitle { font-size: 11px; color: var(--text-hint); }
+        .menu-card:active { transform: scale(0.95); border-color: var(--primary); background: rgba(0,0,0,0.6); }
+        .menu-card .card-icon { font-size: 36px; margin-bottom: 10px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4)); }
+        .menu-card .card-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: white; }
+        .menu-card .card-subtitle { font-size: 12px; color: var(--text-hint); }
         
-        .menu-card.wide {
-            grid-column: span 2;
-            border-left: 4px solid var(--primary); /* Красивый акцент слева */
-        }
-        .menu-card.wide .card-title { color: var(--primary); font-size: 16px; }
+        .menu-card.wide { grid-column: span 2; border-left: 4px solid var(--primary); }
+        .menu-card.wide .card-title { color: var(--primary); font-size: 17px; }
 
-        /* ========== DAILY QUESTS ========== */
-        .quest-item { 
-            border-radius: 16px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; 
-            background: rgba(30, 30, 45, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.08);
-        }
-        .quest-icon { font-size: 28px; }
-        .quest-info { flex: 1; }
-        .quest-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: white;}
-        .quest-bar { height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; }
-        .quest-bar-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.3s; box-shadow: 0 0 10px var(--primary);}
-        .quest-reward { font-size: 14px; font-weight: 700; color: var(--primary); }
-        .quest-item.done { opacity: 0.5; border-color: var(--success); }
-        .quest-item.done .quest-reward { color: var(--success); }
-
-        /* ========== СТИЛИ ИЗУЧЕНИЯ И АЗБУКИ ========== */
-        .alphabet-header, .study-header, .profile-header, .leaderboard-header, .settings-header { 
-            padding: 20px 16px; color: white; text-align: center; border-radius: 0 0 24px 24px; margin-bottom: 15px;
-            background: rgba(20, 20, 35, 0.6); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        /* ========== АЗБУКА И УЧЕБА ========== */
+        .tabs { display: flex; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 4px; margin-bottom: 14px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-hint); font-size: 14px; font-weight: 600; border-radius: 10px; }
+        .tab-btn.active { background: rgba(255,255,255,0.1); color: var(--primary); box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         
-        .test-btn.primary { background: var(--primary); color: white; font-weight: bold; border: none;}
-        .test-btn.secondary { background: rgba(0,0,0,0.3); border: 1px solid var(--primary); color: white; }
+        .test-buttons { display: flex; gap: 10px; margin-bottom: 16px; }
+        .test-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; color: white; }
+        .test-btn.primary { background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 4px 15px rgba(var(--primary), 0.4); }
+        .test-btn.secondary { background: rgba(0,0,0,0.4); border: 1px solid var(--primary); }
 
-        .category-card { 
-            background: rgba(30, 30, 45, 0.6); backdrop-filter: blur(10px); border-radius: 18px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; cursor: pointer; border: 1px solid rgba(255,255,255,0.05);
-        }
-        .category-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: white;}
-        .category-desc { color: var(--text-hint); }
-        .category-bar { height: 6px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; margin-top: 8px;}
-        .category-bar-fill { height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary);}
+        .kana-cell { background: rgba(30, 30, 46, 0.7); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); padding: 10px 0;}
+        .kana-cell:active { background: var(--primary); }
+        .kana-cell .char { font-size: 26px; font-weight: 600; color: white; }
+        .kana-cell .reading { font-size: 11px; color: var(--text-hint); margin-top: 4px; }
 
-        /* ========== ПРОФИЛЬ ========== */
-        .profile-stats { 
-            display: flex; justify-content: space-around; padding: 20px; margin: -20px 16px 0; border-radius: 20px; position: relative;
-            background: rgba(30, 30, 45, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1);
-        }
-        .profile-stat-value { font-size: 26px; font-weight: 800; color: var(--primary); text-shadow: 0 0 15px rgba(var(--primary), 0.5);}
-
-        .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .achievement { text-align: center; cursor: pointer; transition: 0.1s;}
-        .achievement:active { transform: scale(0.9); }
-        .achievement-icon { width: 54px; height: 54px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; }
-        .achievement.locked .achievement-icon { filter: grayscale(1); opacity: 0.2; }
-
-        /* ========== ЛИДЕРБОРД ========== */
-        .leaderboard-item { display: flex; align-items: center; background: rgba(30,30,45,0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 14px; margin-bottom: 10px; gap: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .leaderboard-rank { font-size: 20px; font-weight: 800; color: var(--primary); min-width: 30px; text-align: center; }
-        .leaderboard-avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--primary); background-size: cover; background-position: center;}
-        .leaderboard-name { font-weight: 700; font-size: 16px; color: white;}
-        .leaderboard-xp { font-weight: 800; color: var(--primary); }
-
-        /* ========== НАСТРОЙКИ И ТЕМЫ ========== */
-        .settings-group { background: rgba(30,30,45,0.6); backdrop-filter: blur(10px); border-radius: 18px; overflow: hidden; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05); }
-        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
-        
-        .toggle { width: 50px; height: 28px; background: rgba(0,0,0,0.4); border-radius: 14px; position: relative; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1);}
-        .toggle.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary);}
-        .toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 2px; left: 3px; transition: all 0.3s; }
-        .toggle.active::after { left: 23px; }
-
-        .color-picker { display: flex; gap: 14px; overflow-x: auto; padding: 10px 16px 20px; margin: 0 -16px; scrollbar-width: none;}
-        .color-circle { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; cursor: pointer; border: 3px solid transparent; transition: 0.2s;}
+        /* ========== НАСТРОЙКИ ========== */
+        .settings-group { background: rgba(30,30,46,0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.05); }
+        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .color-circle { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; flex-shrink: 0; transition: 0.2s;}
         .color-circle.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.5);}
+        .bg-option { width: 85px; height: 130px; border-radius: 14px; background-size: cover; background-position: center; border: 2px solid transparent; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; transition: 0.2s; }
+        .bg-option.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 15px var(--primary); }
 
-        .bg-picker { display: flex; gap: 12px; overflow-x: auto; padding: 10px 16px 20px; margin: 0 -16px; scrollbar-width: none;}
-        .bg-option { width: 85px; height: 130px; border-radius: 14px; border: 2px solid transparent; flex-shrink: 0; cursor: pointer; transition: 0.2s; display: flex; align-items: flex-end; justify-content: center; background-size: cover; background-position: center; padding-bottom: 10px;}
-        .bg-option.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 15px var(--primary);}
-
-        /* ========== МОДАЛЬНЫЕ ОКНА И КВИЗ ========== */
-        .modal-box, .quiz-card { 
-            background: rgba(25, 25, 35, 0.85) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important;
-            border: 1px solid var(--primary) !important; box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important;
-            color: white !important;
+        /* ========== ПОПАПЫ (МОДАЛКИ) - ЖЕСТКИЙ СТИЛЬ ========== */
+        .overlay-screen {
+            position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+            background: rgba(10, 10, 15, 0.85) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+            z-index: 500 !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; padding: 20px !important;
         }
-        .modal-reading, .card-answer { color: var(--primary) !important; text-shadow: 0 0 10px rgba(var(--primary), 0.3); }
-        
-        .quiz-option { 
-            background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1) !important; 
-            color: white !important; backdrop-filter: blur(5px);
-        }
-        .quiz-option.correct { background: var(--success) !important; border-color: var(--success) !important; box-shadow: 0 0 15px var(--success);}
-        .quiz-option.wrong { background: var(--error) !important; border-color: var(--error) !important; box-shadow: 0 0 15px var(--error);}
 
-        /* Скрытие */
-        .hidden { display: none !important; }
+        .modal-box {
+            background: rgba(30, 30, 46, 0.95) !important; border-radius: 28px !important; padding: 30px 20px !important;
+            width: 100% !important; max-width: 340px !important; text-align: center !important;
+            border: 1px solid var(--primary) !important; box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important; position: relative !important;
+        }
         
+        .modal-char { font-size: 80px; margin-bottom: 10px; color: white; transition: 0.2s; }
+        .modal-reading { font-size: 32px; color: var(--primary); font-weight: 700; margin-bottom: 6px; }
+        .modal-meaning { font-size: 18px; color: white; margin-bottom: 6px; }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 24px; cursor: pointer; color: white; }
+
+        .quiz-card { background: rgba(30,30,46,0.9); border: 1px solid var(--primary); border-radius: 28px; padding: 50px 20px; text-align: center; margin-bottom: 30px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .quiz-option { padding: 20px; background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px; font-size: 20px; font-weight: 700; color: white; }
+        .quiz-option.correct { background: var(--success); border-color: var(--success); }
+        .quiz-option.wrong { background: var(--error); border-color: var(--error); }
+
+        .swipe-card { width: 100%; max-width: 300px; height: 400px; background: rgba(30,30,46,0.95); border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .swipe-buttons { display: flex; gap: 30px; margin-top: 30px; }
+        .swipe-btn { width: 70px; height: 70px; border-radius: 50%; border: none; font-size: 30px; background: rgba(0,0,0,0.5); color: white; }
+
+        /* Лоадер */
         .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
-        .loading-logo { font-size: 60px; margin-bottom: 16px; animation: pulse 1.2s infinite; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .loading-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-top: 18px; }
+        .loading-spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-top: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
@@ -237,37 +170,25 @@
     <div class="app-bg-overlay"></div>
 
     <div class="loading-screen" id="loadingScreen">
-        <div class="loading-logo">🎌</div>
-        <div style="color: white; font-size: 18px; font-weight: bold;">YomuBot</div>
+        <div style="font-size: 70px; margin-bottom: 10px;">🎌</div>
+        <div style="color: white; font-size: 22px; font-weight: bold;">YomuBot</div>
         <div class="loading-spinner"></div>
     </div>
 
-    <!-- Home Screen -->
+    <!-- Главная -->
     <div class="screen active" id="homeScreen">
-        <div class="home-header">
+        <div class="glass-header">
             <div class="user-row">
                 <div class="avatar" id="userAvatar">👤</div>
                 <div class="user-info">
                     <h1 id="userName">Загрузка...</h1>
-                    <div class="user-rank">
-                        <span id="userBadge">🥚</span>
-                        <span id="userRankName">Новичок</span>
-                    </div>
+                    <div class="user-rank"><span id="userBadge">🥚</span> <span id="userRankName">Новичок</span></div>
                 </div>
             </div>
             <div class="stats-row">
-                <div class="stat-box">
-                    <div class="stat-value" id="userXp">0</div>
-                    <div class="stat-label">XP</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="userStreak">0</div>
-                    <div class="stat-label">🔥 Серия</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value" id="userCards">0</div>
-                    <div class="stat-label">Карточек</div>
-                </div>
+                <div class="stat-box"><div class="stat-value" id="userXp">0</div><div class="stat-label">XP</div></div>
+                <div class="stat-box"><div class="stat-value" id="userStreak">0</div><div class="stat-label">🔥 Серия</div></div>
+                <div class="stat-box"><div class="stat-value" id="userCards">0</div><div class="stat-label">Карточек</div></div>
             </div>
         </div>
 
@@ -334,225 +255,178 @@
         </div>
     </div>
 
-    <!-- Alphabet Screen -->
+    <!-- Азбука -->
     <div class="screen" id="alphabetScreen">
-        <div class="alphabet-header">
-            <h2>🎌 Японская Азбука</h2>
+        <div class="glass-header" style="padding-bottom: 15px;">
+            <h2 style="margin-bottom: 15px;">🎌 Японская Азбука</h2>
             <div class="tabs">
                 <button class="tab-btn active" onclick="setAlphabetTab('hiragana')">Хирагана</button>
                 <button class="tab-btn" onclick="setAlphabetTab('katakana')">Катакана</button>
             </div>
-            <div class="view-toggle">
+            <div class="view-toggle" style="background: rgba(0,0,0,0.3);">
                 <button class="view-btn active" onclick="setAlphabetView('grid')">📋 Сетка</button>
                 <button class="view-btn" onclick="setAlphabetView('rows')">📚 Строки</button>
             </div>
         </div>
-        <div class="alphabet-content">
+        <div class="section">
             <div class="test-buttons">
                 <button class="test-btn primary" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
                 <button class="test-btn secondary" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
             </div>
-            <div id="alphabetGrid" class="kana-grid"></div>
+            <!-- СТИЛИ СЕТКИ ВШИТЫ НАПРЯМУЮ, ЧТОБЫ ИЗБЕЖАТЬ ПОЛОМКИ -->
+            <div id="alphabetGrid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;"></div>
             <div id="alphabetRows" class="hidden"></div>
         </div>
     </div>
 
-    <!-- Study Screen -->
+    <!-- Изучение -->
     <div class="screen" id="studyScreen">
-        <div class="study-header">
-            <h2 id="studyTitle">📚 Изучение</h2>
-        </div>
-        <div class="study-content" id="studyContent"></div>
+        <div class="glass-header"><h2 id="studyTitle">📚 Изучение</h2></div>
+        <div class="section" id="studyContent"></div>
     </div>
 
-    <!-- Profile Screen -->
+    <!-- Профиль -->
     <div class="screen" id="profileScreen">
-        <div class="profile-header">
-            <button class="profile-settings-btn" onclick="goTo('settings')">⚙️</button>
-            <button class="profile-edit-name" onclick="promptChangeName()">✏️</button>
+        <div class="glass-header">
+            <button style="position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.1); border:none; width:40px; height:40px; border-radius:50%; color:white; font-size:18px;" onclick="goTo('settings')">⚙️</button>
+            <button style="position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.1); border:none; width:40px; height:40px; border-radius:50%; color:white; font-size:18px;" onclick="promptChangeName()">✏️</button>
             
-            <div class="profile-avatar" id="profileAvatar">👤</div>
-            <div class="profile-name" id="profileName">Пользователь</div>
-            <div class="profile-rank-badge">
-                <span id="profileBadge">🥚</span>
-                <span id="profileRankName">Новичок</span>
+            <div class="avatar" id="profileAvatar" style="margin: 0 auto 15px; width: 80px; height: 80px;">👤</div>
+            <h1 id="profileName" style="font-size: 24px; margin-bottom: 5px;">Пользователь</h1>
+            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.1); padding:6px 16px; border-radius:20px; font-size:14px; color:var(--primary); font-weight:bold;">
+                <span id="profileBadge">🥚</span> <span id="profileRankName">Новичок</span>
             </div>
         </div>
         
         <div class="profile-stats">
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileXp">0</div>
-                <div class="profile-stat-label">XP</div>
-            </div>
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileStreak">0</div>
-                <div class="profile-stat-label">Серия</div>
-            </div>
-            <div class="profile-stat">
-                <div class="profile-stat-value" id="profileCards">0</div>
-                <div class="profile-stat-label">Карточек</div>
-            </div>
+            <div class="stat-box" style="background:none; border:none;"><div class="stat-value" id="profileXp" style="color:var(--primary);">0</div><div class="stat-label">XP</div></div>
+            <div class="stat-box" style="background:none; border:none;"><div class="stat-value" id="profileStreak" style="color:var(--primary);">0</div><div class="stat-label">Серия</div></div>
+            <div class="stat-box" style="background:none; border:none;"><div class="stat-value" id="profileCards" style="color:var(--primary);">0</div><div class="stat-label">Карточек</div></div>
         </div>
 
-        <div class="profile-section">
-            <div class="profile-section-title">📊 Прогресс по разделам</div>
-            <!-- Сюда подгружается подробная статистика -->
+        <div class="section" style="margin-top: 30px;">
+            <div class="section-title">📊 Прогресс по разделам</div>
             <div id="progressDetails" style="margin-bottom: 20px;">
-                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 16px;">Загрузка статистики с сервера...</div>
+                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Загрузка статистики...</div>
             </div>
             
-            <div class="profile-section-title">🎯 Дополнительно</div>
+            <div class="section-title">🎯 Дополнительно</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                <div class="stat-box" style="background: rgba(30,30,45,0.6); border: 1px solid rgba(255,255,255,0.05);">
-                    <div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div>
-                    <div class="stat-label">Лучшая серия</div>
-                </div>
-                <div class="stat-box" style="background: rgba(30,30,45,0.6); border: 1px solid rgba(255,255,255,0.05);">
-                    <div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div>
-                    <div class="stat-label">Точность</div>
-                </div>
-                <div class="stat-box" style="background: rgba(30,30,45,0.6); border: 1px solid rgba(255,255,255,0.05);">
-                    <div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div>
-                    <div class="stat-label">Лучший блиц</div>
-                </div>
-                <div class="stat-box" style="background: rgba(30,30,45,0.6); border: 1px solid rgba(255,255,255,0.05);">
-                    <div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div>
-                    <div class="stat-label">Голосовых</div>
-                </div>
+                <div class="stat-box"><div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div><div class="stat-label">Лучшая серия</div></div>
+                <div class="stat-box"><div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div><div class="stat-label">Точность</div></div>
+                <div class="stat-box"><div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div><div class="stat-label">Лучший блиц</div></div>
+                <div class="stat-box"><div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div><div class="stat-label">Голосовых</div></div>
             </div>
-        </div>
 
-        <div class="profile-section">
-            <div class="profile-section-title">🏆 Достижения (Нажми)</div>
+            <div class="section-title">🏆 Достижения (Нажми)</div>
             <div class="achievements-grid" id="achievementsGrid"></div>
         </div>
     </div>
 
-    <!-- Leaderboard Screen -->
+    <!-- Рейтинг -->
     <div class="screen" id="leaderboardScreen">
-        <div class="leaderboard-header">
+        <div class="glass-header">
             <h2>🏆 Рейтинг игроков</h2>
-            <p>Топ-20 по опыту</p>
+            <p style="color: var(--text-hint); font-size: 14px;">Топ-20 по опыту</p>
         </div>
-        <div class="leaderboard-list" id="leaderboardList">
+        <div class="section" id="leaderboardList">
             <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
         </div>
     </div>
 
-    <!-- Settings Screen -->
+    <!-- Настройки -->
     <div class="screen" id="settingsScreen">
-        <div class="settings-header">
-            <h2>⚙️ Настройки</h2>
-        </div>
-        <div class="settings-content">
-            
+        <div class="glass-header"><h2>⚙️ Настройки</h2></div>
+        <div class="section">
             <div class="settings-group">
                 <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
-                    <div class="settings-left">
-                        <span class="settings-icon">🎨</span>
-                        <span class="settings-label" style="font-weight: bold;">Цвет интерфейса</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:12px; font-weight:bold;"><span style="font-size:20px;">🎨</span> Цвет интерфейса</div>
                 </div>
-                <div class="color-picker" id="colorPicker"></div>
+                <div class="color-picker" id="colorPicker" style="padding: 10px 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
             </div>
 
             <div class="settings-group">
                 <div class="settings-item" style="border-bottom: none; padding-bottom: 5px;">
-                    <div class="settings-left">
-                        <span class="settings-icon">🖼️</span>
-                        <span class="settings-label" style="font-weight: bold;">Тема оформления (Фон)</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:12px; font-weight:bold;"><span style="font-size:20px;">🖼️</span> Тема (Фон)</div>
                 </div>
-                <div class="bg-picker" id="bgPicker"></div>
+                <div class="bg-picker" id="bgPicker" style="padding: 10px 16px 20px; overflow-x: auto; display: flex; gap: 12px;"></div>
             </div>
             
             <div class="settings-group">
                 <div class="settings-item" onclick="toggleSetting('sound')">
-                    <div class="settings-left">
-                        <span class="settings-icon">🔊</span>
-                        <span class="settings-label">Звуки</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px;">🔊</span> Звуки</div>
                     <div class="toggle active" id="soundToggle"></div>
                 </div>
                 <div class="settings-item" onclick="toggleSetting('vibration')">
-                    <div class="settings-left">
-                        <span class="settings-icon">📳</span>
-                        <span class="settings-label">Вибрация</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:12px;"><span style="font-size:20px;">📳</span> Вибрация</div>
                     <div class="toggle active" id="vibrationToggle"></div>
                 </div>
             </div>
             
             <div class="settings-group">
                 <div class="settings-item" onclick="tg.close()">
-                    <div class="settings-left">
-                        <span class="settings-icon">🚪</span>
-                        <span class="settings-label">Вернуться в бота</span>
-                    </div>
+                    <div style="display:flex; align-items:center; gap:12px; font-weight:bold; color: var(--error);"><span style="font-size:20px;">🚪</span> Закрыть приложение</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ВАЖНО: ВСПЛЫВАЮЩИЕ ОКНА (ЖЕСТКО СКРЫТЫ ЧЕРЕЗ STYLE) -->
+
     <!-- Modal (Изучение карточек) -->
-    <div class="modal" id="modal">
+    <div class="overlay-screen" id="modal" style="display: none;">
         <div class="modal-box" id="modalBox">
-            <div class="modal-counter" id="modalCounter">1/10</div>
-            <div class="modal-swipe-hint" id="modalSwipeHint">↔️</div>
+            <div id="modalCounter" style="position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: white;">1/10</div>
+            <div id="modalSwipeHint" style="position: absolute; top: 15px; right: 15px; font-size: 18px; opacity: 0.5;">↔️</div>
             
             <div class="modal-char japanese" id="modalChar">あ</div>
             <div class="modal-reading" id="modalReading">a</div>
-            <div class="modal-meaning" id="modalMeaning"></div>
-            <div class="modal-hint" id="modalHint">Подсказка</div>
-            <div class="modal-gif" id="modalGif">
-                <img id="gifImage" src="" alt="">
-            </div>
+            <div class="modal-meaning" id="modalMeaning" style="display: none;"></div>
+            <div class="modal-hint" id="modalHint" style="margin-bottom: 20px; color: var(--text-hint); font-size: 14px;">Подсказка</div>
+            
+            <div id="modalGif" style="display: none; margin: 15px 0;"><img id="gifImage" src="" style="max-width:140px; border-radius:12px; background:white; padding:5px;"></div>
+            
             <div class="modal-buttons">
-                <button class="modal-btn sound" style="background: rgba(255,255,255,0.1); border: 1px solid var(--primary);" onclick="playSound()">🔊</button>
-                <button class="modal-btn stroke" id="modalStrokeBtn" style="background: var(--primary);" onclick="showGif()">✍️</button>
-                <button class="modal-btn close" onclick="closeModal()">✕</button>
+                <button class="modal-btn" style="background: rgba(255,255,255,0.1); border: 1px solid var(--primary);" onclick="playSound()">🔊</button>
+                <button class="modal-btn" id="modalStrokeBtn" style="background: var(--primary);" onclick="showGif()">✍️</button>
+                <button class="modal-btn" style="background: rgba(255,255,255,0.1); flex: 0.5;" onclick="closeModal()">✕</button>
             </div>
         </div>
     </div>
 
     <!-- Swipe Screen (Tinder) -->
-    <div class="swipe-screen" id="swipeScreen">
-        <div class="swipe-header">
-            <h2>🃏 Карточки</h2>
-            <div class="swipe-progress">
-                <span id="swipeCount">1 / 10</span>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="swipeProgress"></div>
-                </div>
-            </div>
+    <div class="overlay-screen" id="swipeScreen" style="display: none;">
+        <h2 style="color: white; margin-bottom: 15px;">🃏 Карточки</h2>
+        <div style="display: flex; align-items: center; gap: 12px; color: white; margin-bottom: 20px; width: 100%; max-width: 300px;">
+            <span id="swipeCount">1 / 10</span>
+            <div style="flex:1; height:6px; background:rgba(255,255,255,0.2); border-radius:3px; overflow:hidden;"><div id="swipeProgress" style="height:100%; background:var(--primary); width:10%;"></div></div>
         </div>
-        <div class="swipe-area">
-            <div class="swipe-card" id="swipeCard">
-                <div class="swipe-indicators">
-                    <div class="indicator learn">👎 Учить</div>
-                    <div class="indicator know">👍 Знаю</div>
-                </div>
-                <div class="card-char japanese" id="swipeChar">あ</div>
-                <div class="card-hint" id="swipeHint">Нажми 👁 чтобы увидеть</div>
-                <div class="card-answer" id="swipeAnswer">a</div>
+        
+        <div class="swipe-card" id="swipeCard">
+            <div style="position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between;">
+                <div class="indicator learn" style="padding: 8px 16px; background: var(--error); border-radius: 20px; font-weight: bold; opacity: 0;">👎 Учить</div>
+                <div class="indicator know" style="padding: 8px 16px; background: var(--success); border-radius: 20px; font-weight: bold; opacity: 0;">👍 Знаю</div>
             </div>
+            <div class="card-char japanese" id="swipeChar" style="font-size: 120px; margin-bottom: 15px;">あ</div>
+            <div class="card-hint" id="swipeHint" style="color: var(--text-hint);">Нажми 👁 чтобы увидеть</div>
+            <div class="card-answer" id="swipeAnswer" style="font-size: 36px; font-weight: bold; color: var(--primary); opacity: 0;">a</div>
         </div>
+        
         <div class="swipe-buttons">
-            <button class="swipe-btn no" onclick="swipeNo()">👎</button>
-            <button class="swipe-btn reveal" onclick="swipeReveal()">👁</button>
-            <button class="swipe-btn yes" onclick="swipeYes()">👍</button>
+            <button class="swipe-btn" style="border: 2px solid var(--error);" onclick="swipeNo()">👎</button>
+            <button class="swipe-btn" style="border: 2px solid var(--warning);" onclick="swipeReveal()">👁</button>
+            <button class="swipe-btn" style="border: 2px solid var(--success);" onclick="swipeYes()">👍</button>
         </div>
     </div>
 
     <!-- Quiz Screen -->
-    <div class="quiz-screen" id="quizScreen">
-        <div class="quiz-header">
-            <div class="quiz-title" id="quizTitle">🎯 Тест</div>
-            <div class="quiz-score">
-                <span class="correct">✓ <span id="quizCorrect">0</span></span>
-                <span class="wrong">✗ <span id="quizWrong">0</span></span>
-            </div>
+    <div class="overlay-screen" id="quizScreen" style="display: none;">
+        <h2 id="quizTitle" style="color: white; margin-bottom: 10px;">🎯 Тест</h2>
+        <div style="display: flex; gap: 30px; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
+            <span style="color: var(--success);">✓ <span id="quizCorrect">0</span></span>
+            <span style="color: var(--error);">✗ <span id="quizWrong">0</span></span>
         </div>
+        
         <div class="quiz-card">
             <div class="quiz-char japanese" id="quizChar">あ</div>
         </div>
@@ -560,54 +434,53 @@
     </div>
 
     <!-- Results Screen -->
-    <div class="results-screen" id="resultsScreen">
-        <div class="results-icon" id="resultsIcon">🎉</div>
-        <div class="results-title" id="resultsTitle">Отлично!</div>
-        <div class="results-score" id="resultsScore">5 / 5</div>
-        <div class="results-xp" id="resultsXp">+50 XP</div>
-        <div class="results-subtitle" id="resultsSubtitle">Так держать!</div>
-        <button class="results-btn primary" onclick="finishQuiz()">✨ Получить XP</button>
-        <button class="results-btn secondary" onclick="retryQuiz()">🔄 Ещё раз</button>
+    <div class="overlay-screen" id="resultsScreen" style="display: none;">
+        <div id="resultsIcon" style="font-size: 90px; margin-bottom: 20px;">🎉</div>
+        <h1 id="resultsTitle" style="color: var(--primary); margin-bottom: 10px;">Отлично!</h1>
+        <div id="resultsScore" style="font-size: 50px; font-weight: 900; color: white; margin-bottom: 10px;">5 / 5</div>
+        <div id="resultsXp" style="font-size: 24px; color: var(--warning); font-weight: bold; margin-bottom: 10px;">+50 XP</div>
+        <div id="resultsSubtitle" style="color: var(--text-hint); margin-bottom: 40px;">Так держать!</div>
+        
+        <button style="width: 100%; max-width: 280px; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: bold; margin-bottom: 15px;" onclick="finishQuiz()">✨ Забрать награду</button>
+        <button style="width: 100%; max-width: 280px; padding: 18px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: bold;" onclick="retryQuiz()">🔄 Ещё раз</button>
     </div>
 
     <!-- Wheel Screen -->
-    <div class="wheel-screen" id="wheelScreen">
-        <button class="wheel-close" onclick="closeWheel()">✕</button>
-        <div class="wheel-title">🎡 КОЛЕСО ФОРТУНЫ</div>
-        <div class="wheel-subtitle">Крути раз в день!</div>
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <svg class="wheel" id="wheel" viewBox="0 0 100 100"></svg>
-            <div class="wheel-center">🎯</div>
+    <div class="overlay-screen" id="wheelScreen" style="display: none;">
+        <button style="position: absolute; top: 20px; right: 20px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px;" onclick="closeWheel()">✕</button>
+        <h2 style="color: var(--primary); font-size: 30px; margin-bottom: 10px;">🎡 РУЛЕТКА</h2>
+        <p style="color: var(--text-hint); margin-bottom: 30px;">Крути раз в день!</p>
+        
+        <div style="position: relative; width: 300px; height: 300px; margin-bottom: 40px;">
+            <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--warning); z-index: 10;"></div>
+            <svg id="wheel" viewBox="0 0 100 100" style="width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 50px var(--primary); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);"></svg>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: var(--bg); border: 4px solid var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 5;">🎯</div>
         </div>
-        <button class="wheel-spin-btn" id="wheelSpinBtn" onclick="spinWheel()" style="background: var(--primary);">🎲 КРУТИТЬ!</button>
-        <div class="wheel-result" id="wheelResult">
-            <div class="wheel-result-xp" id="wheelResultXp">+100 XP</div>
-            <div class="wheel-result-text">Награда начислена!</div>
+        
+        <button id="wheelSpinBtn" style="padding: 18px 60px; background: var(--primary); border: none; border-radius: 30px; color: white; font-size: 20px; font-weight: bold; box-shadow: 0 10px 25px rgba(0,0,0,0.5);" onclick="spinWheel()">🎲 КРУТИТЬ</button>
+        
+        <div id="wheelResult" style="display: none; margin-top: 30px; padding: 20px 40px; background: rgba(255,255,255,0.1); border-radius: 20px; text-align: center;">
+            <div id="wheelResultXp" style="font-size: 45px; font-weight: 900; color: var(--warning); margin-bottom: 5px;">+100 XP</div>
+            <div style="color: white; font-size: 16px;">Награда начислена!</div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
+    <!-- УСИЛЕННЫЙ БЛОК НАВИГАЦИИ -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" onclick="goTo('home')">
-            <span class="icon">🏠</span>
-            <span>Главная</span>
+            <span class="icon">🏠</span><span>Главная</span>
         </button>
         <button class="nav-item" onclick="goTo('alphabet')">
-            <span class="icon">🔤</span>
-            <span>Азбука</span>
+            <span class="icon">🔤</span><span>Азбука</span>
         </button>
         <button class="nav-item" onclick="goTo('study')">
-            <span class="icon">📚</span>
-            <span>Учить</span>
+            <span class="icon">📚</span><span>Учить</span>
         </button>
         <button class="nav-item" onclick="goTo('profile')">
-            <span class="icon">👤</span>
-            <span>Профиль</span>
+            <span class="icon">👤</span><span>Профиль</span>
         </button>
         <button class="nav-item" onclick="goTo('leaderboard')">
-            <span class="icon">🏆</span>
-            <span>Рейтинг</span>
+            <span class="icon">🏆</span><span>Рейтинг</span>
         </button>
     </nav>
 
@@ -621,8 +494,8 @@
         const AUTH_HEADER = tg.initData || 'user_id=12345';
 
         let user = {
-            id: null, name: '', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
-            settings: { sound: true, vibration: true, bg: 'default', themeColor: 'purple' }
+            id: null, name: 'Загрузка...', xp: 0, streak: 0, cardsLearned: 0, perfectTests: 0, quests: {},
+            settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }
         };
 
         let currentScreen = 'home';
@@ -635,7 +508,7 @@
         let currentStudyList = [];
         let currentStudyIndex = 0;
 
-        // ==================== 1. ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
+        // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
         const PALETTES = [
             { id: 'purple', name: 'Фиолетовый', p: '#667eea', s: '#764ba2', a: '#f093fb' },
             { id: 'blue', name: 'Океан', p: '#4facfe', s: '#00f2fe', a: '#43e97b' },
@@ -668,7 +541,7 @@
             `).join('');
         }
 
-        // ==================== 2. ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
+        // ==================== ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
         const BACKGROUNDS = [
             { id: 'default', name: 'Тёмный', url: '' },
             { id: 'sakura', name: 'Сакура', url: 'https://media.tenor.com/2h4L8k-y1OQAAAAC/sakura-tree.gif' },
@@ -683,7 +556,7 @@
             const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
             if (bg.url) {
                 bgLayer.style.backgroundImage = `url('${bg.url}')`;
-                bgLayer.style.opacity = '0.4'; // Оптимальная прозрачность
+                bgLayer.style.opacity = '0.35'; 
             } else {
                 bgLayer.style.opacity = '0';
             }
@@ -705,7 +578,7 @@
             `).join('');
         }
 
-        // ==================== 3. ДОСТИЖЕНИЯ (57 ШТУК с иконками) ====================
+        // ==================== ДОСТИЖЕНИЯ (57 ШТУК) ====================
         const ACHIEVEMENTS = [];
         
         const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
@@ -744,7 +617,7 @@
                     const data = { type, score, initData: AUTH_HEADER };
                     tg.sendData(JSON.stringify(data));
                 }
-            } catch (e) { console.warn("sendData works only inside Telegram"); }
+            } catch (e) { console.warn("sendData работает только внутри Telegram"); }
         }
 
         async function fetchUserFromServer() {
@@ -761,7 +634,7 @@
                     user.streak = data.user.streak;
                     user.cardsLearned = data.user.cards_learned;
                     
-                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ЕСЛИ ОНО ЗАДАНО). ПРИОРИТЕТ ВЫШЕ ЧЕМ ТГ!
+                    // БЕРЕМ ИМЯ ИЗ БАЗЫ ДАННЫХ (ПРИОРИТЕТ ВЫШЕ ЧЕМ ТГ)
                     if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
                         user.name = data.user.name;
                     }
@@ -784,7 +657,7 @@
                         if(el) el.style.backgroundImage = `url('${url}')`;
                     }
                 }
-            } catch (e) {}
+            } catch (e) { console.warn('Avatar download failed'); }
         }
 
         async function fetchLeaderboard() {
@@ -798,7 +671,7 @@
                     headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                 });
                 
-                if (!response.ok) throw new Error(`HTTP ошибка`);
+                if (!response.ok) throw new Error(`HTTP ошибка ${response.status}`);
                 const data = await response.json();
                 
                 if (data.success && Array.isArray(data.players) && data.players.length > 0) {
@@ -812,7 +685,7 @@
                         html += `
                         <div class="leaderboard-item">
                             <div class="leaderboard-rank">#${rank}</div>
-                            <div class="leaderboard-avatar" id="${avatarDivId}" style="background-image: url('${fallbackUrl}');"></div>
+                            <div class="leaderboard-avatar" id="${avatarDivId}" style="background-image: url('${fallbackUrl}'); background-size: cover;"></div>
                             <div class="leaderboard-info">
                                 <div class="leaderboard-name">${p.name}</div>
                                 <div class="leaderboard-details">
@@ -824,6 +697,7 @@
                     });
                     
                     container.innerHTML = html;
+
                     data.players.forEach((p, index) => {
                         loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
                     });
@@ -849,7 +723,7 @@
                     throw new Error('No success flag');
                 }
             } catch (e) { 
-                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 16px;">Сбой загрузки статистики.<br>Проверьте работу сервера.</div>`;
+                if(container) container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(0,0,0,0.4); border-radius: 16px;">Сбой загрузки статистики.<br>Проверьте работу сервера.</div>`;
             }
         }
 
@@ -874,7 +748,7 @@
                         <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
                             <span>${sec.name}</span><span>${learned}/${sec.total} (<span style="color:var(--primary); font-weight:bold;">${percent}%</span>)</span>
                         </div>
-                        <div style="height:8px; background:rgba(0,0,0,0.3); border-radius:4px; overflow:hidden;">
+                        <div style="height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden;">
                             <div style="height:100%; width:${percent}%; background:var(--primary); border-radius:4px; box-shadow: 0 0 10px var(--primary);"></div>
                         </div>
                     </div>
@@ -891,8 +765,8 @@
                 if (!user.settings) user.settings = { sound: true, vibration: true, bg: 'default', themeColor: 'purple' };
             }
 
-            // ЖЕСТКИЙ ФОЛЛБЭК, ЧТОБЫ ИМЯ "ПОЛЬЗОВАТЕЛЬ" ИЛИ "TEST USER" УШЛО
-            if (!user.name || user.name === 'Test User' || user.name === 'Пользователь') {
+            // ПРИНУДИТЕЛЬНО ИСПРАВЛЯЕМ ИМЯ ИЗ ТЕЛЕГРАМА
+            if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...') {
                 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                     user.name = tg.initDataUnsafe.user.first_name;
                 } else {
@@ -934,16 +808,16 @@
                     if (data.success) {
                         user.name = trimmed;
                         saveUser(); updateUI(); setAvatar();
-                        alert('Имя успешно изменено!');
-                    } else { alert('Ошибка при смене имени'); }
-                } catch (e) { console.error(e); alert('Ошибка соединения с сервером'); }
+                        tg.showAlert('Имя успешно изменено!');
+                    } else { tg.showAlert('Ошибка при смене имени'); }
+                } catch (e) { console.error(e); tg.showAlert('Ошибка соединения с сервером'); }
             }
         }
 
         async function init() {
             loadUserFromStorage();
             
-            // Если сервер жив, обновим данные с него
+            // Загрузка с сервера
             await fetchUserFromServer();
             
             applyBackground(user.settings.bg || 'default');
@@ -960,22 +834,26 @@
             updateUI();
             setAvatar();
 
-            // Показываем нижнюю навигацию жестко (failsafe)
+            // Гарантируем, что нижняя панель видна
             const bNav = document.getElementById('bottomNav');
             if(bNav) bNav.classList.remove('hidden');
 
             setTimeout(() => {
                 document.getElementById('loadingScreen').classList.add('hidden');
                 createWheel();
-            }, 800);
+            }, 500);
         }
 
         function goTo(screen, param = null) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
             const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
             if (navBtn) navBtn.classList.add('active');
-            document.getElementById(screen + 'Screen').classList.add('active');
+            
+            const screenEl = document.getElementById(screen + 'Screen');
+            if(screenEl) screenEl.classList.add('active');
+            
             currentScreen = screen;
             
             if (screen === 'alphabet') renderAlphabet();
@@ -987,12 +865,9 @@
         }
 
         function updateUI() {
-            // ПРАВИЛЬНЫЙ ПОДСЧЕТ РАНГА (Мастер с 18 000 XP и тд)
             let rank = {name:'Новичок', badge:'🥚'};
             if (typeof RANKS !== 'undefined') {
-                for (let r of RANKS) {
-                    if (user.xp >= r.min) rank = r;
-                }
+                for (let r of RANKS) { if (user.xp >= r.min) rank = r; }
             }
 
             document.getElementById('userName').textContent = user.name;
@@ -1011,13 +886,6 @@
             if (profileName) profileName.textContent = user.name;
             
             renderQuests();
-        }
-
-        function getRank(xp) {
-            if (typeof RANKS === 'undefined') return {min:0, name:'Новичок', badge:'🥚', frame:1};
-            let rank = RANKS[0];
-            for (const r of RANKS) if (xp >= r.min) rank = r;
-            return rank;
         }
 
         function renderQuests() {
@@ -1093,7 +961,7 @@
             openModal(rows[rowIndex].chars[charIndex], 'kana');
         }
 
-        // ==================== УЧЁБА (СО СВАЙПАМИ) ====================
+        // ==================== УЧЁБА ====================
         function renderStudy() {
             const categories = [
                 {id: 'kanji_n5', name:'Кандзи N5', icon:'🈁', desc:'103 базовых иероглифа', data: typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : []},
@@ -1141,7 +1009,7 @@
                 currentStudyIndex = 0;
                 openModal(currentStudyList[currentStudyIndex], 'study');
             } else {
-                alert("Данные для этого раздела еще не загружены!");
+                tg.showAlert("Данные для этого раздела еще не загружены!");
             }
         }
 
@@ -1169,22 +1037,21 @@
                 }
                 
                 document.getElementById('modalHint').textContent = item.hint || '';
-                document.getElementById('modalGif').classList.remove('show');
+                document.getElementById('modalGif').classList.remove('show-flex');
                 
-                // Скрываем GIF если больше 1 символа
                 if (textVal.length > 1) {
-                    document.getElementById('modalStrokeBtn').style.display = 'none';
+                    document.getElementById('modalStrokeBtn').classList.add('hidden');
                 } else {
-                    document.getElementById('modalStrokeBtn').style.display = 'block';
+                    document.getElementById('modalStrokeBtn').classList.remove('hidden');
                 }
 
                 if (type === 'study' && currentStudyList.length > 0) {
-                    document.getElementById('modalCounter').style.display = 'block';
-                    document.getElementById('modalSwipeHint').style.display = 'block';
+                    document.getElementById('modalCounter').classList.remove('hidden');
+                    document.getElementById('modalSwipeHint').classList.remove('hidden');
                     document.getElementById('modalCounter').textContent = `${currentStudyIndex + 1} / ${currentStudyList.length}`;
                 } else {
-                    document.getElementById('modalCounter').style.display = 'none';
-                    document.getElementById('modalSwipeHint').style.display = 'none';
+                    document.getElementById('modalCounter').classList.add('hidden');
+                    document.getElementById('modalSwipeHint').classList.add('hidden');
                 }
 
                 if (swipeAnim) {
@@ -1198,12 +1065,12 @@
                 }
             }, swipeAnim ? 150 : 0);
 
-            document.getElementById('modal').classList.add('show');
+            document.getElementById('modal').classList.add('show-flex');
             if (!swipeAnim) haptic('light');
         }
 
         function closeModal() {
-            document.getElementById('modal').classList.remove('show');
+            document.getElementById('modal').classList.remove('show-flex');
             modalData = null;
             currentStudyList = []; 
         }
@@ -1257,7 +1124,7 @@
                 if (!response.ok) throw new Error();
                 const url = URL.createObjectURL(await response.blob());
                 new Audio(url).play(); haptic('medium');
-            } catch (e) { alert('Ошибка воспроизведения звука'); }
+            } catch (e) { tg.showAlert('Ошибка воспроизведения звука'); }
         }
 
         function showGif() {
@@ -1266,8 +1133,8 @@
             if (char.length > 1) return;
 
             const container = document.getElementById('modalGif');
-            container.innerHTML = '<span style="color:#999">Загрузка...</span>';
-            container.classList.add('show');
+            container.innerHTML = '<span style="color:var(--text-hint);">Загрузка...</span>';
+            container.classList.add('show-flex');
             
             const hex4 = char.charCodeAt(0).toString(16).toLowerCase();
             const hex5 = char.padStart(5, '0');
@@ -1289,7 +1156,7 @@
             let loaded = false;
             function tryLoad(i) {
                 if (i >= urls.length || loaded) {
-                    if (!loaded) container.innerHTML = '<span style="color:#f87171">Анимация не найдена</span>'; return;
+                    if (!loaded) container.innerHTML = '<span style="color:var(--error);">Анимация не найдена</span>'; return;
                 }
                 const img = new Image();
                 img.onload = () => { 
@@ -1309,7 +1176,6 @@
             document.getElementById('profileStreak').textContent = user.streak;
             document.getElementById('profileCards').textContent = user.cardsLearned;
             
-            // Если вкладка профиля активна - обновляем детальную стату
             fetchUserStats();
 
             const grid = document.getElementById('achievementsGrid');
@@ -1344,10 +1210,10 @@
         }
 
         function showAbout() {
-            tg.showAlert('YomuBot v2.1\n\nПриложение для изучения японского языка.\n\n🎌 Сделано с любовью!');
+            tg.showAlert('YomuBot v2.5\n\nЯпонский язык в твоем кармане.\n🎌 Сделано с любовью!');
         }
 
-        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ КВИЗА ====================
+        // ==================== КВИЗЫ ====================
         function startQuiz(type) {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
@@ -1376,16 +1242,12 @@
         }
 
         function showQuizScreen() {
-            document.getElementById('quizScreen').classList.add('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.add('hidden');
+            document.getElementById('quizScreen').classList.add('show-flex');
         }
 
         function hideQuizScreen() {
-            document.getElementById('quizScreen').classList.remove('show');
-            document.getElementById('resultsScreen').classList.remove('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.remove('hidden');
+            document.getElementById('quizScreen').classList.remove('show-flex');
+            document.getElementById('resultsScreen').classList.remove('show-flex');
         }
 
         function renderQuizQuestion() {
@@ -1402,7 +1264,7 @@
 
         function checkQuizAnswer(selected, correct) {
             document.querySelectorAll('.quiz-option').forEach(btn => {
-                btn.classList.add('disabled');
+                btn.style.pointerEvents = 'none';
                 if (btn.textContent === correct) btn.classList.add('correct');
                 else if (btn.textContent === selected) btn.classList.add('wrong');
             });
@@ -1412,8 +1274,8 @@
         }
 
         function showResults() {
-            document.getElementById('quizScreen').classList.remove('show');
-            document.getElementById('resultsScreen').classList.add('show');
+            document.getElementById('quizScreen').classList.remove('show-flex');
+            document.getElementById('resultsScreen').classList.add('show-flex');
             const score = quiz.correct, total = quiz.items.length, pct = Math.round(score / total * 100), xp = score * 10;
             let icon, title, subtitle;
             if (pct === 100) { icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; user.perfectTests = (user.perfectTests || 0) + 1; }
@@ -1439,13 +1301,12 @@
         function finishQuiz() { sendResult('quiz_result', quiz.correct); setTimeout(() => { hideQuizScreen(); goTo('home'); }, 100); }
         function retryQuiz() { hideQuizScreen(); if (quiz.type === 'alphabet' || quiz.type === 'row') goTo('alphabet'); else startQuiz(quiz.type); }
 
+        // ==================== TINDER СВАЙПЫ ====================
         function startSwipe() {
             if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
             const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
             swipe = { items: shuffle(allKana).slice(0,10), index:0, correct:0, wrong:0 };
-            document.getElementById('swipeScreen').classList.add('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.add('hidden');
+            document.getElementById('swipeScreen').classList.add('show-flex');
             renderSwipeCard();
         }
 
@@ -1488,7 +1349,7 @@
         }
 
         function showSwipeResults() {
-            document.getElementById('swipeScreen').classList.remove('show');
+            document.getElementById('swipeScreen').classList.remove('show-flex');
             const xp = swipe.correct * 10;
             quiz = { correct: swipe.correct, items: swipe.items, type: 'swipe' };
             if (xp > 0) {
@@ -1497,7 +1358,7 @@
                 user.quests.cards10 = (user.quests.cards10 || 0) + swipe.correct;
                 saveUser(); updateUI();
             }
-            document.getElementById('resultsScreen').classList.add('show');
+            document.getElementById('resultsScreen').classList.add('show-flex');
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
             document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
@@ -1507,6 +1368,7 @@
             sendResult('swipe_result', swipe.correct);
         }
 
+        // ==================== РУЛЕТКА ====================
         function createWheel() {
             const svg = document.getElementById('wheel');
             const angle = 360 / WHEEL_PRIZES.length;
@@ -1524,10 +1386,9 @@
         }
 
         function openWheel() {
-            document.getElementById('wheelScreen').classList.add('show');
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.add('hidden');
-            document.getElementById('wheelResult').classList.remove('show');
+            document.getElementById('wheelScreen').classList.add('show-flex');
+            document.getElementById('wheelResult').classList.remove('show-flex');
+            document.getElementById('wheelResult').style.display = 'none';
             if (user.lastDaily === new Date().toDateString()) {
                 document.getElementById('wheelSpinBtn').disabled = true;
                 document.getElementById('wheelSpinBtn').textContent = 'Завтра!';
@@ -1538,9 +1399,7 @@
         }
 
         function closeWheel() { 
-            document.getElementById('wheelScreen').classList.remove('show'); 
-            const nav = document.getElementById('bottomNav');
-            if(nav) nav.classList.remove('hidden'); 
+            document.getElementById('wheelScreen').classList.remove('show-flex'); 
         }
 
         let wheelRotation = 0;
@@ -1557,14 +1416,14 @@
                 user.xp += WHEEL_PRIZES[prizeIndex].value; user.lastDaily = today;
                 saveUser(); updateUI();
                 document.getElementById('wheelResultXp').textContent = `+${WHEEL_PRIZES[prizeIndex].value} XP`;
-                document.getElementById('wheelResult').classList.add('show');
+                document.getElementById('wheelResult').style.display = 'block';
+                document.getElementById('wheelResult').classList.add('show-flex');
                 btn.textContent = '✅ Готово!'; haptic('success');
                 sendResult('wheel_reward', WHEEL_PRIZES[prizeIndex].value);
             }, 4500);
         }
 
         function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-        function haptic(type) { if (!user.settings.vibration) return; try { if (type === 'success') tg.HapticFeedback.notificationOccurred('success'); else if (type === 'error') tg.HapticFeedback.notificationOccurred('error'); else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium'); else tg.HapticFeedback.impactOccurred('light'); } catch(e){} }
 
         init();
     </script>
