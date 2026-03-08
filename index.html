@@ -2525,19 +2525,96 @@
         }
 
         // ==================== СВАЙПЫ (TINDER) ====================
-        function startSwipe() {
-            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
-            const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
-            swipe = { items: shuffle(allKana).slice(0,10), index:0, correct:0, wrong:0 };
-            
+        // Запрос к нашему новому умному API
+        async function fetchDueReviews() {
+            if (!AUTH_HEADER) return [];
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews`, {
+                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                });
+                const data = await res.json();
+                if(data.success && data.cards.length > 0) return data.cards;
+            } catch(e) { console.warn(e); }
+            return [];
+        }
+
+        async function startSwipe() {
             document.getElementById('swipeScreen').style.display = 'flex';
-            
-            // Прячем меню
             const nav = document.getElementById('bottomNav');
             if(nav) nav.style.display = 'none';
             
+            document.getElementById('swipeChar').textContent = "⏳";
+            document.getElementById('swipeHint').textContent = "Ищем забытые карточки...";
+            
+            let reviewCards = await fetchDueReviews();
+            let items = [];
+            
+            if (reviewCards && reviewCards.length > 0) {
+                items = reviewCards; // ИСПОЛЬЗУЕМ УМНЫЕ КАРТОЧКИ!
+                document.querySelector('#swipeScreen h2').innerHTML = '🧠 Повторение';
+            } else {
+                // Если нечего повторять, даем случайные
+                const allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
+                items = shuffle(allKana).slice(0, 10);
+                document.querySelector('#swipeScreen h2').innerHTML = '🃏 Практика';
+            }
+            
+            swipe = { items: shuffle(items).slice(0,15), index: 0, correct: 0, wrong: 0, history: [] };
             renderSwipeCard();
         }
+
+        function swipeYes() {
+            swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: true });
+            document.querySelector('.indicator.know').style.opacity = '1';
+            const card = document.getElementById('swipeCard');
+            card.style.transform = 'translateX(300px) rotate(15deg)'; card.style.opacity = '0';
+            swipe.correct++; haptic('medium');
+            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+        }
+
+        function swipeNo() {
+            swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: false });
+            document.querySelector('.indicator.learn').style.opacity = '1';
+            const card = document.getElementById('swipeCard');
+            card.style.transform = 'translateX(-300px) rotate(-15deg)'; card.style.opacity = '0';
+            swipe.wrong++; haptic('medium');
+            setTimeout(() => { swipe.index++; renderSwipeCard(); }, 250);
+        }
+
+        function showSwipeResults() {
+            document.getElementById('swipeScreen').style.display = 'none';
+            const xp = swipe.correct * 10;
+            
+            if (xp > 0) {
+                user.xp += xp; user.cardsLearned += swipe.correct;
+                saveUser(); updateUI();
+            }
+            
+            document.getElementById('resultsScreen').style.display = 'flex';
+            document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
+            document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
+            document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
+            document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
+            document.getElementById('resultsSubtitle').textContent = `Знал: ${swipe.correct}, Учить: ${swipe.wrong}`;
+            haptic('success');
+            
+            // Отправляем массив history на сервер, чтобы алгоритм SM-2 обновил карточки
+            sendResult('swipe_result', swipe.correct, swipe.history);
+        }
+        
+        // Обновленная функция отправки (замените старую)
+        async function sendResult(type, score, detailedHistory = []) {
+            try {
+                if (AUTH_HEADER && AUTH_HEADER !== 'user_id=12345') {
+                    await fetch(`${API_BASE}/api/progress`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' },
+                        body: JSON.stringify({ action: 'quiz_complete', correct: score, total: score, results: detailedHistory })
+                    });
+                }
+            } catch (e) { console.warn("API Error:", e); }
+        }
+
 
         function renderSwipeCard() {
             if (swipe.index >= swipe.items.length) { 
@@ -2571,49 +2648,6 @@
             haptic('light');
         }
 
-        function swipeYes() {
-            document.querySelector('.indicator.know').style.opacity = '1';
-            const card = document.getElementById('swipeCard');
-            card.style.transform = 'translateX(300px) rotate(15deg)';
-            card.style.opacity = '0';
-            swipe.correct++; 
-            haptic('medium');
-            
-            setTimeout(() => { 
-                swipe.index++; 
-                renderSwipeCard(); 
-            }, 250);
-        }
-
-        function swipeNo() {
-            document.querySelector('.indicator.learn').style.opacity = '1';
-            const card = document.getElementById('swipeCard');
-            card.style.transform = 'translateX(-300px) rotate(-15deg)';
-            card.style.opacity = '0';
-            swipe.wrong++; 
-            haptic('medium');
-            
-            setTimeout(() => { 
-                swipe.index++; 
-                renderSwipeCard(); 
-            }, 250);
-        }
-
-        function showSwipeResults() {
-            document.getElementById('swipeScreen').style.display = 'none';
-            
-            const xp = swipe.correct * 10;
-            quiz = { correct: swipe.correct, items: swipe.items, type: 'swipe' };
-            
-            if (xp > 0) {
-                user.xp += xp; 
-                user.cardsLearned += swipe.correct;
-                if (!user.quests) user.quests = {};
-                user.quests.cards10 = (user.quests.cards10 || 0) + swipe.correct;
-                saveUser(); 
-                updateUI();
-            }
-            
             document.getElementById('resultsScreen').style.display = 'flex';
             document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
             document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
@@ -2731,5 +2765,6 @@
     </script>
 </body>
 </html>
+
 
 
