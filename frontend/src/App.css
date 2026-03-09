@@ -1,0 +1,16 @@
+/* Стили для App компонента */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--bg);
+}
+
+.content {
+  flex: 1;
+  /* padding-bottom: 80px; - handled by body padding in index.css */
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
