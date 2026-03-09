@@ -813,7 +813,40 @@
         .quiz-option.correct { background: var(--success); border-color: var(--success); box-shadow: 0 0 15px var(--success); }
         .quiz-option.wrong { background: var(--error); border-color: var(--error); box-shadow: 0 0 15px var(--error); }
 
-        .swipe-card { width: 100%; max-width: 320px; height: 420px; background: rgba(30, 30, 46, 0.9); border-radius: 35px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); transition: transform 0.3s, opacity 0.3s; }
+        .swipe-card { 
+            width: 100%; 
+            max-width: 320px; 
+            height: 420px; 
+            background: rgba(30, 30, 46, 0.9); 
+            border-radius: 35px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); 
+            transition: transform 0.3s, opacity 0.3s;
+            touch-action: none; 
+            user-select: none;
+            overflow: hidden;
+        }
+        
+        .swipe-card .japanese {
+            font-size: 80px; 
+            line-height: 1.2;
+            margin-bottom: 15px; 
+            color: white; 
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            max-width: 90%;
+            word-break: break-all;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            max-height: 220px;
+        }
         .swipe-btn { width: 75px; height: 75px; border-radius: 50%; font-size: 32px; background: rgba(0, 0, 0, 0.6); color: white; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); cursor: pointer; }
 
         /* Загрузка */
@@ -1248,11 +1281,11 @@
         </div>
         
         <div class="swipe-card" id="swipeCard">
-            <div class="swipe-indicators" style="position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px;">
+            <div class="swipe-indicators" style="position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; pointer-events: none;">
                 <div class="indicator learn" style="background: var(--error); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 20px; border: 2px solid white; transform: rotate(-15deg); opacity: 0; transition: opacity 0.2s;">👎 Учить</div>
                 <div class="indicator know" style="background: var(--success); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 20px; border: 2px solid white; transform: rotate(15deg); opacity: 0; transition: opacity 0.2s;">👍 Знаю</div>
             </div>
-            <div class="japanese" id="swipeChar" style="font-size: 130px; margin-bottom: 15px; color: white; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">あ</div>
+            <div class="japanese" id="swipeChar">あ</div>
             <div id="swipeHint" style="color: var(--text-hint); font-size: 16px; font-weight: 500;">Нажми 👁 чтобы увидеть</div>
             <div id="swipeAnswer" style="font-size: 40px; font-weight: 900; color: var(--primary); opacity: 0; text-shadow: 0 0 15px rgba(0,0,0,0.8); transition: opacity 0.2s;">a</div>
         </div>
@@ -3550,6 +3583,86 @@
             
             swipe = { items: shuffle(items).slice(0,15), index: 0, correct: 0, wrong: 0, history: [] };
             renderSwipeCard();
+            initSwipeGestures();
+        }
+
+        // Логика жестов свайпа
+        function initSwipeGestures() {
+            let card = document.getElementById('swipeCard');
+            if (!card) return;
+            
+            // Клонируем элемент, чтобы удалить старые обработчики событий
+            const newCard = card.cloneNode(true);
+            card.parentNode.replaceChild(newCard, card);
+            card = newCard; // Работаем с новым элементом
+
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+            const threshold = 100; // Порог срабатывания
+
+            const onStart = (e) => {
+                if (swipe.index >= swipe.items.length) return;
+                startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                isDragging = true;
+                card.style.transition = 'none';
+            };
+
+            const onMove = (e) => {
+                if (!isDragging) return;
+                // Не блокируем скролл, если движение вертикальное? 
+                // Но у нас свайп влево-вправо. Блокируем всё для надежности на карточке.
+                e.preventDefault(); 
+                currentX = (e.type.includes('mouse') ? e.clientX : e.touches[0].clientX) - startX;
+                
+                const rotate = currentX * 0.05;
+                card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+
+                const knowInd = document.querySelector('.indicator.know');
+                const learnInd = document.querySelector('.indicator.learn');
+                
+                if (currentX > 0) {
+                    if(knowInd) knowInd.style.opacity = Math.min(currentX / 100, 1);
+                    if(learnInd) learnInd.style.opacity = 0;
+                } else {
+                    if(learnInd) learnInd.style.opacity = Math.min(Math.abs(currentX) / 100, 1);
+                    if(knowInd) knowInd.style.opacity = 0;
+                }
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                if (currentX > threshold) {
+                    swipeYes();
+                } else if (currentX < -threshold) {
+                    swipeNo();
+                } else {
+                    card.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                    card.style.transform = 'translateX(0) rotate(0)';
+                    document.querySelectorAll('.indicator').forEach(i => i.style.opacity = '0');
+                }
+                currentX = 0;
+            };
+
+            // Touch events
+            card.addEventListener('touchstart', onStart, {passive: false});
+            card.addEventListener('touchmove', onMove, {passive: false}); // Вешаем прямо на карту
+            card.addEventListener('touchend', onEnd);
+
+            // Mouse events
+            card.addEventListener('mousedown', onStart);
+            
+            // Для мыши move/up лучше вешать на document, чтобы не срывалось
+            const onMouseMove = (e) => { if(isDragging) onMove(e); }
+            const onMouseUp = (e) => { if(isDragging) onEnd(e); }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            
+            // Очистка глобальных слушателей при уничтожении (не идеально, но для SPA сойдет, 
+            // так как мышь используется редко на мобилках)
         }
 
         function renderSwipeCard() {
@@ -3576,6 +3689,14 @@
             // Устанавливаем текст
             swipeCharEl.textContent = item.char || '';
             swipeAnswerEl.textContent = item.reading || '';
+
+            // Динамический размер шрифта для длинных текстов
+            swipeCharEl.className = 'japanese'; // сброс
+            if (item.char && item.char.length > 5) {
+                swipeCharEl.classList.add('very-long-text');
+            } else if (item.char && item.char.length > 1) {
+                swipeCharEl.classList.add('long-text');
+            }
             
             // Сбрасываем стили и анимации
             card.style.transition = 'none';
