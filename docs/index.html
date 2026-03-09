@@ -1,0 +1,4046 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YomuBot - Японский язык</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='50' x='50' font-size='50' text-anchor='middle'>🎌</text></svg>">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Если ваши словари лежат прямо в этом файле, они должны быть ниже в теге script. 
+         Если они в отдельном файле, оставляем эту строку: -->
+    <script src="data.js" onerror="console.warn('data.js не загружен, используем резервные данные'); window.dataLoaded=false;"></script>
+    <script>
+        // Резервные данные, если data.js не загрузился
+        if (typeof window.dataLoaded === 'undefined') {
+            window.KANJI_N5 = window.KANJI_N5 || {};
+            window.WORDS_N5 = window.WORDS_N5 || {};
+            window.KANJI_N4 = window.KANJI_N4 || {};
+            window.WORDS_N4 = window.WORDS_N4 || {};
+            console.log('Используются резервные данные');
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Базовые цвета */
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            
+            --success: #4ade80;
+            --error: #f87171;
+            --warning: #fbbf24;
+            --gold: #ffd700;
+            
+            --bg: var(--tg-theme-bg-color, #131320);
+            --bg-secondary: var(--tg-theme-secondary-bg-color, #1e1e2e);
+            --text: var(--tg-theme-text-color, #ffffff);
+            --text-hint: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 120px;
+            padding-top: 50px; /* Отступ для верхней панели с монетами */
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .japanese {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        /* ========== ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ И СТАТУСОМ ========== */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: rgba(30, 30, 46, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .server-status {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-hint);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .server-status:hover {
+            background: rgba(0, 0, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online {
+            background: var(--success);
+            animation: none;
+        }
+
+        .status-dot.offline {
+            background: var(--error);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .coin-display {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-weight: 800;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .coin-display:active {
+            transform: scale(0.95);
+        }
+
+        /* ========== ФОНЫ И ЭФФЕКТЫ ========== */
+        .app-bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .app-bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(to bottom, rgba(19, 19, 32, 0.85) 0%, rgba(19, 19, 32, 0.5) 100%);
+        }
+
+        /* ========== НИЖНЯЯ НАВИГАЦИЯ ========== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 75px;
+            background: rgba(30, 30, 46, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 9999;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 14px;
+            border: none;
+            background: none;
+            color: var(--text-hint);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            transform: scale(1.1);
+            text-shadow: 0 0 15px var(--primary);
+        }
+
+        .nav-item .icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        /* ========== ЭКРАНЫ ========== */
+        .screen {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ========== СТЕКЛЯННЫЕ ШАПКИ ========== */
+        .glass-header {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 25px 20px;
+            border-radius: 0 0 30px 30px;
+            color: white;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: -50px; /* Компенсация верхней панели */
+            padding-top: 75px; 
+        }
+
+        .glass-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at top, var(--primary) 0%, transparent 60%);
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* ========== ПРОФИЛЬ И СТАТИСТИКА ========== */
+        .user-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid var(--primary);
+        }
+
+        .user-info h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .user-rank {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-box {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 2px;
+        }
+
+        .section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            padding-left: 4px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* ========== КАРТОЧКИ (МЕНЮ) ========== */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .menu-card {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-card:active {
+            transform: scale(0.95);
+            border-color: var(--primary);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .menu-card .card-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+        }
+
+        .menu-card .card-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .menu-card .card-subtitle {
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+
+        .menu-card.wide {
+            grid-column: span 2;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            text-align: left;
+            gap: 15px;
+        }
+
+        .menu-card.wide .card-icon {
+            margin-bottom: 0;
+            font-size: 40px;
+        }
+
+        .menu-card.wide .card-title {
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        /* ========== ЕЖЕДНЕВНЫЕ ЗАДАНИЯ ========== */
+        .quest-item {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .quest-icon { font-size: 28px; }
+        .quest-info { flex: 1; }
+        .quest-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; color: white; }
+        
+        .quest-bar {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .quest-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .quest-reward {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .quest-item.done {
+            opacity: 0.5;
+            border-color: var(--success);
+        }
+        .quest-item.done .quest-reward {
+            color: var(--success);
+        }
+
+        /* ========== ИНТЕРАКТИВНЫЕ ИСТОРИИ (НОВЫЙ ДИЗАЙН) ========== */
+        .story-card-enhanced {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .story-card-enhanced:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .story-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .story-image {
+            font-size: 40px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+        
+        .story-info {
+            flex: 1;
+        }
+        
+        .story-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 6px;
+        }
+        
+        .story-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .story-level, .story-difficulty, .story-duration {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .story-level {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--primary);
+        }
+        
+        .story-difficulty {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-hint);
+        }
+        
+        .story-duration {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+        
+        .story-status {
+            font-size: 24px;
+        }
+        
+        .story-description {
+            font-size: 14px;
+            color: var(--text-hint);
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .story-preview {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .story-rewards {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .reward-xp {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+        
+        .story-vocab-count {
+            font-size: 12px;
+            color: var(--text-hint);
+        }
+        
+        .completion-badge {
+            background: var(--success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .lock-text {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .interactive-word {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+        
+        .interactive-word:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .non-interactive-word {
+            opacity: 0.7;
+        }
+        
+        .story-option-btn:hover {
+            background: rgba(102, 126, 234, 0.3) !important;
+            transform: translateX(5px);
+        }
+
+        /* ========== ИСТОРИИ (ЧТЕНИЕ) ========== */
+        .story-card {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+        }
+        .story-card:active { transform: scale(0.98); }
+
+        .story-word {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 2px 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .story-word:active { transform: translateY(-3px); }
+        .story-kana { font-size: 12px; color: var(--primary); font-weight: 700; min-height: 15px; margin-bottom: 2px;}
+        .story-kanji { font-size: 26px; color: white; }
+
+        .story-translation {
+            position: fixed; bottom: 90px; left: 20px; right: 20px; background: rgba(0,0,0,0.9);
+            border: 1px solid var(--primary); border-radius: 16px; padding: 15px;
+            text-align: center; font-size: 18px; font-weight: 700; color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: none; z-index: 1000;
+        }
+
+        /* ========== МАГАЗИН ========== */
+        .shop-item {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .shop-item .price {
+            background: rgba(0,0,0,0.5); border: 1px solid var(--gold); color: var(--gold);
+            padding: 6px 12px; border-radius: 12px; font-weight: 800; display: flex; align-items: center; gap: 5px;
+        }
+        .shop-btn {
+            background: var(--primary); border: none; color: white; font-weight: 700;
+            padding: 10px 20px; border-radius: 12px; cursor: pointer; transition: 0.2s;
+        }
+        .shop-btn:active { transform: scale(0.9); }
+        .shop-btn:disabled { background: gray; color: #ccc; cursor: not-allowed; }
+
+        /* ========== ЛИГИ В РЕЙТИНГЕ ========== */
+        .league-badge {
+            font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 8px; text-transform: uppercase; margin-left: 8px;
+        }
+        .league-1 { border-color: #cd7f32 !important; box-shadow: 0 0 10px rgba(205, 127, 50, 0.2); } /* Бронза */
+        .league-2 { border-color: #c0c0c0 !important; box-shadow: 0 0 10px rgba(192, 192, 192, 0.2); } /* Серебро */
+        .league-3 { border-color: #ffd700 !important; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }   /* Золото */
+        .league-4 { border-color: #b9f2ff !important; box-shadow: 0 0 20px rgba(185, 242, 255, 0.4); } /* Платина */
+        .league-5 { border-color: #ffb3e6 !important; box-shadow: 0 0 25px rgba(255, 179, 230, 0.5); } /* Алмаз */
+
+        .l-badge-1 { background: rgba(205, 127, 50, 0.2); color: #cd7f32; }
+        .l-badge-2 { background: rgba(192, 192, 192, 0.2); color: #c0c0c0; }
+        .l-badge-3 { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+        .l-badge-4 { background: rgba(185, 242, 255, 0.2); color: #b9f2ff; }
+        .l-badge-5 { background: rgba(255, 179, 230, 0.2); color: #ffb3e6; }
+
+        /* ========== АЗБУКА И ТАБЫ ========== */
+        .tabs { display: flex; background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 4px; margin-bottom: 14px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text-hint); font-size: 14px; font-weight: 600; border-radius: 10px; transition: 0.2s; }
+        .tab-btn.active { background: rgba(255, 255, 255, 0.1); color: var(--primary); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); }
+
+        .view-toggle { display: flex; background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 3px; }
+        .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: var(--text-hint); font-size: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .view-btn.active { background: rgba(255, 255, 255, 0.1); color: var(--primary); }
+
+        .test-buttons { display: flex; gap: 12px; margin-bottom: 20px; }
+        .test-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-size: 14px; font-weight: 700; cursor: pointer; color: white; transition: 0.2s; }
+        .test-btn.primary { background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        .test-btn.secondary { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--primary); }
+
+        .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .kana-cell { aspect-ratio: 1; background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.15s; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .kana-cell:active { background: var(--primary); transform: scale(0.92); }
+        .kana-cell .char { font-size: 26px; font-weight: 600; color: white; }
+        .kana-cell .reading { font-size: 11px; color: var(--text-hint); margin-top: 4px; }
+
+        .kana-row { margin-bottom: 18px; }
+        .row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .row-title { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .row-test-btn { padding: 6px 14px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .row-cards { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+        .row-cards::-webkit-scrollbar { display: none; }
+        .row-card { min-width: 60px; height: 75px; background: rgba(30, 30, 46, 0.7); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .row-card:active { background: var(--primary); }
+        .row-card .char { font-size: 26px; color: white; }
+        .row-card .reading { font-size: 11px; color: var(--text-hint); }
+
+        /* ========== УЧЕБА (ПРОГРЕСС И КАТЕГОРИИ) ========== */
+        .progress-container { margin-bottom: 12px; background: rgba(30, 30, 46, 0.7); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: transform 0.2s; pointer-events: auto; }
+        .progress-container:active { transform: scale(0.98); }
+        .progress-header { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; color: white; margin-bottom: 4px; }
+        .progress-track { height: 8px; background: rgba(0,0,0,0.6); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);}
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px; box-shadow: 0 0 10px var(--primary); transition: width 0.5s; }
+        .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .summary-card { background: rgba(30, 30, 46, 0.7); border-radius: 16px; padding: 14px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 6px; }
+        .summary-title { font-size: 12px; color: var(--text-hint); font-weight: 700; letter-spacing: 0.4px; }
+        .summary-value { font-size: 18px; font-weight: 800; color: white; }
+        .summary-sub { font-size: 12px; color: var(--text-hint); }
+
+        .category-card { background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; cursor: pointer; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .category-card:active { transform: scale(0.98); background: rgba(0, 0, 0, 0.5); }
+        .category-icon { font-size: 36px; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); }
+        .category-info { flex: 1; text-align: left; }
+        .category-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: white; }
+        .category-desc { font-size: 12px; color: var(--text-hint); margin-bottom: 8px; }
+
+        /* ========== ПРОФИЛЬ ДЕТАЛИ ========== */
+        .profile-btn { position: absolute; top: 85px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); width: 44px; height: 44px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); transition: all 0.2s ease; z-index: 10; }
+        .profile-btn:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--primary); transform: scale(1.1); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); }
+        .profile-btn:active { transform: scale(0.95); }
+        .profile-stats { display: flex; justify-content: space-around; padding: 20px; background: rgba(30, 30, 46, 0.8); backdrop-filter: blur(15px); margin: -35px 16px 0; border-radius: 20px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4); position: relative; z-index: 2; border: 1px solid rgba(255, 255, 255, 0.05); animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* ========== РЕСПОНСИВНЫЙ ДИЗАЙН ========== */
+        @media (max-width: 380px) {
+            .glass-header { padding: 20px 15px; padding-top: 75px; }
+            .profile-btn { top: 80px; width: 40px; height: 40px; font-size: 18px; }
+            .profile-stats { padding: 15px; margin: -30px 12px 0; }
+            .achievements-grid { grid-template-columns: repeat(3, 1fr); }
+            .section { padding: 0 12px; }
+        }
+        
+        @media (max-height: 700px) {
+            .glass-header { padding: 20px 20px; padding-top: 70px; }
+            .profile-btn { top: 75px; }
+        }
+        .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .achievement { text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .achievement:hover { transform: translateY(-5px); }
+        .achievement:active { transform: scale(0.9); }
+        .achievement-icon { width: 54px; height: 54px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; transition: all 0.3s ease; }
+        .achievement:hover .achievement-icon { border-color: var(--primary); box-shadow: 0 0 15px rgba(102, 126, 234, 0.3); }
+        .achievement.locked .achievement-icon { filter: grayscale(1); opacity: 0.2; }
+        .achievement-name { font-size: 10px; color: var(--text-hint); }
+
+        /* ========== ЛИДЕРБОРД ========== */
+        .leaderboard-list { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+        .leaderboard-item { display: flex; align-items: center; background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 14px; gap: 12px; border: 1px solid rgba(255, 255, 255, 0.05); position: relative; overflow: hidden; }
+        .leaderboard-item.current-user { border-color: var(--primary); box-shadow: 0 0 18px rgba(102, 126, 234, 0.35); }
+        .leaderboard-rank { font-size: 20px; font-weight: 800; color: var(--primary); min-width: 30px; text-align: center; }
+        .leaderboard-avatar { width: 44px; height: 44px; border-radius: 50%; background: rgba(0, 0, 0, 0.1); background-size: cover; background-position: center; border: 2px solid var(--primary); }
+        .leaderboard-info { flex: 1; }
+        .leaderboard-name { font-weight: 700; font-size: 16px; color: white; display: flex; align-items: center; gap: 8px; }
+        .leaderboard-details { display: flex; gap: 12px; font-size: 12px; color: var(--text-hint); margin-top: 4px; }
+        .leaderboard-xp { font-weight: 800; color: var(--primary); }
+
+        /* ========== НАСТРОЙКИ ========== */
+        .settings-group { background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255, 255, 255, 0.05); overflow: hidden; }
+        .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 18px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); cursor: pointer; }
+        .color-picker, .bg-picker { display: flex; gap: 12px; overflow-x: auto; padding: 10px 16px 20px; margin: 0 -16px; scrollbar-width: none; }
+        .color-circle { width: 44px; height: 44px; border-radius: 50%; border: 3px solid transparent; flex-shrink: 0; transition: 0.2s; cursor: pointer; }
+        .color-circle.active { border-color: white; transform: scale(1.15); box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
+        .bg-option { width: 85px; height: 130px; border-radius: 14px; background-size: cover; background-position: center; border: 2px solid transparent; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 10px; transition: 0.2s; cursor: pointer; background-color: rgba(30, 30, 46, 0.8); }
+        .bg-option.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 15px var(--primary); }
+        .toggle { width: 50px; height: 28px; background: rgba(0, 0, 0, 0.4); border-radius: 14px; position: relative; transition: all 0.3s; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .toggle.active { background: var(--primary); border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .toggle::after { content: ''; position: absolute; width: 22px; height: 22px; background: white; border-radius: 50%; top: 2px; left: 3px; transition: all 0.3s; }
+        .toggle.active::after { left: 23px; }
+
+        /* ========== ВСПЛЫВАЮЩИЕ ОКНА (OVERLAYS) ========== */
+        .overlay-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(10px); z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: rgba(30, 30, 46, 0.95); border-radius: 28px; padding: 30px 20px; width: 100%; max-width: 340px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); position: relative; animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-size: 24px; cursor: pointer; color: white; transition: 0.2s; }
+        
+        .modal-char { font-size: 80px; font-weight: 700; color: white; margin-bottom: 5px; text-shadow: 0 5px 15px rgba(0, 0, 0, 0.4); }
+        .modal-reading { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 5px; }
+        .modal-meaning { font-size: 18px; color: white; font-weight: 600; margin-bottom: 5px; }
+        .modal-hint { font-size: 15px; color: var(--text-hint); margin-bottom: 25px; }
+        .modal-gif { display: flex; justify-content: center; align-items: center; min-height: 20px; margin-bottom: 15px; }
+        .modal-buttons { display: flex; justify-content: center; align-items: stretch; gap: 12px; width: 100%; margin-top: 10px; }
+
+        .quiz-card { background: rgba(30, 30, 46, 0.9); border: 2px solid var(--primary); border-radius: 35px; padding: 50px 20px; text-align: center; margin-bottom: 35px; width: 100%; max-width: 320px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); }
+        .quiz-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 320px; margin: 0 auto; }
+        .quiz-option { padding: 20px 10px; background: rgba(0, 0, 0, 0.5); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; font-size: 22px; font-weight: 700; color: white; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .quiz-option.correct { background: var(--success); border-color: var(--success); box-shadow: 0 0 15px var(--success); }
+        .quiz-option.wrong { background: var(--error); border-color: var(--error); box-shadow: 0 0 15px var(--error); }
+
+        .swipe-card { 
+            width: 100%; 
+            max-width: 320px; 
+            height: 420px; 
+            background: rgba(30, 30, 46, 0.9); 
+            border-radius: 35px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            position: relative; 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); 
+            transition: transform 0.3s, opacity 0.3s;
+            touch-action: none; 
+            user-select: none;
+            overflow: hidden;
+        }
+        
+        .swipe-card .japanese {
+            font-size: 80px; 
+            line-height: 1.2;
+            margin-bottom: 15px; 
+            color: white; 
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            max-width: 90%;
+            word-break: break-all;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            max-height: 220px;
+        }
+        .swipe-btn { width: 75px; height: 75px; border-radius: 50%; font-size: 32px; background: rgba(0, 0, 0, 0.6); color: white; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); cursor: pointer; }
+
+        /* Загрузка */
+        .loading-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; }
+        .loading-logo { font-size: 70px; margin-bottom: 20px; animation: pulse 1.5s infinite ease-in-out; filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2)); }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .loading-spinner { width: 44px; height: 44px; border: 4px solid rgba(255, 255, 255, 0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; margin-top: 25px; box-shadow: 0 0 15px var(--primary); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <div class="app-bg-layer" id="appBgLayer"></div>
+    <div class="app-bg-overlay"></div>
+
+    <!-- ЗАГРУЗКА -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-logo">🎌</div>
+        <div style="color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px;">YomuBot</div>
+        <div class="loading-spinner"></div>
+        <div id="debugInfo" style="margin-top: 20px; color: rgba(255,255,255,0.5); font-size: 10px; font-family: monospace; white-space: pre-wrap; text-align: left; width: 90%;">Initializing...</div>
+    </div>
+
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ И СТАТУСОМ -->
+    <div class="top-bar">
+        <div class="server-status" id="serverStatus">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Проверка...</span>
+        </div>
+        <div class="coin-display" onclick="goTo('shop')">
+            🪙 <span id="topCoins">0</span>
+        </div>
+    </div>
+
+    <!-- ГЛАВНЫЙ ЭКРАН -->
+    <div class="screen active" id="homeScreen">
+        <div class="glass-header">
+            <!-- ... -->
+            <div class="user-row">
+                <div class="avatar" id="userAvatar">👤</div>
+                <div class="user-info">
+                    <h1 id="userName">Ученик</h1>
+                    <div class="user-rank">
+                        <span id="userBadge">🥚</span> <span id="userRankName">Новичок</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value" id="userXp">0</div>
+                    <div class="stat-label">XP</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="userStreak" style="color: var(--warning);">0</div>
+                    <div class="stat-label">🔥 Серия</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="userFreezes" style="color: var(--primary);">0</div>
+                    <div class="stat-label">❄️ Заморозок</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="progress-container" id="dailyProgressCard" onclick="goTo('study')" style="cursor: pointer;">
+                <div class="progress-header">
+                    <span>🎯 Цель дня</span>
+                    <span id="dailyProgressValue">0/10</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="dailyProgressBar" style="width: 0%"></div>
+                </div>
+                <div class="summary-sub" id="dailyProgressHint">Продолжай, ты близко к цели</div>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-title">Лига</div>
+                    <div class="summary-value" id="leagueName">Бронза</div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="leagueProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="summary-sub" id="leagueProgressHint">До следующей: 0 XP</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">Сегодня</div>
+                    <div class="summary-value" id="todayXp">+0 XP</div>
+                    <div class="summary-sub" id="lastSync">Синхронизация: —</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📋 Ежедневные задания</div>
+            <div id="questsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📚 Обучение</div>
+            <div class="menu-grid">
+                <div class="menu-card wide" onclick="goTo('stories')" style="border-left: 4px solid var(--success);">
+                    <div class="card-icon" style="margin-bottom: 0; font-size: 45px;">📚</div>
+                    <div style="text-align: left;">
+                        <div class="card-title" style="font-size: 18px; color: var(--success);">Интерактивные Истории</div>
+                        <div class="card-subtitle">Погружайся в японский через увлекательные истории</div>
+                    </div>
+                </div>
+                <div class="menu-card" onclick="startQuiz('mixed')">
+                    <div class="card-icon">🎯</div>
+                    <div class="card-title">Быстрый тест</div>
+                    <div class="card-subtitle">5 вопросов</div>
+                </div>
+                <div class="menu-card" onclick="startSwipe()">
+                    <div class="card-icon">🃏</div>
+                    <div class="card-title">Карточки</div>
+                    <div class="card-subtitle">Свайп-режим</div>
+                </div>
+                <div class="menu-card" onclick="openWheel()">
+                    <div class="card-icon">🎡</div>
+                    <div class="card-title">Рулетка</div>
+                    <div class="card-subtitle">Ежедневный бонус</div>
+                </div>
+                <div class="menu-card" onclick="goTo('shop')">
+                    <div class="card-icon">🛒</div>
+                    <div class="card-title">Магазин</div>
+                    <div class="card-subtitle">Трать монеты</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- АЗБУКА (ВЫДЕЛЕНА ОТДЕЛЬНО ДЛЯ УДОБСТВА) -->
+    <div class="screen" id="alphabetScreen">
+        <div class="glass-header" style="padding-bottom: 15px;">
+            <h2 style="margin-bottom: 20px; font-weight: 800; font-size: 26px;">🎌 Японская Азбука</h2>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="setAlphabetTab('hiragana')">Хирагана</button>
+                <button class="tab-btn" onclick="setAlphabetTab('katakana')">Катакана</button>
+            </div>
+            <div style="display: flex; background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 4px;">
+                <button class="view-btn active" onclick="setAlphabetView('grid')">📋 Сетка</button>
+                <button class="view-btn" onclick="setAlphabetView('rows')">📚 Строки</button>
+            </div>
+        </div>
+        <div class="section">
+            <div class="test-buttons">
+                <button class="test-btn primary" onclick="startAlphabetQuiz(5)">📝 Быстрый тест</button>
+                <button class="test-btn secondary" onclick="startAlphabetQuiz(15)">🎯 Полный тест</button>
+            </div>
+            <div id="alphabetGrid" class="kana-grid"></div>
+            <div id="alphabetRows" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- ИЗУЧЕНИЕ КАТЕГОРИЙ (СЛОВАРИ) -->
+    <div class="screen" id="studyScreen">
+        <div class="glass-header">
+            <h2 id="studyTitle" style="font-weight: 800; font-size: 26px;">📚 Словари</h2>
+            <p style="color: var(--text-hint); font-size: 14px;">Азбука, кандзи и слова по уровням JLPT</p>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">🎌 Японская Азбука</div>
+            <div class="menu-grid">
+                <div class="menu-card wide" onclick="goTo('alphabet')" style="border-left: 4px solid var(--primary);">
+                    <div class="card-icon" style="margin-bottom: 0; font-size: 45px;">🎌</div>
+                    <div style="text-align: left;">
+                        <div class="card-title" style="font-size: 18px; color: var(--primary);">Японская Азбука</div>
+                        <div class="card-subtitle">Хирагана и Катакана (92 символа)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🈁 Кандзи</div>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startStudy('kanji_n5')">
+                    <div class="card-icon">🈴</div>
+                    <div class="card-title">Кандзи N5</div>
+                    <div class="card-subtitle">103 иероглифа</div>
+                </div>
+                <div class="menu-card" onclick="startStudy('kanji_n4')">
+                    <div class="card-icon">🈵</div>
+                    <div class="card-title">Кандзи N4</div>
+                    <div class="card-subtitle">181 иероглиф</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📝 Слова</div>
+            <div class="menu-grid">
+                <div class="menu-card" onclick="startStudy('words_n5')">
+                    <div class="card-icon">🍜</div>
+                    <div class="card-title">Слова N5</div>
+                    <div class="card-subtitle">40 слов</div>
+                </div>
+                <div class="menu-card" onclick="startStudy('words_n4')">
+                    <div class="card-icon">🗾</div>
+                    <div class="card-title">Слова N4</div>
+                    <div class="card-subtitle">16 слов</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ИСТОРИИ - НОВЫЙ ИНТЕРЕСНЫЙ ФОРМАТ -->
+    <div class="screen" id="storiesScreen">
+        <div class="glass-header">
+            <h2 style="font-weight: 800; font-size: 26px;">📚 Интерактивные Истории</h2>
+            <p style="color: var(--text-hint); font-size: 14px;">Погружайся в японский язык через увлекательные истории</p>
+        </div>
+        
+        <!-- Прогресс по историям -->
+        <div class="section">
+            <div class="progress-container">
+                <div class="progress-header">
+                    <span>📖 Прогресс чтения</span>
+                    <span id="storiesProgress">0/5 историй</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="storiesProgressBar" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточки историй -->
+        <div class="section" id="storiesList">
+            <!-- Истории будут генерироваться через JS -->
+        </div>
+    </div>
+
+    <!-- ЭКРАН ЧТЕНИЯ -->
+    <div class="screen" id="readingScreen" style="padding-top: 20px;">
+        <div class="section">
+            <button onclick="goTo('stories')" style="background: rgba(255,255,255,0.1); border:none; color:white; padding: 10px 20px; border-radius: 14px; margin-bottom: 20px;">⬅️ Назад</button>
+            <h2 id="readingTitle" style="color: var(--primary); margin-bottom: 25px;">Заголовок</h2>
+            
+            <div id="readingText" style="background: rgba(30,30,46,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 25px; line-height: 2.5; font-size: 22px;">
+                <!-- Текст генерируется JS -->
+            </div>
+            
+            <div id="readingQuiz" style="display: none; margin-top: 30px;">
+                <h3 id="readingQuestion" style="margin-bottom: 15px;">Вопрос?</h3>
+                <div id="readingOptions" style="display:flex; flex-direction:column; gap:10px;"></div>
+            </div>
+        </div>
+        <div id="translationTooltip" class="story-translation"></div>
+    </div>
+
+    <!-- МАГАЗИН -->
+    <div class="screen" id="shopScreen">
+        <div class="glass-header">
+            <div style="font-size: 50px; margin-bottom: 10px;">🛒</div>
+            <h2 style="font-weight: 800; font-size: 26px;">Магазин</h2>
+            <p style="color: var(--gold); font-size: 18px; font-weight: 800;">У вас <span id="shopCoinsBig">0</span> 🪙</p>
+        </div>
+        <div class="section">
+            <div class="shop-item">
+                <div style="font-size: 40px;">❄️</div>
+                <div style="flex:1;">
+                    <div style="font-weight: 800; font-size: 16px;">Заморозка серии</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">Спасает 🔥, если пропустишь день</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="price">🪙 50</div>
+                    <button class="shop-btn" id="buyFreezeBtn" onclick="buyItem('freeze', 50)">Купить</button>
+                </div>
+            </div>
+            
+            <div class="shop-item" style="opacity: 0.5;">
+                <div style="font-size: 40px;">👑</div>
+                <div style="flex:1;">
+                    <div style="font-weight: 800; font-size: 16px;">VIP Рамка</div>
+                    <div style="font-size: 12px; color: var(--text-hint);">Уникальный стиль в рейтинге (Скоро)</div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="price">🪙 500</div>
+                    <button class="shop-btn" disabled>Закрыто</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПРОФИЛЬ -->
+    <div class="screen" id="profileScreen">
+        <div class="glass-header">
+            <button class="profile-btn" style="right: 20px;" onclick="goTo('settings')">⚙️</button>
+            <button class="profile-btn" style="left: 20px;" onclick="promptChangeName()">✏️</button>
+            
+            <div class="avatar" id="profileAvatar" style="margin: 0 auto 15px; width: 85px; height: 85px; font-size: 40px; border-width: 3px;">👤</div>
+            <h1 id="profileName" style="font-size: 26px; font-weight: 800; margin-bottom: 8px;">Пользователь</h1>
+            
+            <div class="user-rank" style="margin: 0 auto; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 6px 16px; border-radius: 20px;">
+                <span id="profileBadge">🥚</span> <span id="profileRankName">Новичок</span>
+            </div>
+        </div>
+        
+        <div class="profile-stats">
+            <div style="text-align: center;">
+                <div class="stat-value" id="profileXp" style="color:var(--primary);">0</div>
+                <div class="stat-label">XP</div>
+            </div>
+            <div style="text-align: center;">
+                <div class="stat-value" id="profileStreak" style="color:var(--primary);">0</div>
+                <div class="stat-label">Серия</div>
+            </div>
+            <div style="text-align: center;">
+                <div class="stat-value" id="profileCards" style="color:var(--primary);">0</div>
+                <div class="stat-label">Карточек</div>
+            </div>
+        </div>
+
+        <div class="section" style="margin-top: 35px;">
+            <div class="section-title">📊 Прогресс по разделам</div>
+            <div id="progressDetails" style="margin-bottom: 25px;">
+                <div style="text-align: center; color: var(--text-hint); font-size: 14px; padding: 30px; background: rgba(30,30,46,0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">Загрузка статистики...</div>
+            </div>
+            
+            <div class="section-title">🎯 Дополнительно</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 25px;">
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileBestStreak" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Лучшая серия</div>
+                </div>
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileAccuracy" style="color: var(--primary);">0%</div>
+                    <div class="stat-label">Точность</div>
+                </div>
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileBlitz" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Лучший блиц</div>
+                </div>
+                <div class="stat-box" style="background: rgba(30,30,46,0.4); backdrop-filter: blur(10px);">
+                    <div class="stat-value" id="profileVoice" style="color: var(--primary);">0</div>
+                    <div class="stat-label">Голосовых</div>
+                </div>
+            </div>
+
+            <div class="section-title">🏆 Достижения (Нажми)</div>
+            <div class="achievements-grid" id="achievementsGrid"></div>
+        </div>
+    </div>
+
+    <!-- РЕЙТИНГ (С ЛИГАМИ) -->
+    <div class="screen" id="leaderboardScreen">
+        <div class="glass-header">
+            <h2 style="margin-bottom: 5px; font-weight: 800; font-size: 26px;">🏆 Рейтинг Лиг</h2>
+            <p style="color: var(--text-hint); font-size: 14px; font-weight: 500;">Итоги недели в Воскресенье!</p>
+        </div>
+        <div class="leaderboard-list" id="leaderboardList">
+            <div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>
+        </div>
+    </div>
+
+    <!-- НАСТРОЙКИ -->
+    <div class="screen" id="settingsScreen">
+        <div class="glass-header">
+            <h2 style="font-weight: 800; font-size: 26px;">⚙️ Настройки</h2>
+        </div>
+        <div class="section">
+            <div class="settings-group">
+                <div class="settings-item" style="border-bottom: none; padding-bottom: 10px;">
+                    <div style="font-weight: 800; font-size: 16px; color: white;">🎨 Цвет интерфейса</div>
+                </div>
+                <div class="color-picker" id="colorPicker"></div>
+            </div>
+
+            <div class="settings-group">
+                <div class="settings-item" style="border-bottom: none; padding-bottom: 10px;">
+                    <div style="font-weight: 800; font-size: 16px; color: white;">🖼️ Тема (Фон)</div>
+                </div>
+                <div class="bg-picker" id="bgPicker"></div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-item" onclick="toggleSetting('sound')">
+                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600; font-size: 16px; color: white;">
+                        <span style="font-size:22px;">🔊</span> Звуки
+                    </div>
+                    <div class="toggle active" id="soundToggle"></div>
+                </div>
+                <div class="settings-item" onclick="toggleSetting('vibration')">
+                    <div style="display:flex; align-items:center; gap:14px; font-weight: 600; font-size: 16px; color: white;">
+                        <span style="font-size:22px;">📳</span> Вибрация
+                    </div>
+                    <div class="toggle active" id="vibrationToggle"></div>
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <div class="settings-item" onclick="tg.close()">
+                    <div style="display:flex; align-items:center; gap:14px; font-weight:800; color: var(--error);">
+                        <span style="font-size:22px;">🚪</span> Закрыть приложение
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= ВСПЛЫВАЮЩИЕ ОКНА И ОВЕРЛЕИ ================= -->
+    
+    <!-- МОДАЛКА КАРТОЧЕК -->
+    <div id="modal" class="overlay-screen" style="display: none;">
+        <div class="modal-box" id="modalBox">
+            <div id="modalCounter" style="display: none; position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.5); padding: 6px 14px; border-radius: 14px; font-size: 13px; font-weight: 700; color: white;">1/10</div>
+            <div id="modalSwipeHint" style="display: none; position: absolute; top: 20px; right: 20px; font-size: 20px; opacity: 0.5;">↔️</div>
+            
+            <div id="modalChar" class="japanese modal-char">あ</div>
+            <div id="modalReading" class="modal-reading">a</div>
+            <div id="modalMeaning" class="modal-meaning" style="display: none;"></div>
+            <div id="modalHint" class="modal-hint">Подсказка</div>
+            <div id="modalGif" class="modal-gif"><img id="gifImage" src=""></div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn" style="background: rgba(255,255,255,0.1); border: 1px solid var(--primary);" onclick="playSound()">🔊</button>
+                <button id="modalStrokeBtn" class="modal-btn" style="background: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.4);" onclick="showGif()">✍️</button>
+                <button class="modal-btn" style="background: rgba(255,255,255,0.1); flex: 0.5;" onclick="closeModal()">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- СВАЙПЫ (TINDER) -->
+    <div id="swipeScreen" class="overlay-screen" style="display: none;">
+        <h2 style="color: white; margin-bottom: 20px; font-size: 28px; font-weight: 800;">🃏 Карточки</h2>
+        <div class="swipe-progress" style="width: 100%; max-width: 320px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+            <span id="swipeCount" style="font-weight: 700; font-size: 16px; color: white; min-width: 50px;">1 / 10</span>
+            <div style="flex: 1; height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden;">
+                <div id="swipeProgress" style="height: 100%; background: var(--primary); width: 10%; border-radius: 4px; box-shadow: 0 0 10px var(--primary); transition: width 0.3s;"></div>
+            </div>
+        </div>
+        
+        <div class="swipe-card" id="swipeCard">
+            <div class="swipe-indicators" style="position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; pointer-events: none;">
+                <div class="indicator learn" style="background: var(--error); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 20px; border: 2px solid white; transform: rotate(-15deg); opacity: 0; transition: opacity 0.2s;">👎 Учить</div>
+                <div class="indicator know" style="background: var(--success); color: white; padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 20px; border: 2px solid white; transform: rotate(15deg); opacity: 0; transition: opacity 0.2s;">👍 Знаю</div>
+            </div>
+            <div class="japanese" id="swipeChar">あ</div>
+            <div id="swipeHint" style="color: var(--text-hint); font-size: 16px; font-weight: 500;">Нажми 👁 чтобы увидеть</div>
+            <div id="swipeAnswer" style="font-size: 40px; font-weight: 900; color: var(--primary); opacity: 0; text-shadow: 0 0 15px rgba(0,0,0,0.8); transition: opacity 0.2s;">a</div>
+        </div>
+        
+        <div class="swipe-buttons" style="display: flex; gap: 25px; margin-top: 30px;">
+            <button class="swipe-btn" style="border: 3px solid var(--error);" onclick="swipeNo()">👎</button>
+            <button class="swipe-btn" style="border: 3px solid var(--warning);" onclick="swipeReveal()">👁</button>
+            <button class="swipe-btn" style="border: 3px solid var(--success);" onclick="swipeYes()">👍</button>
+        </div>
+    </div>
+
+    <!-- КВИЗ -->
+    <div id="quizScreen" class="overlay-screen" style="display: none;">
+        <h2 id="quizTitle" style="color: white; margin-bottom: 15px; font-size: 26px; font-weight: 800;">🎯 Тест</h2>
+        
+        <div style="display: flex; gap: 40px; font-size: 22px; font-weight: 900; margin-bottom: 25px;">
+            <span style="color: var(--success); text-shadow: 0 0 10px rgba(0,0,0,0.8);">✓ <span id="quizCorrect">0</span></span>
+            <span style="color: var(--error); text-shadow: 0 0 10px rgba(0,0,0,0.8);">✗ <span id="quizWrong">0</span></span>
+        </div>
+        
+        <div class="quiz-card">
+            <div id="quizChar" class="japanese" style="font-size: 100px; color: white; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">あ</div>
+        </div>
+        
+        <div id="quizOptions" class="quiz-options"></div>
+    </div>
+
+    <!-- ЭКРАН РЕЗУЛЬТАТА -->
+    <div id="resultsScreen" class="overlay-screen" style="display: none; text-align: center;">
+        <div id="resultsIcon" style="font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">🎉</div>
+        <h1 id="resultsTitle" style="color: var(--primary); margin-bottom: 10px; font-size: 36px; font-weight: 900; text-shadow: 0 0 20px rgba(0,0,0,0.8);">Отлично!</h1>
+        <div id="resultsScore" style="font-size: 55px; font-weight: 900; color: white; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">5 / 5</div>
+        <div id="resultsXp" style="font-size: 26px; color: var(--warning); font-weight: 800; margin-bottom: 10px; text-shadow: 0 0 15px rgba(0,0,0,0.8);">+50 XP</div>
+        <div id="resultsSubtitle" style="color: var(--text-hint); margin-bottom: 45px; font-size: 18px;">Так держать!</div>
+        
+        <button style="width: 100%; max-width: 300px; padding: 20px; background: var(--primary); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transition: 0.2s;" onclick="finishQuiz()">✨ Забрать награду</button>
+        <button style="width: 100%; max-width: 300px; padding: 20px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: 800; transition: 0.2s;" onclick="retryQuiz()">🔄 Ещё раз</button>
+    </div>
+
+    <!-- РУЛЕТКА ВНУТРИ ПРИЛОЖЕНИЯ -->
+    <div id="wheelScreen" class="overlay-screen" style="display: none;">
+        <button style="position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; font-size: 20px; transition: 0.2s; cursor: pointer;" onclick="closeWheel()">✕</button>
+        <h2 style="color: var(--primary); font-size: 32px; font-weight: 900; margin-bottom: 10px; text-shadow: 0 0 20px rgba(0,0,0,0.8);">🎡 РУЛЕТКА</h2>
+        <p style="color: var(--text-hint); margin-bottom: 40px; font-size: 16px;">Испытай свою удачу!</p>
+        
+        <div style="position: relative; width: 320px; height: 320px; margin-bottom: 50px;">
+            <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 35px solid var(--warning); z-index: 10; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));"></div>
+            <svg id="wheel" viewBox="0 0 100 100" style="width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 8px rgba(255,255,255,0.1), 0 0 50px rgba(0,0,0,0.5); transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);"></svg>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 66px; height: 66px; background: rgba(30,30,46,0.9); border: 4px solid var(--warning); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">🎯</div>
+        </div>
+        
+        <button id="wheelSpinBtn" style="padding: 20px 70px; background: var(--primary); border: none; border-radius: 35px; color: white; font-size: 22px; font-weight: 900; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.2s; cursor: pointer;" onclick="spinWheel()">🎲 КРУТИТЬ</button>
+        
+        <div id="wheelResult" style="display: none; margin-top: 35px; padding: 25px 45px; background: rgba(255,255,255,0.1); border-radius: 24px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.4);">
+            <div id="wheelResultXp" style="font-size: 50px; font-weight: 900; color: var(--warning); margin-bottom: 8px; text-shadow: 0 0 15px rgba(0,0,0,0.8);">+100 XP</div>
+            <div style="color: white; font-size: 16px; font-weight: 600;">Награда зачислена!</div>
+        </div>
+    </div>
+
+    <!-- УСИЛЕННЫЙ БЛОК НАВИГАЦИИ С 5 КНОПКАМИ -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" onclick="goTo('home')">
+            <span class="icon">🏠</span><span>Главная</span>
+        </button>
+        <button class="nav-item" onclick="goTo('study')">
+            <span class="icon">📚</span><span>Словари</span>
+        </button>
+        <button class="nav-item" onclick="goTo('stories')">
+            <span class="icon">📖</span><span>Истории</span>
+        </button>
+        <button class="nav-item" onclick="goTo('leaderboard')">
+            <span class="icon">🏆</span><span>Лиги</span>
+        </button>
+        <button class="nav-item" onclick="goTo('profile')">
+            <span class="icon">👤</span><span>Профиль</span>
+        </button>
+    </nav>
+<!-- КОНЕЦ ПЕРВОЙ ЧАСТИ -->
+    <script>
+        const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : { initData: '', initDataUnsafe: {}, expand(){}, ready(){}, showAlert(m){ try{ alert(m) }catch(e){} }, sendData(){}, HapticFeedback: { notificationOccurred(){}, impactOccurred(){} }, colorScheme: 'dark' };
+        try { tg.expand(); tg.ready(); } catch(e){}
+
+        // ДИАГНОСТИКА
+        function updateDebug(msg) {
+            const el = document.getElementById('debugInfo');
+            if(el) {
+                const lines = el.innerText.split('\n');
+                if (lines.length > 5) lines.shift();
+                lines.push(msg);
+                el.innerText = lines.join('\n');
+            }
+            console.log(msg);
+        }
+
+        updateDebug('WebApp ready');
+        updateDebug('UA: ' + navigator.userAgent);
+        updateDebug('Platform: ' + (tg.platform || 'unknown'));
+
+        // ======= НАСТРОЙКИ API С РЕЗЕРВНЫМИ СЕРВЕРАМИ =======
+        const API_ENDPOINTS = [
+            'https://endless-max-jowly.ngrok-free.dev',  // Основной
+            'https://your-backup-server.herokuapp.com',   // Резервный 1
+            'https://another-backup-server.glitch.me'     // Резервный 2
+        ];
+        
+        let API_BASE = API_ENDPOINTS[0];
+        let currentApiIndex = 0;
+        let user = { id: null, name: 'Ученик', xp: 0, streak: 0, cardsLearned: 0, coins: 0, freezes: 0, league: 1, settings: { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' }, quests: {}, questsDate: null, completedStories: [], lastDaily: null, perfectTests: 0 };
+        let currentScreen = 'home';
+        function storageKey(){ const uid = localStorage.getItem('telegram_user_id') || 'anon'; return 'yomubot_user_' + uid; }
+        function getLeagueByXp(xp){ if(xp>=5000) return 5; if(xp>=3000) return 4; if(xp>=1500) return 3; if(xp>=500) return 2; return 1; }
+        function getLeagueInfo(xp){
+            const levels = [
+                { id: 1, name: 'Бронза', min: 0, max: 499 },
+                { id: 2, name: 'Серебро', min: 500, max: 1499 },
+                { id: 3, name: 'Золото', min: 1500, max: 2999 },
+                { id: 4, name: 'Платина', min: 3000, max: 4999 },
+                { id: 5, name: 'Алмаз', min: 5000, max: Infinity }
+            ];
+            let current = levels[0];
+            for (const lvl of levels) {
+                if (xp >= lvl.min) current = lvl;
+            }
+            const next = levels.find(l => l.id === current.id + 1);
+            const range = (next ? next.min : current.max + 1) - current.min;
+            const progress = range > 0 ? Math.min(100, Math.max(0, Math.round((xp - current.min) / range * 100))) : 100;
+            const remaining = next ? Math.max(0, next.min - xp) : 0;
+            return { ...current, progress, remaining, nextName: next ? next.name : null };
+        }
+        function normalizeDailyStats() {
+            const today = new Date().toDateString();
+            if (!user.dailyDate || user.dailyDate !== today) {
+                user.dailyDate = today;
+                user.dailyXp = 0;
+            }
+        }
+        function addXpLocal(amount) {
+            normalizeDailyStats();
+            user.xp += amount;
+            user.dailyXp = (user.dailyXp || 0) + amount;
+        }
+        
+        // Функция для получения актуальных данных пользователя
+        function getCurrentUserData() {
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                return {
+                    id: tg.initDataUnsafe.user.id,
+                    name: tg.initDataUnsafe.user.first_name,
+                    username: tg.initDataUnsafe.user.username
+                };
+            }
+            return null;
+        }
+        
+        // Очищаем localStorage при смене пользователя
+        function clearUserDataIfDifferent() {
+            const currentUser = getCurrentUserData();
+            if (currentUser) {
+                const storedUserId = localStorage.getItem('telegram_user_id');
+                const storedUserName = localStorage.getItem('telegram_user_name');
+                
+                if (storedUserId && storedUserId !== currentUser.id.toString()) {
+                    console.log('Смена пользователя detected, очищаем данные');
+                    localStorage.clear();
+                    localStorage.setItem('telegram_user_id', currentUser.id.toString());
+                    localStorage.setItem('telegram_user_name', currentUser.name);
+                    return true;
+                }
+                
+                if (!storedUserId) {
+                    localStorage.setItem('telegram_user_id', currentUser.id.toString());
+                    localStorage.setItem('telegram_user_name', currentUser.name);
+                }
+            }
+            return false;
+        }
+        
+        let AUTH_HEADER = tg.initData || '';
+        
+        // Определение сетевого подключения
+        let isOnline = navigator.onLine;
+        let apiAvailable = false;
+
+        // Мониторинг сетевого подключения
+        window.addEventListener('online', () => {
+            isOnline = true;
+            showNotification('🌐 Соединение восстановлено', 'success');
+            checkApiAvailability();
+        });
+        
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            showNotification('📵 Нет соединения с интернетом', 'error');
+        });
+
+        // Проверка доступности API
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            }
+        }
+
+        // Централизованный логгер ошибок
+        const logError = throttle(async (error, context = {}) => {
+            console.error('🔥 ERROR:', error, context);
+            try {
+                if (!navigator.onLine) return;
+                await fetch(`${API_BASE}/api/log`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+                    body: JSON.stringify({
+                        error: error.message || String(error),
+                        stack: error.stack,
+                        context: context,
+                        user: user.id,
+                        ua: navigator.userAgent,
+                        time: new Date().toISOString()
+                    })
+                });
+            } catch(e) {}
+        }, 5000);
+
+        window.onerror = function(msg, url, line, col, error) {
+            logError(error || msg, { url, line, col });
+            return false;
+        };
+
+        window.onunhandledrejection = function(event) {
+            logError(event.reason, { type: 'unhandledRejection' });
+        };
+
+        async function checkApiAvailability() {
+            if (!isOnline) {
+                updateDebug('Offline');
+                return false;
+            }
+            
+            // Если мы уже нашли рабочий API и он работает - ничего не меняем
+            if (apiAvailable) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/health`, { 
+                        method: 'GET',
+                        headers: { 'ngrok-skip-browser-warning': 'true' }
+                    });
+                    if (response.ok) return true;
+                } catch(e) {
+                    updateDebug('API check failed: ' + e.message);
+                }
+            }
+            
+            // Если текущий API не работает, пробуем все из списка
+            updateDebug('Checking endpoints...');
+            for (let i = 0; i < API_ENDPOINTS.length; i++) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    
+                    const response = await fetch(`${API_ENDPOINTS[i]}/api/health`, {
+                        method: 'GET',
+                        headers: { 'ngrok-skip-browser-warning': 'true' },
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (response.ok) {
+                        API_BASE = API_ENDPOINTS[i];
+                        currentApiIndex = i;
+                        apiAvailable = true;
+                        updateDebug('Connected: ' + API_BASE);
+                        // Если это первый запуск или восстановление - сразу обновим данные
+                        fetchUserFromServer();
+                        return true;
+                    }
+                } catch (e) {
+                    // console.warn(`API ${API_ENDPOINTS[i]} недоступен:`, e.message);
+                }
+            }
+            updateDebug('All endpoints failed');
+            apiAvailable = false;
+            return false;
+        }
+
+        // Автоматическая проверка соединения каждые 10 секунд
+        setInterval(checkApiAvailability, 10000);
+
+        // Улучшенная функция fetch с обработкой ошибок
+        async function safeFetch(url, options = {}) {
+            if (!isOnline) {
+                throw new Error('OFFLINE');
+            }
+            
+            if (!apiAvailable) {
+                await checkApiAvailability();
+            }
+            
+            let lastError;
+            for (let i = 0; i < API_ENDPOINTS.length; i++) {
+                try {
+                    const apiEndpoint = API_ENDPOINTS[(currentApiIndex + i) % API_ENDPOINTS.length];
+                    const fullUrl = url.replace(API_BASE, apiEndpoint);
+                    
+                    const response = await fetch(fullUrl, {
+                        ...options,
+                        timeout: options.timeout || 8000
+                    });
+                    
+                    if (response.ok) {
+                        return response;
+                    }
+                } catch (e) {
+                    lastError = e;
+                    console.warn(`Ошибка при запросе к ${API_ENDPOINTS[(currentApiIndex + i) % API_ENDPOINTS.length]}:`, e);
+                }
+            }
+            throw lastError || new Error('All API endpoints failed');
+        }
+
+        // Система уведомлений
+        function showNotification(message, type = 'info', duration = 3000) {
+            try {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed; top: 60px; left: 20px; right: 20px; z-index: 10000;
+                    padding: 15px; border-radius: 12px; text-align: center; font-weight: 600;
+                    animation: slideDown 0.3s ease; backdrop-filter: blur(10px);
+                    ${type === 'error' ? 'background: rgba(248, 113, 113, 0.9); color: white;' : ''}
+                    ${type === 'success' ? 'background: rgba(74, 222, 128, 0.9); color: white;' : ''}
+                    ${type === 'info' ? 'background: rgba(102, 126, 234, 0.9); color: white;' : ''}
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.remove();
+                        }
+                    }, 300);
+                }, duration);
+            } catch (e) {
+                console.warn("Ошибка showNotification:", e);
+                // Резервный вариант - console.log
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+        }
+
+        let swipe = { items: [], index: 0, correct: 0, wrong: 0, history: [] };
+        let currentStudyList = [];
+        let currentStudyIndex = 0;
+        let currentStory = null; // Для интерактивных историй
+
+        // ==================== ПАЛИТРЫ ЦВЕТОВ ИНТЕРФЕЙСА ====================
+        const PALETTES = [
+            { id: 'purple', name: 'Фиолетовый', p: '#667eea', s: '#764ba2', a: '#f093fb' },
+            { id: 'blue', name: 'Океан', p: '#4facfe', s: '#00f2fe', a: '#43e97b' },
+            { id: 'red', name: 'Закат', p: '#fa709a', s: '#fee140', a: '#f5576c' },
+            { id: 'green', name: 'Лес', p: '#11998e', s: '#38ef7d', a: '#0ba360' },
+            { id: 'dark', name: 'Ночь', p: '#537895', s: '#09203f', a: '#141e30' },
+            { id: 'orange', name: 'Огонь', p: '#ff0844', s: '#ffb199', a: '#f6d365' }
+        ];
+
+        function applyPalette(paletteId) {
+            const pal = PALETTES.find(p => p.id === paletteId) || PALETTES[0];
+            document.documentElement.style.setProperty('--primary', pal.p);
+            document.documentElement.style.setProperty('--secondary', pal.s);
+            document.documentElement.style.setProperty('--accent', pal.a);
+            
+            if (!user.settings) user.settings = {};
+            user.settings.themeColor = paletteId;
+            saveUser(); 
+            renderPalettePicker();
+        }
+
+        function renderPalettePicker() {
+            const picker = document.getElementById('colorPicker');
+            if(!picker) return;
+            picker.innerHTML = PALETTES.map(p => `
+                <div class="color-circle ${(user.settings.themeColor || 'purple') === p.id ? 'active' : ''}" 
+                     style="background: linear-gradient(135deg, ${p.p}, ${p.s});"
+                     onclick="applyPalette('${p.id}'); haptic('light');">
+                </div>
+            `).join('');
+        }
+
+        // ==================== ЛОКАЛЬНЫЕ И СЕТЕВЫЕ ФОНЫ ====================
+        const BACKGROUNDS = [
+            { id: 'bg-dark', name: 'Тёмный', url: '' },
+            { id: 'bg-sakura', name: 'Сакура', url: 'sakura.gif' },
+            { id: 'bg-city', name: 'Кибер Сити', url: 'city.gif' },
+            { id: 'bg-rain', name: 'Дождь', url: 'rain.gif' },
+            { id: 'bg-sunset', name: 'Закат', url: 'sunset.gif' },
+            { id: 'bg-forest', name: 'Лес', url: 'forest.gif' }
+        ];
+
+        function applyBackground(bgId) {
+            const bgLayer = document.getElementById('appBgLayer');
+            const bg = BACKGROUNDS.find(b => b.id === bgId) || BACKGROUNDS[0];
+            
+            if (bg.url !== '') {
+                bgLayer.style.backgroundImage = `url('${bg.url}')`;
+                bgLayer.style.opacity = '0.4'; 
+            } else {
+                bgLayer.style.backgroundImage = 'none';
+                bgLayer.style.opacity = '0';
+            }
+            
+            if (!user.settings) user.settings = {};
+            user.settings.bg = bgId;
+            saveUser(); 
+            renderBgPicker();
+        }
+
+        function renderBgPicker() {
+            const picker = document.getElementById('bgPicker');
+            if(!picker) return;
+            picker.innerHTML = BACKGROUNDS.map(bg => `
+                <div class="bg-option ${(user.settings.bg || 'bg-dark') === bg.id ? 'active' : ''}" 
+                     style="background-image: url('${bg.url}'); background-color: rgba(255,255,255,0.05); border: 2px solid ${user.settings.bg === bg.id ? 'var(--primary)' : 'transparent'};"
+                     onclick="applyBackground('${bg.id}'); haptic('light');">
+                     <div style="background: rgba(0,0,0,0.8); padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; text-align:center;">${bg.name}</div>
+                </div>
+            `).join('');
+        }
+
+        // ==================== ИНТЕРАКТИВНЫЕ ИСТОРИИ (НОВЫЙ ФОРМАТ) ====================
+        const INTERACTIVE_STORIES = [
+            {
+                id: "story_cafe",
+                title: "☕ Поход в кафе",
+                level: "N5",
+                difficulty: "Легко",
+                duration: "5 мин",
+                xp: 50,
+                description: "Помоги Таро заказать кофе в токийском кафе",
+                preview: "今日は、カフェに行きます...",
+                image: "☕",
+                isUnlocked: true,
+                isCompleted: false,
+                content: [
+                    {jp: "今日", kana: "きょう", ru: "Сегодня", interactive: true},
+                    {jp: "は", kana: "わ", ru: "(тема)", interactive: false},
+                    {jp: "カフェ", kana: "カフェ", ru: "кафе", interactive: true},
+                    {jp: "に", kana: "に", ru: "в (место)", interactive: false},
+                    {jp: "行きます", kana: "いきます", ru: "иду/еду", interactive: true},
+                    {jp: "。", kana: "", ru: "", interactive: false}
+                ],
+                quiz: { 
+                    question: "Куда идёт герой?", 
+                    options: ["В школу", "В кафе", "Домой", "В парк"], 
+                    correct: "В кафе",
+                    hint: "Посмотри на слово カフェ"
+                },
+                achievements: ["Первая история", "Читатель N5"],
+                vocabulary: ["今日", "カフェ", "行きます"]
+            },
+            {
+                id: "story_friend",
+                title: "👥 Новый друг",
+                level: "N5", 
+                difficulty: "Легко",
+                duration: "7 мин",
+                xp: 60,
+                description: "Познакомься с новым другом и узнай о его хобби",
+                preview: "私の友達は猫が好きです...",
+                image: "👥",
+                isUnlocked: true,
+                isCompleted: false,
+                content: [
+                    {jp: "私", kana: "わたし", ru: "Я", interactive: true},
+                    {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
+                    {jp: "友達", kana: "ともだち", ru: "друг", interactive: true},
+                    {jp: "は", kana: "わ", ru: "(тема)", interactive: false},
+                    {jp: "猫", kana: "ねこ", ru: "кошка/кот", interactive: true},
+                    {jp: "が", kana: "が", ru: "(объект)", interactive: false},
+                    {jp: "好き", kana: "すき", ru: "нравится", interactive: true},
+                    {jp: "です", kana: "です", ru: "есть/является", interactive: false},
+                    {jp: "。", kana: "", ru: "", interactive: false}
+                ],
+                quiz: { 
+                    question: "Что нравится другу героя?", 
+                    options: ["Собаки", "Кошки", "Рыбки", "Птицы"], 
+                    correct: "Кошки",
+                    hint: "Ищи слово 猫 (ねこ)"
+                },
+                achievements: ["Дружелюбный", "Любитель животных"],
+                vocabulary: ["私", "友達", "猫", "好き", "です"]
+            },
+            {
+                id: "story_shopping",
+                title: "🛍️ Шоппинг в Токио",
+                level: "N5",
+                difficulty: "Средне",
+                duration: "10 мин", 
+                xp: 80,
+                description: "Сходи за покупками в японский магазин",
+                preview: "このリンゴはいくらですか...",
+                image: "🛍️",
+                isUnlocked: false,
+                isCompleted: false,
+                requirement: "Заверши 2 истории",
+                content: [
+                    {jp: "この", kana: "この", ru: "этот/эта/это", interactive: true},
+                    {jp: "リンゴ", kana: "リンゴ", ru: "яблоко", interactive: true},
+                    {jp: "は", kana: "わ", ru: "(тема)", interactive: false},
+                    {jp: "いくら", kana: "いくら", ru: "сколько", interactive: true},
+                    {jp: "です", kana: "です", ru: "стоит", interactive: false},
+                    {jp: "か", kana: "か", ru: "? (вопрос)", interactive: false},
+                    {jp: "。", kana: "", ru: "", interactive: false}
+                ],
+                quiz: { 
+                    question: "Что хочет купить герой?", 
+                    options: ["Банан", "Яблоко", "Апельсин", "Грушу"], 
+                    correct: "Яблоко",
+                    hint: "リンゴ - это яблоко"
+                },
+                achievements: ["Покупатель", "Экономист"],
+                vocabulary: ["この", "リンゴ", "いくら", "です"]
+            },
+            {
+                id: "story_train",
+                title: "☕ Поездка на поезде",
+                level: "N5",
+                difficulty: "Средне",
+                duration: "20 мин",
+                xp: 120,
+                description: "Отправляйся в путешествие на знаменитом японском поезде синкансэн",
+                preview: "新幹線で京都に行きます...",
+                image: "🚅",
+                isUnlocked: false,
+                isCompleted: false,
+                requirement: "XP 500+",
+                stages: [
+                    {
+                        id: "stage_1",
+                        title: "На вокзале",
+                        content: [
+                            {jp: "新幹線", kana: "しんかんせん", ru: "синкансэн (пуля)", interactive: true},
+                            {jp: "で", kana: "で", ru: "на (транспорте)", interactive: false},
+                            {jp: "京都", kana: "きょうと", ru: "Киото", interactive: true},
+                            {jp: "に", kana: "に", ru: "в (место)", interactive: false},
+                            {jp: "行きます", kana: "いきます", ru: "поеду", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "На чём едет герой?", 
+                            options: ["Автобус", "Машина", "Синкансэн", "Велосипед"], 
+                            correct: "Синкансэн",
+                            hint: "新幹線 - это знаменитый японский поезд"
+                        }
+                    },
+                    {
+                        id: "stage_2",
+                        title: "В вагоне",
+                        content: [
+                            {jp: "窓", kana: "まど", ru: "окно", interactive: true},
+                            {jp: "から", kana: "から", ru: "из", interactive: false},
+                            {jp: "富士山", kana: "ふじさん", ru: "Фудзияма", interactive: true},
+                            {jp: "が", kana: "が", ru: "подлежащее", interactive: false},
+                            {jp: "見えます", kana: "みえます", ru: "видно", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Что видно из окна?", 
+                            options: ["Фудзияма", "Токио", "Море", "Горы"], 
+                            correct: "Фудзияма",
+                            hint: "富士山 (ふじさん) - это знаменитая гора Японии"
+                        }
+                    },
+                    {
+                        id: "stage_3", 
+                        title: "Прибытие",
+                        content: [
+                            {jp: "京都", kana: "きょうと", ru: "Киото", interactive: true},
+                            {jp: "に", kana: "に", ru: "в (место)", interactive: false},
+                            {jp: "着きました", kana: "つきました", ru: "прибыл", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Куда прибыл герой?", 
+                            options: ["Токио", "Киото", "Осака", "Нагоя"], 
+                            correct: "Киото",
+                            hint: "京都 (きょうと) - это древняя столица Японии"
+                        }
+                    }
+                ],
+                achievements: ["Путешественник", "Скоростник"],
+                vocabulary: ["新幹線", "京都", "行きます", "窓", "富士山", "見えます", "着きました"]
+            },
+            {
+                id: "story_festival",
+                title: "🎌 Фестиваль Сакуры",
+                level: "N4",
+                difficulty: "Сложно",
+                duration: "25 мин",
+                xp: 180,
+                description: "Участвуй в традиционном японском фестивале цветения сакуры",
+                preview: "春の桜祭りに参加しましょう...",
+                image: "🎌",
+                isUnlocked: false,
+                isCompleted: false,
+                requirement: "XP 1000+",
+                stages: [
+                    {
+                        id: "stage_1",
+                        title: "Подготовка к фестивалю",
+                        content: [
+                            {jp: "春", kana: "はる", ru: "весна", interactive: true},
+                            {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
+                            {jp: "桜", kana: "さくら", ru: "сакура", interactive: true},
+                            {jp: "祭り", kana: "まつり", ru: "фестиваль", interactive: true},
+                            {jp: "の", kana: "の", ru: "(принадлежность)", interactive: false},
+                            {jp: "準備", kana: "じゅんび", ru: "подготовка", interactive: true},
+                            {jp: "を", kana: "を", ru: "объект", interactive: false},
+                            {jp: "します", kana: "します", ru: "делаю", interactive: false},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Что готовит герой?", 
+                            options: ["Новогодний праздник", "Фестиваль сакуры", "День рождения", "Свадьбу"], 
+                            correct: "Фестиваль сакуры",
+                            hint: "桜 (さくら) - это сакура/вишнёвый цвет"
+                        }
+                    },
+                    {
+                        id: "stage_2",
+                        title: "На фестивале",
+                        content: [
+                            {jp: "公園", kana: "こうえん", ru: "парк", interactive: true},
+                            {jp: "で", kana: "で", ru: "в (месте)", interactive: false},
+                            {jp: "たくさん", kana: "たくさん", ru: "много", interactive: true},
+                            {jp: "の", kana: "の", ru: "частиц", interactive: false},
+                            {jp: "人", kana: "ひと", ru: "людей", interactive: true},
+                            {jp: "が", kana: "が", ru: "подлежащее", interactive: false},
+                            {jp: "集まります", kana: "あつまります", ru: "собираются", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Где происходит действие?", 
+                            options: ["В школе", "В ресторане", "В парке", "В магазине"], 
+                            correct: "В парке",
+                            hint: "公園 (こうえん) - это парк"
+                        }
+                    },
+                    {
+                        id: "stage_3",
+                        title: "Танцы под сакурой",
+                        content: [
+                            {jp: "美しい", kana: "うつくしい", ru: "красивый", interactive: true},
+                            {jp: "音楽", kana: "おんがく", ru: "музыка", interactive: true},
+                            {jp: "を", kana: "を", ru: "Объект", interactive: false},
+                            {jp: "聴きながら", kana: "ききながら", ru: "слушая", interactive: true},
+                            {jp: "踊ります", kana: "おどります", ru: "танцую", interactive: true},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Что делает герой под сакурой?", 
+                            options: ["Поёт", "Танцует", "Рисует", "Читает"], 
+                            correct: "Танцует",
+                            hint: "踊ります (おどります) - это танцевать"
+                        }
+                    },
+                    {
+                        id: "stage_4",
+                        title: "Завершение фестиваля",
+                        content: [
+                            {jp: "楽しい", kana: "たのしい", ru: "весёлый", interactive: true},
+                            {jp: "一日", kana: "いちにち", ru: "один день", interactive: true},
+                            {jp: "でした", kana: "でした", ru: "был (прошлое время)", interactive: false},
+                            {jp: "。", kana: "", ru: "", interactive: false}
+                        ],
+                        quiz: { 
+                            question: "Как прошёл день фестиваля?", 
+                            options: ["Скучно", "Грустно", "Весело", "Обычно"], 
+                            correct: "Весело",
+                            hint: "楽しい (たのしい) - это весёлый/радостный"
+                        }
+                    }
+                ],
+                achievements: ["Фестивальщик", "Любитель весны", "Мастер культуры", "Танцор"],
+                vocabulary: ["春", "桜", "祭り", "準備", "公園", "集まります", "美しい", "音楽", "聴きながら", "踊ります", "楽しい", "一日"]
+            }
+        ];
+
+        // ==================== ДОСТИЖЕНИЯ И КВЕСТЫ ====================
+        const ACHIEVEMENTS = [];
+        
+        const xpMilestones = [100, 500, 1000, 2500, 5000, 10000, 15000, 20000, 35000, 50000, 75000, 100000, 150000, 200000, 250000];
+        const xpNames = ["Первый шаг", "Ученик", "Искатель", "Странник", "Кохай", "Сэмпай", "Мечник", "Самурай", "Ронин", "Мастер", "Сенсей", "Шихан", "Даймё", "Сёгун", "Ками"];
+        const xpIcons = ['🌱','🌿','🌳','🌲','🍄','🐚','🐌','🦋','🐛','🐝','🐞','🐠','🐟','🐬','🐲'];
+        
+        for (let i = 0; i < xpMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `xp_${i}`, 
+                name: xpNames[i], 
+                icon: xpIcons[i], 
+                desc: `Набери ${xpMilestones[i]} XP.`, 
+                check: (u) => u.xp >= xpMilestones[i] 
+            });
+        }
+
+        const strMilestones = [3, 7, 10, 14, 21, 30, 50, 60, 90, 100, 150, 180, 200, 250, 300, 365, 500];
+        const strIcons = ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛','🔥','💥','⚡','✨','💫'];
+        
+        for (let i = 0; i < strMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `str_${strMilestones[i]}`, 
+                name: `${strMilestones[i]} Дней`, 
+                icon: strIcons[i], 
+                desc: `Поддерживай серию ${strMilestones[i]} дней.`, 
+                check: (u) => u.streak >= strMilestones[i] 
+            });
+        }
+
+        const cardMilestones = [10, 20, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 2500, 3000, 4000, 5000];
+        const crdIcons = ['📝','📖','📄','📃','📑','📓','📔','📒','📕','📗','📘','📙','📚','📜','🗺️'];
+        
+        for (let i = 0; i < cardMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `crd_${cardMilestones[i]}`, 
+                name: `Словарь ${cardMilestones[i]}`, 
+                icon: crdIcons[i], 
+                desc: `Изучи ${cardMilestones[i]} карточек.`, 
+                check: (u) => u.cardsLearned >= cardMilestones[i] 
+            });
+        }
+
+        const testMilestones = [1, 5, 10, 25, 50, 75, 100, 150, 200, 250];
+        const testIcons = ['🥉','🥈','🥇','🏅','🏆','🏵️','🎗️','🎫','🎟️','👑'];
+        
+        for (let i = 0; i < testMilestones.length; i++) {
+            ACHIEVEMENTS.push({ 
+                id: `pt_${testMilestones[i]}`, 
+                name: `Снайпер ${testMilestones[i]}`, 
+                icon: testIcons[i], 
+                desc: `Пройди ${testMilestones[i]} тестов без ошибок.`, 
+                check: (u) => (u.perfectTests || 0) >= testMilestones[i] 
+            });
+        }
+
+        const DAILY_QUESTS = [
+            {id: 'cards10', name: 'Изучить 10 карточек', target: 10, xp: 30, icon: '📚'},
+            {id: 'test', name: 'Пройти тест', target: 1, xp: 20, icon: '✅'},
+            {id: 'login', name: 'Зайти в приложение', target: 1, xp: 10, icon: '👋'}
+        ];
+
+        const WHEEL_PRIZES = [
+            {value: 10, color: '#e74c3c'}, {value: 25, color: '#9b59b6'}, {value: 50, color: '#3498db'},
+            {value: 100, color: '#2ecc71'}, {value: 15, color: '#e67e22'}, {value: 75, color: '#1abc9c'},
+            {value: 30, color: '#f39c12'}, {value: 150, color: '#e91e63'}
+        ];
+
+        // ==================== УПРАВЛЕНИЕ СТАТУСОМ СЕРВЕРА ====================
+        function updateServerStatus(isOnline, details = '') {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            const serverStatus = document.getElementById('serverStatus');
+            
+            if (!statusDot || !statusText || !serverStatus) return;
+            
+            if (isOnline) {
+                statusDot.className = 'status-dot online';
+                statusText.textContent = 'Онлайн';
+                serverStatus.style.color = 'var(--success)';
+            } else {
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = 'Оффлайн';
+                serverStatus.style.color = 'var(--error)';
+            }
+            
+            // Добавляем детальную информацию при клике
+            serverStatus.onclick = () => {
+                const message = isOnline 
+                    ? `✅ Сервер доступен\n${details}\n\nПоследняя проверка: ${new Date().toLocaleTimeString()}`
+                    : `❌ Сервер недоступен\n${details}\n\nПоследняя проверка: ${new Date().toLocaleTimeString()}\n\nПриложение работает в оффлайн-режиме`;
+                tg.showAlert(message);
+            };
+        }
+
+        // Автоматическая проверка статуса сервера
+        async function startServerStatusMonitoring() {
+            // Первая проверка
+            await updateServerStatusFromApi();
+            
+            // Регулярная проверка каждые 30 секунд
+            setInterval(async () => {
+                await updateServerStatusFromApi();
+            }, 30000);
+        }
+
+        async function updateServerStatusFromApi() {
+            try {
+                const isAvailable = await checkApiAvailability();
+                if (isAvailable) {
+                    updateServerStatus(true, `API: ${API_BASE}`);
+                } else {
+                    updateServerStatus(false, 'Все серверы недоступны');
+                }
+            } catch (error) {
+                updateServerStatus(false, `Ошибка: ${error.message}`);
+            }
+        }
+
+        // ==================== СЕТЬ И ЗАГРУЗКА ====================
+        async function fetchUserFromServer() {
+            if (!AUTH_HEADER) return false;
+            try {
+                const response = await safeFetch(`${API_BASE}/api/user`, {
+                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                });
+                
+                if (!response.ok) throw new Error('Server error');
+                const data = await response.json();
+                
+                if (data.success) {
+                    user.id = data.user.id;
+                    user.xp = data.user.xp;
+                    user.streak = data.user.streak;
+                    user.cardsLearned = data.user.cards_learned;
+                    user.coins = data.user.coins || 0;
+                    user.freezes = data.user.freezes || 0;
+                    user.league = data.user.league || 1;
+                    
+                    if (data.user.name && data.user.name.trim() !== '' && data.user.name !== 'Test User') {
+                        user.name = data.user.name;
+                    } else if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                        user.name = tg.initDataUnsafe.user.first_name;
+                    }
+                    normalizeDailyStats();
+                    saveUser();
+                    return true;
+                }
+            } catch (e) { 
+                if (e.message === 'OFFLINE') {
+                    console.log('Работаем в оффлайн режиме');
+                    return false;
+                }
+                console.warn('Ошибка загрузки данных с сервера:', e);
+                return false; 
+            }
+        }
+
+        async function loadAvatarBlob(userId, elementId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/avatar/${userId}`, {
+                    headers: { 'ngrok-skip-browser-warning': 'true', 'X-Telegram-Init-Data': AUTH_HEADER }
+                });
+                if (response.ok) {
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('image')) {
+                        const blob = await response.blob();
+                        const url = URL.createObjectURL(blob);
+                        const el = document.getElementById(elementId);
+                        if (el) el.style.backgroundImage = `url('${url}')`;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function fetchLeaderboard() {
+            const container = document.getElementById('leaderboardList');
+            if (!container) return;
+            
+            container.innerHTML = '<div style="text-align: center; padding: 30px; color: var(--text-hint);">Загрузка...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/leaderboard`, {
+                    method: 'GET',
+                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ошибка`);
+                const data = await response.json();
+                
+                if (data.success && Array.isArray(data.players) && data.players.length > 0) {
+                    let html = '';
+                    
+                    const leagueNames = { 1: "Бронза", 2: "Серебро", 3: "Золото", 4: "Платина", 5: "Алмаз" };
+                    
+                    data.players.forEach((p, index) => {
+                        let safeName = p.name;
+                        // Защита от крестиков и плохих имен
+                        if (!safeName || safeName === 'Test User' || safeName === 'User' || safeName === 'Х' || safeName === 'X') {
+                            safeName = `Игрок ${p.id.toString().slice(-4)}`;
+                        }
+                        
+                        const initial = safeName.charAt(0).toUpperCase();
+                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff&size=40`;
+                        const avatarDivId = `lb-av-${p.id}-${index}`;
+                        const leagueId = p.league || getLeagueByXp(p.xp);
+                        const leagueStr = leagueNames[leagueId] || "Бронза";
+                        const isCurrentUser = (p.id.toString() === user.id.toString());
+                        const activeClass = isCurrentUser ? 'current-user' : '';
+
+                        html += `
+                        <div class="leaderboard-item league-${leagueId} ${activeClass}">
+                            <div class="leaderboard-rank">#${index + 1}</div>
+                            <div class="leaderboard-avatar" id="${avatarDivId}" style="background-image: url('${fallbackUrl}'); border-color: inherit;"></div>
+                            <div class="leaderboard-info">
+                                <div class="leaderboard-name">
+                                    ${safeName}
+                                    <span class="league-badge l-badge-${leagueId}">${leagueStr}</span>
+                                    ${isCurrentUser ? '<span style="font-size: 10px; background: var(--primary); padding: 2px 6px; border-radius: 6px; margin-left: 6px;">ВЫ</span>' : ''}
+                                </div>
+                                <div class="leaderboard-details">
+                                    <span class="leaderboard-xp">${p.xp} XP</span>
+                                    <span class="leaderboard-streak">🔥 ${p.streak}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    
+                    container.innerHTML = html;
+
+                    data.players.forEach((p, index) => {
+                        loadAvatarBlob(p.id, `lb-av-${p.id}-${index}`);
+                    });
+
+                } else {
+                    container.innerHTML = '<div style="text-align: center; color: var(--text-hint);">Нет данных</div>';
+                }
+            } catch (e) { 
+                if (e.message && e.message.includes('401')) {
+                     container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка авторизации</div>`; 
+                } else {
+                     container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; 
+                }
+            }
+        }
+
+        async function fetchUserStats() {
+            if (!AUTH_HEADER) {
+                // Если нет авторизации, попробуем обновить токен из TG (вдруг появился)
+                if (tg.initData) {
+                    // Перезагрузка страницы для обновления AUTH_HEADER (он константа)
+                    // Но лучше просто предупредить
+                }
+                return;
+            }
+            const container = document.getElementById('progressDetails');
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/user/stats`, {
+                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                });
+                
+                if (!response.ok) throw new Error('Stats API Error');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderProfileStats(data.stats);
+                }
+            } catch (e) { 
+                if (container) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--error); font-size: 14px; padding: 20px; background: rgba(30,30,46,0.5); border-radius: 16px;">Сбой загрузки статистики.</div>`;
+                }
+            }
+        }
+
+        function renderProfileStats(stats) {
+            document.getElementById('profileBestStreak').textContent = stats.best_streak || 0;
+            document.getElementById('profileAccuracy').textContent = Math.round((stats.accuracy || 0) * 100) + '%';
+            document.getElementById('profileBlitz').textContent = stats.best_blitz || 0;
+            document.getElementById('profileVoice').textContent = stats.voice_msgs || 0;
+
+            const byType = stats.by_type || {};
+            const sections = [
+                { id: 'hiragana', name: 'Хирагана', total: 46 }, 
+                { id: 'katakana', name: 'Катакана', total: 46 },
+                { id: 'kanji_n5', name: 'Кандзи N5', total: 103 }, 
+                { id: 'words_n5', name: 'Слова N5', total: 40 },
+                { id: 'kanji_n4', name: 'Кандзи N4', total: 181 }, 
+                { id: 'words_n4', name: 'Слова N4', total: 16 }
+            ];
+            
+            let progressHtml = '';
+            sections.forEach(sec => {
+                const learned = byType[sec.id] || 0;
+                const percent = Math.min(100, Math.round(learned / sec.total * 100));
+                
+                progressHtml += `
+                    <div style="margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px; color: white;">
+                            <span>${sec.name}</span>
+                            <span>${learned}/${sec.total} (<span style="color:var(--primary); font-weight:bold;">${percent}%</span>)</span>
+                        </div>
+                        <div style="height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
+                            <div style="height:100%; width:${percent}%; background:linear-gradient(90deg, var(--primary), var(--accent)); border-radius:4px; box-shadow: 0 0 10px var(--primary);"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('progressDetails').innerHTML = progressHtml;
+        }
+
+        // ==================== ЛОГИКА ПОЛЬЗОВАТЕЛЯ ====================
+        function loadUserFromStorage() {
+            const saved = localStorage.getItem(storageKey());
+            if (saved) {
+                user = { ...user, ...JSON.parse(saved) };
+                if (!user.settings) {
+                    user.settings = { sound: true, vibration: true, bg: 'bg-dark', themeColor: 'purple' };
+                }
+            }
+            const currentUser = getCurrentUserData();
+            if (currentUser && !user.id) {
+                user.id = currentUser.id;
+            }
+
+            // Защита от кривых имен
+            if (!user.name || user.name === 'Test User' || user.name === 'Загрузка...' || user.name === 'User' || user.name === 'Х' || user.name === 'X') {
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    user.name = tg.initDataUnsafe.user.first_name;
+                } else {
+                    user.name = 'Ученик';
+                }
+            }
+            normalizeDailyStats();
+        }
+
+        function saveUser() {
+            localStorage.setItem(storageKey(), JSON.stringify(user));
+        }
+
+        function setAvatar() {
+            const tgUser = tg.initDataUnsafe?.user;
+            let avatarUrl = '';
+            
+            // Если у пользователя есть фото в Telegram, используем его
+            if (tgUser && tgUser.photo_url) {
+                avatarUrl = tgUser.photo_url;
+            } else {
+                // Если нет фото, генерируем аватар с инициалами
+                const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
+                avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff`;
+            }
+            
+            // Функция для установки фона с проверкой загрузки
+            const applyBg = (elementId, url) => {
+                const el = document.getElementById(elementId);
+                if (!el) return;
+                
+                // Проверяем доступность URL перед установкой
+                const img = new Image();
+                img.onload = () => { el.style.backgroundImage = `url(${url})`; };
+                img.onerror = () => {
+                    // Если не загрузилось (404/403), ставим заглушку
+                    console.warn(`Ошибка загрузки аватара для ${elementId}: ${url}`);
+                    const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
+                    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff`;
+                    el.style.backgroundImage = `url(${fallback})`;
+                };
+                img.src = url;
+            };
+
+            applyBg('userAvatar', avatarUrl);
+            applyBg('profileAvatar', avatarUrl);
+            
+            // Очищаем текст внутри, так как картинка будет фоном
+            document.getElementById('userAvatar').textContent = '';
+            document.getElementById('profileAvatar').textContent = '';
+        }
+
+        async function promptChangeName() {
+            const newName = prompt('Введите новое имя (макс. 15 символов):', user.name);
+            if (newName && newName.trim()) {
+                const trimmed = newName.trim().slice(0, 15);
+                try {
+                    const response = await fetch(`${API_BASE}/api/setname`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'X-Telegram-Init-Data': AUTH_HEADER, 
+                            'ngrok-skip-browser-warning': 'true' 
+                        },
+                        body: JSON.stringify({ name: trimmed })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        user.name = trimmed;
+                        saveUser(); 
+                        updateUI(); 
+                        setAvatar();
+                        tg.showAlert('Имя успешно изменено!');
+                    } else {
+                        tg.showAlert('Ошибка при смене имени');
+                    }
+                } catch (e) {
+                    tg.showAlert('Ошибка соединения с сервером');
+                }
+            }
+        }
+
+        async function init() {
+            try {
+                if (!tg.initData) {
+                    console.warn("initData отсутствует. Возможно, запуск вне Telegram или проблема с API.");
+                    updateDebug('No initData found!');
+                    // Пробуем получить initData еще раз, вдруг она появилась
+                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+                         AUTH_HEADER = window.Telegram.WebApp.initData;
+                         updateDebug('initData recovered');
+                    }
+                } else {
+                    AUTH_HEADER = tg.initData;
+                    updateDebug('initData OK (' + AUTH_HEADER.length + ' chars)');
+                }
+
+                loadUserFromStorage();
+                
+                // Запускаем мониторинг статуса сервера
+                startServerStatusMonitoring();
+                
+                // Проверяем доступность API
+                showNotification('🔄 Проверка соединения...', 'info', 2000);
+                updateDebug('Starting API check...');
+                const apiOk = await checkApiAvailability();
+                
+                if (apiOk) {
+                    showNotification('✅ Сервер доступен', 'success', 2000);
+                    const fetchPromise = fetchUserFromServer();
+                    const timeoutPromise = new Promise(resolve => setTimeout(resolve, 3000));
+                    await Promise.race([fetchPromise, timeoutPromise]);
+                } else {
+                    showNotification('📱 Работаем в оффлайн режиме', 'info', 3000);
+                    updateDebug('Offline Mode active');
+                }
+                
+                applyBackground(user.settings?.bg || 'bg-dark');
+                applyPalette(user.settings?.themeColor || 'purple');
+
+                const today = new Date().toDateString();
+                if (!user.questsDate || user.questsDate !== today) {
+                    user.questsDate = today;
+                    user.quests = {};
+                }
+                if (!user.quests) user.quests = {};
+                user.quests.login = Math.min(1, user.quests.login || 0);
+                
+                saveUser();
+                try {
+                    updateUI();
+                } catch (e) {
+                    console.warn("Ошибка updateUI:", e);
+                }
+                try {
+                    setAvatar();
+                } catch (e) {
+                    console.warn("Ошибка setAvatar:", e);
+                }
+                try {
+                    renderStudy();
+                } catch (e) {
+                    console.warn("Ошибка renderStudy:", e);
+                }
+                try {
+                    renderStories();
+                } catch (e) {
+                    console.warn("Ошибка renderStories:", e);
+                }
+                try {
+                    createWheel(); // Инициализация рулетки
+                } catch (e) {
+                    console.warn("Ошибка createWheel:", e);
+                }
+
+                const bNav = document.getElementById('bottomNav');
+                if(bNav) bNav.style.display = 'flex';
+                
+            } catch (e) {
+                console.error("Ошибка при инициализации:", e);
+                showNotification('⚠️ Ошибка запуска приложения', 'error', 5000);
+            } finally {
+                const loadingScreen = document.getElementById('loadingScreen');
+                if (loadingScreen) {
+                    loadingScreen.style.display = 'none';
+                }
+            }
+        }
+
+        function goTo(screen, param = null) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            const navBtn = document.querySelector(`.nav-item[onclick="goTo('${screen}')"]`);
+            if (navBtn) navBtn.classList.add('active');
+            
+            const screenEl = document.getElementById(screen + 'Screen');
+            if(screenEl) screenEl.classList.add('active');
+            
+            currentScreen = screen;
+            
+            if (screen === 'alphabet') renderAlphabet();
+            if (screen === 'stories') renderStories(); // Обновляем истории при каждом переходе
+            if (screen === 'profile') renderProfile();
+            if (screen === 'leaderboard') fetchLeaderboard();
+            if (screen === 'shop') updateShopUI();
+            if (screen === 'settings') { 
+                renderBgPicker(); 
+                renderPalettePicker(); 
+            }
+            
+            haptic('light');
+        }
+
+        // ==================== ОПТИМИЗАЦИЯ ПРОИЗВОДИТЕЛЬНОСТИ ====================
+        
+        // Ленивая загрузка экранов
+        function lazyLoadScreen(screenId) {
+            const screen = document.getElementById(screenId + 'Screen');
+            if (screen && !screen.dataset.loaded) {
+                screen.dataset.loaded = 'true';
+                // Добавляем индикатор загрузки
+                const loader = document.createElement('div');
+                loader.style.cssText = 'text-align: center; padding: 50px; color: var(--text-hint);';
+                loader.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">⏳</div>Загрузка...';
+                screen.appendChild(loader);
+                
+                setTimeout(() => {
+                    if (loader.parentNode) loader.remove();
+                }, 500);
+            }
+        }
+        
+        // Кэширование DOM элементов
+        const domCache = {};
+        function getElement(id) {
+            if (!domCache[id]) {
+                domCache[id] = document.getElementById(id);
+            }
+            return domCache[id];
+        }
+        
+        // Оптимизированная отрисовка
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        function getLeagueProgress(xp) {
+            const thresholds = [
+                { limit: 0, name: "Бронза", id: 1 },
+                { limit: 500, name: "Серебро", id: 2 },
+                { limit: 1500, name: "Золото", id: 3 },
+                { limit: 3000, name: "Платина", id: 4 },
+                { limit: 5000, name: "Алмаз", id: 5 }
+            ];
+            
+            let current = thresholds[0];
+            let next = thresholds[1];
+            
+            for (let i = 0; i < thresholds.length; i++) {
+                if (xp >= thresholds[i].limit) {
+                    current = thresholds[i];
+                    next = thresholds[i+1] || null;
+                }
+            }
+            
+            if (!next) return { name: current.name, percent: 100, remaining: 0, id: current.id };
+            
+            const range = next.limit - current.limit;
+            const progress = xp - current.limit;
+            const percent = Math.min(100, Math.floor((progress / range) * 100));
+            
+            return { 
+                name: current.name, 
+                percent: percent, 
+                remaining: next.limit - xp, 
+                id: current.id,
+                nextName: next.name
+            };
+        }
+
+        // Оптимизированное обновление UI
+        const updateUI = debounce(function() {
+            // Обновляем дневной прогресс
+            const dailyGoal = user.daily_goal || 10;
+            const dailyProg = user.daily_progress || 0;
+            const dailyPct = Math.min(100, Math.round((dailyProg / dailyGoal) * 100));
+            
+            const dailyFill = document.getElementById('dailyProgressFill');
+            const dailyText = document.getElementById('dailyProgressText');
+            
+            if (dailyFill) dailyFill.style.width = `${dailyPct}%`;
+            if (dailyText) dailyText.textContent = `${dailyProg}/${dailyGoal} XP`;
+            
+            // Обновляем лигу
+            const leagueStats = getLeagueProgress(user.xp || 0);
+            const leagueText = document.getElementById('leagueInfoText');
+            const leagueBar = document.getElementById('leagueProgressBar');
+            
+            if (leagueText) {
+                if (leagueStats.remaining > 0) {
+                    leagueText.innerHTML = `<span class="league-badge l-badge-${leagueStats.id}">${leagueStats.name}</span> • до ${leagueStats.nextName} ${leagueStats.remaining} XP`;
+                } else {
+                    leagueText.innerHTML = `<span class="league-badge l-badge-${leagueStats.id}">${leagueStats.name}</span> • Максимальная лига!`;
+                }
+            }
+            if (leagueBar) leagueBar.style.width = `${leagueStats.percent}%`;
+
+            const LOCAL_RANKS = [
+                {min: 0, name: 'Новичок', badge: '🥚'}, 
+                {min: 100, name: 'Ученик', badge: '🐣'},
+                {min: 500, name: 'Искатель', badge: '🔍'}, 
+                {min: 1000, name: 'Странник', badge: '🚶'},
+                {min: 1500, name: 'Кохай', badge: '🎒'}, 
+                {min: 2500, name: 'Сэмпай', badge: '🎓'},
+                {min: 4800, name: 'Мечник', badge: '⚔️'}, 
+                {min: 8000, name: 'Самурай', badge: '🥷'},
+                {min: 12000, name: 'Ронин', badge: '🏯'}, 
+                {min: 18000, name: 'Мастер', badge: '👨‍🏫'}
+            ];
+
+            let rank = LOCAL_RANKS[0];
+            for (let r of LOCAL_RANKS) { 
+                if (user.xp >= r.min) rank = r; 
+            }
+
+            // Используем кэшированные элементы
+            const userName = getElement('userName');
+            const userXp = getElement('userXp');
+            const userStreak = getElement('userStreak');
+            const userFreezes = getElement('userFreezes');
+            const topCoins = getElement('topCoins');
+            
+            if (userName) userName.textContent = user.name;
+            if (userXp) userXp.textContent = user.xp;
+            if (userStreak) userStreak.textContent = user.streak;
+            if (userFreezes) userFreezes.textContent = user.freezes || 0;
+            if (topCoins) topCoins.textContent = user.coins || 0;
+            
+            const shopCoinsBig = getElement('shopCoinsBig');
+            if (shopCoinsBig) shopCoinsBig.textContent = user.coins || 0;
+            
+            const userBadge = getElement('userBadge');
+            const userRankName = getElement('userRankName');
+            if (userBadge) userBadge.textContent = rank.badge;
+            if (userRankName) userRankName.textContent = rank.name;
+            
+            const profileBadge = getElement('profileBadge');
+            const profileRankName = getElement('profileRankName');
+            const profileName = getElement('profileName');
+            if (profileBadge) profileBadge.textContent = rank.badge;
+            if (profileRankName) profileRankName.textContent = rank.name;
+            if (profileName) profileName.textContent = user.name;
+            
+            renderQuests();
+        }, 100);
+
+        function updateShopUI() {
+            document.getElementById('shopCoinsBig').textContent = user.coins || 0;
+            const btn = document.getElementById('buyFreezeBtn');
+            if (user.coins < 50) {
+                btn.disabled = true;
+                btn.textContent = 'Мало монет';
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Купить';
+            }
+        }
+
+        async function buyItem(itemId, price) {
+            if (user.coins < price) return;
+            try {
+                const response = await fetch(`${API_BASE}/api/buy`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' },
+                    body: JSON.stringify({ item_id: itemId, price: price })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    user.coins -= price;
+                    if (itemId === 'freeze') user.freezes = (user.freezes || 0) + 1;
+                    saveUser();
+                    updateUI();
+                    updateShopUI();
+                    haptic('success');
+                    tg.showAlert('Покупка успешна! Заморозка спасает серию, если вы не зашли в один из дней.');
+                } else {
+                    tg.showAlert('Ошибка при покупке.');
+                }
+            } catch (e) { console.warn(e); }
+        }
+
+        function renderQuests() {
+            const quests = user.quests || {};
+            let html = '';
+            
+            DAILY_QUESTS.forEach(q => {
+                const progress = quests[q.id] || 0;
+                const done = progress >= q.target;
+                const pct = Math.min(progress / q.target * 100, 100);
+                
+                let opacityClass = done ? 'opacity: 0.5; border-color: var(--success);' : '';
+                let rewardText = done ? '✓' : '+' + q.xp;
+                let rewardColor = done ? 'var(--success)' : 'var(--primary)';
+                
+                html += `
+                    <div style="background: rgba(30, 30, 46, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 14px; border: 1px solid rgba(255, 255, 255, 0.08); ${opacityClass}">
+                        <div style="font-size: 28px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 14px;">${q.icon}</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: white;">${q.name}</div>
+                            <div style="height: 8px; background: rgba(0,0,0,0.4); border-radius: 4px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);">
+                                <div style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); border-radius: 4px; width: ${pct}%; box-shadow: 0 0 10px var(--primary);"></div>
+                            </div>
+                        </div>
+                        <div style="font-size: 15px; font-weight: 800; color: ${rewardColor};">${rewardText}</div>
+                    </div>
+                `;
+            });
+            
+            const questsListEl = document.getElementById('questsList');
+            if (questsListEl) {
+                questsListEl.innerHTML = html;
+            } else {
+                console.warn("Элемент questsList не найден");
+            }
+        }
+
+        // ==================== ИНТЕРАКТИВНЫЕ ИСТОРИИ (РЕНДЕРИНГ) ====================
+        function renderStories() {
+            const container = document.getElementById('storiesList');
+            if (!container) {
+                console.warn("Элемент storiesList не найден");
+                return;
+            }
+            
+            const completedStories = user.completedStories || [];
+            const totalStories = INTERACTIVE_STORIES.length;
+            const completedCount = completedStories.length;
+            
+            // Обновляем прогресс
+            const progressEl = document.getElementById('storiesProgress');
+            const progressBarEl = document.getElementById('storiesProgressBar');
+            
+            if (progressEl) progressEl.textContent = `${completedCount}/${totalStories} историй`;
+            if (progressBarEl) progressBarEl.style.width = `${(completedCount / totalStories) * 100}%`;
+            
+            let html = '';
+            
+            INTERACTIVE_STORIES.forEach((story, index) => {
+                const isCompleted = completedStories.includes(story.id);
+                const isUnlocked = checkStoryUnlock(story, completedCount);
+                
+                const statusIcon = isCompleted ? '✅' : (isUnlocked ? '🔓' : '🔒');
+                const statusColor = isCompleted ? 'var(--success)' : (isUnlocked ? 'var(--primary)' : 'var(--text-hint)');
+                const opacity = isUnlocked ? '1' : '0.6';
+                const cursor = isUnlocked ? 'pointer' : 'not-allowed';
+                
+                html += `
+                    <div class="story-card-enhanced" 
+                         style="opacity: ${opacity}; cursor: ${cursor};"
+                         onclick="${isUnlocked ? `openInteractiveStory('${story.id}')` : 'showStoryLocked(\'' + story.requirement + '\')'}">
+                        
+                        <div class="story-header">
+                            <div class="story-image">${story.image}</div>
+                            <div class="story-info">
+                                <div class="story-title">${story.title}</div>
+                                <div class="story-meta">
+                                    <span class="story-level">${story.level}</span>
+                                    <span class="story-difficulty">${story.difficulty}</span>
+                                    <span class="story-duration">⏱️ ${story.duration}</span>
+                                </div>
+                            </div>
+                            <div class="story-status" style="color: ${statusColor}; font-size: 24px;">
+                                ${statusIcon}
+                            </div>
+                        </div>
+                        
+                        <div class="story-description">${story.description}</div>
+                        
+                        <div class="story-preview">
+                            <span style="color: var(--text-hint); font-style: italic;">"${story.preview}"</span>
+                        </div>
+                        
+                        <div class="story-rewards">
+                            <div class="reward-xp">+${story.xp} XP</div>
+                            <div class="story-vocab-count">📝 ${story.vocabulary.length} слов</div>
+                            ${isCompleted ? '<div class="completion-badge">Завершено</div>' : ''}
+                        </div>
+                        
+                        ${!isUnlocked ? `<div class="lock-overlay"><div class="lock-text">${story.requirement}</div></div>` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function checkStoryUnlock(story, completedCount) {
+            if (story.isUnlocked) return true;
+            
+            // Проверяем различные условия разблокировки
+            if (story.requirement.includes('Заверши')) {
+                const required = parseInt(story.requirement.match(/\d+/)[0]);
+                return completedCount >= required;
+            }
+            
+            if (story.requirement.includes('XP')) {
+                const required = parseInt(story.requirement.match(/\d+/)[0]);
+                return user.xp >= required;
+            }
+            
+            return false;
+        }
+        
+        function showStoryLocked(requirement) {
+            showNotification(`🔒 История заблокирована: ${requirement}`, 'info', 3000);
+            haptic('error');
+        }
+        
+        function openInteractiveStory(storyId) {
+            const story = INTERACTIVE_STORIES.find(s => s.id === storyId);
+            if (!story) return;
+            
+            currentStory = story;
+            currentStory.currentStage = 0; // Текущий этап
+            currentStory.correctAnswers = 0; // Правильные ответы
+            
+            // Показываем первый этап
+            showStoryStage(story, 0);
+        }
+        
+        function showStoryStage(story, stageIndex) {
+            const stage = story.stages ? story.stages[stageIndex] : story;
+            
+            if (!stage) {
+                // Если это старая история с одним этапом
+                renderStoryContent(story.content, story.quiz);
+                return;
+            }
+            
+            // Обновляем заголовок с прогрессом
+            const titleEl = document.querySelector('#readingScreen h2');
+            if (titleEl) {
+                titleEl.innerHTML = `📖 ${story.title} - Этап ${stageIndex + 1}/${story.stages.length}`;
+            }
+            
+            // Показываем контент этапа
+            renderStoryContent(stage.content, stage.quiz);
+            
+            // Сохраняем текущий этап
+            currentStory.currentStage = stageIndex;
+        }
+        
+        function renderStoryContent(content, quiz) {
+            let textHtml = '';
+            content.forEach((word, index) => {
+                if (word.jp === '。') {
+                    textHtml += `<span style="color:white;">。</span><br><br>`;
+                } else {
+                    const interactiveClass = word.interactive ? 'interactive-word' : 'non-interactive-word';
+                    textHtml += `
+                        <span class="${interactiveClass} story-word" 
+                              onclick="${word.interactive ? `showWordDetails('${word.jp}', '${word.kana}', '${word.ru}', ${index})` : ''}"
+                              data-word="${word.jp}"
+                              data-kana="${word.kana}"
+                              data-ru="${word.ru}">
+                            <span class="story-kana">${word.kana}</span>
+                            <span class="story-kanji">${word.jp}</span>
+                        </span>
+                    `;
+                }
+            });
+            
+            document.getElementById('readingText').innerHTML = textHtml;
+            
+            // Обновляем викторину
+            document.getElementById('readingQuestion').textContent = quiz.question;
+            let optionsHtml = '';
+            quiz.options.forEach(opt => {
+                optionsHtml += `
+                    <button class="story-option-btn" 
+                            onclick="checkStoryAnswer(this, '${opt}', '${quiz.correct}', '${quiz.hint}')" 
+                            style="font-size: 16px; padding: 15px; width: 100%; text-align: left; 
+                                   background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); 
+                                   margin-bottom: 10px; border-radius: 12px; color: white;
+                                   transition: all 0.2s;">
+                        ${opt}
+                    </button>
+                `;
+            });
+            document.getElementById('readingOptions').innerHTML = optionsHtml;
+            document.getElementById('readingQuiz').style.display = 'block';
+
+            goTo('reading');
+            haptic('light');
+        }
+        
+        function showWordDetails(jp, kana, ru, index) {
+            const tooltip = document.getElementById('translationTooltip');
+            tooltip.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 28px; color: var(--primary); margin-bottom: 8px;">${jp}</div>
+                    <div style="font-size: 18px; color: white; margin-bottom: 4px;">${kana}</div>
+                    <div style="font-size: 16px; color: var(--text-hint);">${ru}</div>
+                </div>
+            `;
+            tooltip.style.display = 'block';
+            haptic('light');
+            
+            // Добавляем анимацию к слову
+            const wordElement = document.querySelectorAll('.story-word')[index];
+            if (wordElement) {
+                wordElement.style.transform = 'scale(1.1)';
+                wordElement.style.color = 'var(--primary)';
+                setTimeout(() => {
+                    wordElement.style.transform = 'scale(1)';
+                    wordElement.style.color = '';
+                }, 300);
+            }
+            
+            setTimeout(() => {
+                tooltip.style.display = 'none';
+            }, 3000);
+        }
+        
+        function checkStoryAnswer(btn, selected, correct, hint) {
+            const buttons = document.querySelectorAll('#readingOptions button');
+            buttons.forEach(b => b.style.pointerEvents = 'none');
+            
+            if (selected === correct) {
+                btn.style.background = 'var(--success)';
+                btn.style.color = 'white';
+                haptic('success');
+                
+                // Увеличиваем счетчик правильных ответов
+                if (!currentStory.correctAnswers) currentStory.correctAnswers = 0;
+                currentStory.correctAnswers++;
+                
+                // Проверяем, есть ли еще этапы
+                if (currentStory.stages && currentStory.currentStage < currentStory.stages.length - 1) {
+                    // Переходим к следующему этапу
+                    setTimeout(() => {
+                        const nextStage = currentStory.currentStage + 1;
+                        showStoryStage(currentStory, nextStage);
+                        showNotification(`✅ Правильно! Переходим к этапу ${nextStage + 1}`, 'success', 2000);
+                    }, 1500);
+                } else {
+                    // История завершена
+                    setTimeout(() => {
+                        completeStory(currentStory.id);
+                    }, 1500);
+                }
+            } else {
+                btn.style.background = 'var(--error)';
+                btn.style.color = 'white';
+                haptic('error');
+                
+                // Показываем подсказку
+                setTimeout(() => {
+                    showNotification(`💡 Подсказка: ${hint}`, 'info', 4000);
+                }, 1000);
+                
+                // Показываем правильный ответ
+                buttons.forEach(b => {
+                    if (b.textContent === correct) {
+                        b.style.background = 'var(--success)';
+                        b.style.color = 'white';
+                    }
+                });
+                
+                // При ошибке даем возможность попробовать еще раз
+                setTimeout(() => {
+                    buttons.forEach(b => {
+                        b.style.pointerEvents = 'auto';
+                        b.style.background = 'rgba(0,0,0,0.5)';
+                        b.style.color = 'white';
+                    });
+                }, 3000);
+            }
+        }
+        
+        function completeStory(storyId) {
+            if (!user.completedStories) user.completedStories = [];
+            
+            if (!user.completedStories.includes(storyId)) {
+                user.completedStories.push(storyId);
+                const story = INTERACTIVE_STORIES.find(s => s.id === storyId);
+                
+                // Начисляем XP
+                user.xp += story.xp;
+                saveUser();
+                updateUI(); // Немедленное обновление счетчика
+                
+                // Показываем красивое уведомление
+                showNotification(`📖 История завершена! +${story.xp} XP`, 'success', 3000);
+                
+                // Показываем достижения
+                if (story.achievements && story.achievements.length > 0) {
+                    setTimeout(() => {
+                        showNotification(`🏆 Получено достижение: ${story.achievements[0]}`, 'success', 3000);
+                    }, 2000);
+                }
+            }
+            
+            // Немедленно обновляем список историй и квесты
+            renderStories();
+            renderQuests();
+            
+            // Возвращаемся к списку историй
+            setTimeout(() => {
+                goTo('stories');
+            }, 2000);
+        }
+
+        function startStudy(type) {
+            let dataObj = {};
+            let title = '';
+            let description = '';
+            
+            // Определяем данные для изучения
+            if (type === 'kanji_n5') {
+                dataObj = typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : {};
+                title = '🈴 Кандзи N5';
+                description = '103 базовых иероглифа';
+            } else if (type === 'kanji_n4') {
+                dataObj = typeof KANJI_N4 !== 'undefined' ? KANJI_N4 : {};
+                title = '🈵 Кандзи N4';
+                description = '181 иероглиф';
+            } else if (type === 'words_n5') {
+                dataObj = typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : {};
+                title = '📝 Слова N5';
+                description = 'Базовая лексика';
+            } else if (type === 'words_n4') {
+                dataObj = typeof WORDS_N4 !== 'undefined' ? WORDS_N4 : {};
+                title = '📖 Слова N4';
+                description = 'Расширенная лексика';
+            } else {
+                showNotification('❌ Неизвестный тип изучения', 'error', 3000);
+                return;
+            }
+            
+            // Преобразуем данные в массив
+            let dataArray = [];
+            if (Array.isArray(dataObj)) {
+                dataArray = dataObj;
+            } else {
+                for (let key in dataObj) {
+                    if (dataObj.hasOwnProperty(key)) {
+                        const item = dataObj[key];
+                        if (typeof item === 'object' && item.char) {
+                            dataArray.push({ 
+                                char: item.char, 
+                                reading: item.reading || item.meaning || '', 
+                                meaning: item.meaning || '',
+                                type: type 
+                            });
+                        } else {
+                            dataArray.push({ 
+                                char: key, 
+                                reading: item, 
+                                meaning: '', 
+                                type: type 
+                            });
+                        }
+                    }
+                }
+            }
+            
+            // Перемешиваем для разнообразия
+            dataArray = shuffle(dataArray).slice(0, 20); // Ограничиваем 20 карточками
+            
+            if (dataArray && dataArray.length > 0) {
+                currentStudyList = dataArray;
+                currentStudyIndex = 0;
+                
+                // Показываем первую карточку
+                openModal(currentStudyList[0], 'study');
+                
+                // Показываем уведомление о начале изучения
+                showNotification(`📚 Начинаем изучать: ${title}`, 'success', 2000);
+                haptic('medium');
+            } else {
+                showNotification('⚠️ Данные еще не загружены', 'info', 3000);
+                haptic('error');
+            }
+        }
+
+        // ==================== ОСТАЛЬНЫЕ ФУНКЦИИ (АЗБУКА, СЛОВАРИ) ====================
+        function setAlphabetTab(tab) {
+            alphabetTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.tab-btn[onclick="setAlphabetTab('${tab}')"]`).classList.add('active');
+            renderAlphabet();
+        }
+
+        function setAlphabetView(view) {
+            alphabetView = view;
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.view-btn[onclick="setAlphabetView('${view}')"]`).classList.add('active');
+            renderAlphabet();
+        }
+
+        function renderAlphabet() {
+            if (typeof HIRAGANA_ROWS === 'undefined' || typeof KATAKANA_ROWS === 'undefined') return;
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            const allChars = rows.flatMap(r => r.chars);
+            
+            if (alphabetView === 'grid') {
+                document.getElementById('alphabetGrid').style.display = 'grid';
+                document.getElementById('alphabetRows').style.display = 'none';
+                let html = '';
+                allChars.forEach((c, i) => {
+                    html += `
+                        <div class="kana-cell" onclick="openKanaModal(${i})">
+                            <div class="char japanese">${c.char}</div>
+                            <div class="reading">${c.reading}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById('alphabetGrid').innerHTML = html;
+            } else {
+                document.getElementById('alphabetGrid').style.display = 'none';
+                document.getElementById('alphabetRows').style.display = 'block';
+                let html = '';
+                rows.forEach((row, ri) => {
+                    html += `
+                        <div class="kana-row">
+                            <div class="row-header">
+                                <span class="row-title">${row.name}</span>
+                                <button class="row-test-btn" onclick="startRowQuiz(${ri})">📝 Тест</button>
+                            </div>
+                            <div class="row-cards">
+                    `;
+                    row.chars.forEach((c, ci) => {
+                        html += `
+                                <div class="row-card" onclick="openKanaModalFromRow(${ri}, ${ci})">
+                                    <div class="char japanese">${c.char}</div>
+                                    <div class="reading">${c.reading}</div>
+                                </div>
+                        `;
+                    });
+                    html += `</div></div>`;
+                });
+                document.getElementById('alphabetRows').innerHTML = html;
+            }
+        }
+
+        function openKanaModal(index) {
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            openModal(rows.flatMap(r => r.chars)[index], 'kana');
+        }
+        function openKanaModalFromRow(rowIndex, charIndex) {
+            const rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            openModal(rows[rowIndex].chars[charIndex], 'kana');
+        }
+
+        function renderStudy() {
+            // В новом дизайне экрана словарей не нужен динамический контент
+            // Все категории уже определены в HTML
+            console.log('renderStudy: экран словарей уже отрендерен в HTML');
+            return;
+            
+            // Старый код (закомментирован для совместимости)
+            /*
+            const categories = [
+                {id: 'kanji_n5', name:'Кандзи N5', desc:'103 базовых иероглифа', data: typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : {}},
+                {id: 'words_n5', name:'Слова N5', desc:'Базовая лексика', data: typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : {}},
+                {id: 'kanji_n4', name:'Кандзи N4', desc:'181 иероглиф', data: typeof KANJI_N4 !== 'undefined' ? KANJI_N4 : {}},
+                {id: 'words_n4', name:'Слова N4', desc:'Расширенная лексика', data: typeof WORDS_N4 !== 'undefined' ? WORDS_N4 : {}}
+            ];
+            
+            let html = '';
+            categories.forEach(cat => {
+                const count = Object.keys(cat.data).length;
+                html += `
+                    <div class="category-card" onclick="openCategory('${cat.id}')">
+                        <div class="category-icon">🈷️</div>
+                        <div class="category-info">
+                            <div class="category-title">${cat.name}</div>
+                            <div class="category-desc">${cat.desc}</div>
+                        </div>
+                        <div class="category-count">${count}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('studyContent').innerHTML = html;
+            */
+        }
+
+        function openCategory(id) {
+            let dataObj = {};
+            if (id === 'kanji_n5') dataObj = typeof KANJI_N5 !== 'undefined' ? KANJI_N5 : {};
+            else if (id === 'kanji_n4') dataObj = typeof KANJI_N4 !== 'undefined' ? KANJI_N4 : {};
+            else if (id === 'kanji_n3') dataObj = typeof KANJI_N3 !== 'undefined' ? KANJI_N3 : {};
+            else if (id === 'words_n5') dataObj = typeof WORDS_N5 !== 'undefined' ? WORDS_N5 : {};
+            
+            let dataArray = [];
+            if (Array.isArray(dataObj)) {
+                dataArray = dataObj;
+            } else {
+                for (let key in dataObj) {
+                    if (dataObj.hasOwnProperty(key)) {
+                        dataArray.push({ char: key, reading: dataObj[key], type: id });
+                    }
+                }
+            }
+            
+            if (dataArray && dataArray.length) {
+                currentStudyList = dataArray;
+                currentStudyIndex = 0;
+                openModal(currentStudyList[currentStudyIndex], 'study');
+            } else {
+                tg.showAlert("Данные еще не загружены!");
+            }
+        }
+
+        // ==================== МОДАЛЬНОЕ ОКНО ====================
+        function openModal(item, type = 'kana', swipeAnim = null) {
+            modalData = item;
+            const charEl = document.getElementById('modalChar');
+            
+            if (swipeAnim === 'left') {
+                charEl.style.transform = 'translateX(30px)'; 
+                charEl.style.opacity = '0';
+            } else if (swipeAnim === 'right') {
+                charEl.style.transform = 'translateX(-30px)'; 
+                charEl.style.opacity = '0';
+            }
+
+            setTimeout(() => {
+                const textVal = item.char || item.word || '';
+                charEl.textContent = textVal;
+                
+                // Показываем чтение (хирагана/катакана)
+                const readingEl = document.getElementById('modalReading');
+                if (item.reading) {
+                    readingEl.textContent = item.reading;
+                    readingEl.style.display = 'block';
+                } else {
+                    readingEl.style.display = 'none';
+                }
+                
+                // Показываем значение (перевод)
+                const meaningEl = document.getElementById('modalMeaning');
+                if (item.meaning && item.meaning !== item.reading) {
+                    meaningEl.textContent = item.meaning;
+                    meaningEl.style.display = 'block';
+                } else {
+                    meaningEl.style.display = 'none';
+                }
+                
+                // Показываем тип изучения
+                const typeEl = document.getElementById('modalType');
+                if (typeEl) {
+                    const typeNames = {
+                        'kanji_n5': 'Кандзи N5',
+                        'kanji_n4': 'Кандзи N4', 
+                        'words_n5': 'Слова N5',
+                        'words_n4': 'Слова N4',
+                        'kana': 'Азбука',
+                        'study': 'Изучение'
+                    };
+                    typeEl.textContent = typeNames[type] || 'Изучение';
+                }
+                
+                document.getElementById('modalHint').textContent = item.hint || '';
+                document.getElementById('modalGif').style.display = 'none';
+                
+                const strokeBtn = document.getElementById('modalStrokeBtn');
+                if (textVal.length > 1) {
+                    strokeBtn.style.display = 'none';
+                } else {
+                    strokeBtn.style.display = 'block';
+                }
+
+                const counterEl = document.getElementById('modalCounter');
+                const swipeHintEl = document.getElementById('modalSwipeHint');
+                
+                if (type === 'study' && currentStudyList.length > 0) {
+                    counterEl.style.display = 'block';
+                    swipeHintEl.style.display = 'block';
+                    counterEl.textContent = `${currentStudyIndex + 1} / ${currentStudyList.length}`;
+                } else {
+                    counterEl.style.display = 'none';
+                    swipeHintEl.style.display = 'none';
+                }
+
+                if (swipeAnim) {
+                    charEl.style.transform = 'translateX(0)';
+                    charEl.style.opacity = '1';
+                    charEl.style.transition = 'all 0.2s ease-out';
+                } else {
+                    charEl.style.transition = 'none';
+                    charEl.style.transform = 'none';
+                    charEl.style.opacity = '1';
+                }
+            }, swipeAnim ? 150 : 0);
+
+            // Показываем окно
+            document.getElementById('modal').style.display = 'flex';
+            
+            if (!swipeAnim) haptic('light');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            modalData = null;
+            currentStudyList = []; 
+        }
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const modalBox = document.getElementById('modalBox');
+        
+        if (modalBox) {
+            modalBox.addEventListener('touchstart', (e) => { 
+                touchStartX = e.changedTouches[0].screenX; 
+                touchStartY = e.changedTouches[0].screenY;
+            }, {passive: true});
+            
+            modalBox.addEventListener('touchend', (e) => {
+                if (!currentStudyList || currentStudyList.length === 0) return; 
+                
+                let touchEndX = e.changedTouches[0].screenX;
+                let touchEndY = e.changedTouches[0].screenY;
+                
+                let diffX = touchStartX - touchEndX;
+                let diffY = touchStartY - touchEndY;
+                
+                // Игнорируем вертикальные свайпы и слишком короткие свайпы
+                if (Math.abs(diffY) > Math.abs(diffX) || Math.abs(diffX) < 30) return;
+                
+                if (diffX > 50) { 
+                    // Свайп влево - НЕ ЗНАЮ
+                    if (currentStudyIndex > 0) {
+                        currentStudyIndex--; 
+                        openModal(currentStudyList[currentStudyIndex], 'study', 'right'); 
+                        haptic('light');
+                    } else { 
+                        haptic('error'); 
+                    }
+                } else if (diffX < -50) { 
+                    // Свайп вправо - ЗНАЮ
+                    if (currentStudyIndex < currentStudyList.length - 1) {
+                        currentStudyIndex++; 
+                        openModal(currentStudyList[currentStudyIndex], 'study', 'left'); 
+                        haptic('light');
+                    } else { 
+                        haptic('error'); 
+                    }
+                }
+            }, {passive: true});
+        }
+
+        // ==================== ЗВУК И GIF ====================
+        async function playSound() {
+            if (!modalData) return;
+            const text = modalData.char || modalData.word;
+            
+            try {
+                if ('speechSynthesis' in window && user.settings.sound) {
+                    speechSynthesis.cancel();
+                    const u = new SpeechSynthesisUtterance(text);
+                    u.lang = 'ja-JP'; 
+                    u.rate = 0.7;
+                    speechSynthesis.speak(u);
+                    haptic('medium'); 
+                    return;
+                }
+                
+                const response = await fetch(`${API_BASE}/api/tts?text=${encodeURIComponent(text)}`, {
+                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                });
+                
+                if (!response.ok) throw new Error();
+                const url = URL.createObjectURL(await response.blob());
+                new Audio(url).play(); 
+                haptic('medium');
+            } catch (e) { 
+                tg.showAlert('Ошибка воспроизведения звука. Проверьте интернет.'); 
+            }
+        }
+
+        function showGif() {
+            if (!modalData) return;
+            const char = modalData.char || modalData.word;
+            
+            if (char.length > 1) return;
+
+            const container = document.getElementById('modalGif');
+            container.innerHTML = '<span style="color:var(--text-hint);">Загрузка...</span>';
+            container.style.display = 'flex';
+            
+            const hex4 = char.charCodeAt(0).toString(16).toLowerCase();
+            const hex5 = char.padStart(5, '0');
+            
+            const urls = [
+                `https://raw.githubusercontent.com/yagays/kanjivg-gif/master/gifs/${hex5}.gif`,
+                `https://raw.githubusercontent.com/mistval/kanji_images/master/gifs/${hex4}.gif`,
+                `https://raw.githubusercontent.com/mistval/kana_images/master/gifs/${hex4}.gif`
+            ];
+
+            if (modalData.reading) {
+                let r = modalData.reading.split(' ')[0].toLowerCase();
+                r = r.replace('shi','si').replace('chi','ti').replace('tsu','tu').replace('fu','hu');
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Hiragana_${r}_stroke_order_animation.gif`);
+                urls.push(`https://commons.wikimedia.org/wiki/Special:FilePath/Katakana_${r}_stroke_order_animation.gif`);
+            }
+
+            let loaded = false;
+            
+            function tryLoad(i) {
+                if (i >= urls.length || loaded) {
+                    if (!loaded) {
+                        container.innerHTML = '<span style="color:var(--error);">Анимация не найдена</span>'; 
+                    }
+                    return;
+                }
+                const img = new Image();
+                img.onload = () => { 
+                    if (!loaded) { 
+                        loaded = true; 
+                        container.innerHTML = `<img src="${urls[i]}" style="max-width:140px;border-radius:10px; background:white; padding:5px;">`; 
+                    }
+                };
+                img.onerror = () => tryLoad(i + 1); 
+                img.src = urls[i];
+            }
+            tryLoad(0); 
+            haptic('light');
+        }
+
+        // ==================== ПРОФИЛЬ ====================
+        function renderProfile() {
+            document.getElementById('profileXp').textContent = user.xp;
+            document.getElementById('profileStreak').textContent = user.streak;
+            document.getElementById('profileCards').textContent = user.cardsLearned;
+            
+            fetchUserStats();
+
+            const grid = document.getElementById('achievementsGrid');
+            let html = '';
+            ACHIEVEMENTS.forEach(a => {
+                const unlocked = a.check(user);
+                const opacityClass = unlocked ? '' : 'filter: grayscale(1); opacity: 0.2;';
+                html += `
+                    <div style="text-align: center; cursor: pointer; transition: 0.1s;" onclick="showAchievementInfo('${a.name}', '${a.desc}', ${unlocked})">
+                        <div style="width: 54px; height: 54px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 26px; ${opacityClass}">${a.icon}</div>
+                        <div style="font-size: 10px; color: var(--text-hint);">${a.name}</div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        function showAchievementInfo(name, desc, unlocked) {
+            haptic('light');
+            const status = unlocked ? "✅ ПОЛУЧЕНО" : "🔒 ЗАБЛОКИРОВАНО";
+            tg.showAlert(`${status}\n\n🏆 ${name}\n📝 ${desc}`);
+        }
+
+        function toggleSetting(key) {
+            user.settings[key] = !user.settings[key];
+            const toggle = document.getElementById(key + 'Toggle');
+            if (user.settings[key]) {
+                toggle.classList.add('active');
+            } else {
+                toggle.classList.remove('active');
+            }
+            saveUser(); 
+            haptic('light');
+        }
+
+        // ==================== КВИЗЫ ====================
+        function startQuiz(type) {
+            let allKana = [];
+            if (typeof HIRAGANA_ROWS !== 'undefined' && typeof KATAKANA_ROWS !== 'undefined') {
+                allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
+            }
+            const count = type === 'full' ? 15 : 5;
+            quiz = { items: shuffle(allKana).slice(0, count), index: 0, correct: 0, wrong: 0, type };
+            
+            document.getElementById('quizTitle').textContent = '🎯 Тест';
+            showQuizScreen(); 
+            renderQuizQuestion();
+        }
+
+        function startAlphabetQuiz(count) {
+            let rows = [];
+            if (typeof HIRAGANA_ROWS !== 'undefined' && typeof KATAKANA_ROWS !== 'undefined') {
+                rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            }
+            const allChars = rows.flatMap(r => r.chars);
+            quiz = { items: shuffle(allChars).slice(0, count), index: 0, correct: 0, wrong: 0, type: 'alphabet' };
+            
+            document.getElementById('quizTitle').textContent = `🎯 ${alphabetTab === 'hiragana' ? 'Хирагана' : 'Катакана'}`;
+            showQuizScreen(); 
+            renderQuizQuestion();
+        }
+
+        function startRowQuiz(rowIndex) {
+            let rows = [];
+            if (typeof HIRAGANA_ROWS !== 'undefined' && typeof KATAKANA_ROWS !== 'undefined') {
+                rows = alphabetTab === 'hiragana' ? HIRAGANA_ROWS : KATAKANA_ROWS;
+            }
+            const row = rows[rowIndex];
+            quiz = { items: shuffle([...row.chars]), index: 0, correct: 0, wrong: 0, type: 'row' };
+            
+            document.getElementById('quizTitle').textContent = `🎯 ${row.name}`;
+            showQuizScreen(); 
+            renderQuizQuestion();
+        }
+
+        function showQuizScreen() {
+            document.getElementById('quizScreen').style.display = 'flex';
+            const nav = document.getElementById('bottomNav');
+            if (nav) nav.style.display = 'none';
+        }
+
+        function hideQuizScreen() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'none';
+            const nav = document.getElementById('bottomNav');
+            if (nav) nav.style.display = 'flex';
+        }
+
+        function renderQuizQuestion() {
+            if (quiz.index >= quiz.items.length) { 
+                showResults(); 
+                return; 
+            }
+            
+            const item = quiz.items[quiz.index];
+            document.getElementById('quizChar').textContent = item.char;
+            document.getElementById('quizCorrect').textContent = quiz.correct;
+            document.getElementById('quizWrong').textContent = quiz.wrong;
+            
+            let allReadings = [];
+            if (typeof HIRAGANA_ROWS !== 'undefined' && typeof KATAKANA_ROWS !== 'undefined') {
+                allReadings = [...new Set([...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars.map(c => c.reading)))];
+            }
+            const wrong = shuffle(allReadings.filter(r => r !== item.reading)).slice(0, 3);
+            const options = shuffle([item.reading, ...wrong]);
+            
+            let html = '';
+            options.forEach(opt => {
+                html += `
+                    <div class="quiz-option" onclick="checkQuizAnswer(this, '${opt}', '${item.reading}')">${opt}</div>
+                `;
+            });
+            
+            document.getElementById('quizOptions').innerHTML = html;
+        }
+
+        function checkQuizAnswer(btn, selected, correct) {
+            document.querySelectorAll('.quiz-option').forEach(b => {
+                b.style.pointerEvents = 'none';
+                if (b.textContent === correct) {
+                    b.classList.add('correct');
+                } else if (b.textContent === selected) {
+                    b.classList.add('wrong');
+                }
+            });
+            
+            if (selected === correct) { 
+                quiz.correct++; 
+                haptic('success'); 
+            } else { 
+                quiz.wrong++; 
+                haptic('error'); 
+            }
+            
+            setTimeout(() => { 
+                quiz.index++; 
+                renderQuizQuestion(); 
+            }, 700);
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'flex';
+            
+            const score = quiz.correct;
+            const total = quiz.items.length;
+            const pct = Math.round(score / total * 100);
+            const xp = score * 10;
+            
+            // Немедленно начисляем очки и обновляем UI
+            if (xp > 0) {
+                user.xp += xp;
+                saveUser();
+                updateUI(); // Немедленное обновление счетчика
+                showNotification(`🎉 +${xp} XP получено!`, 'success', 2000);
+            }
+            
+            let icon, title, subtitle;
+            if (pct === 100) { 
+                icon = '🏆'; title = 'Идеально!'; subtitle = 'Ты мастер!'; 
+                user.perfectTests = (user.perfectTests || 0) + 1; 
+            } else if (pct >= 80) { 
+                icon = '🎉'; title = 'Отлично!'; subtitle = 'Так держать!'; 
+            } else if (pct >= 60) { 
+                icon = '👍'; title = 'Хорошо!'; subtitle = 'Есть куда расти!'; 
+            } else { 
+                icon = '💪'; title = 'Попробуй ещё!'; subtitle = 'Практика — ключ!'; 
+            }
+            
+            document.getElementById('resultsIcon').textContent = icon;
+            document.getElementById('resultsTitle').textContent = title;
+            document.getElementById('resultsScore').textContent = `${score} / ${total}`;
+            document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
+            document.getElementById('resultsSubtitle').textContent = subtitle;
+            
+            haptic('success');
+        }
+
+        function finishQuiz() { 
+            document.getElementById('resultsScreen').style.display = 'none'; // Скрываем экран результатов
+            sendResult('quiz_result', quiz.correct); 
+            setTimeout(() => { 
+                hideQuizScreen(); 
+                goTo('home'); 
+            }, 100); 
+        }
+        
+        function retryQuiz() { 
+            hideQuizScreen(); 
+            if (quiz.type === 'alphabet' || quiz.type === 'row') {
+                goTo('alphabet'); 
+            } else {
+                startQuiz(quiz.type); 
+            }
+        }
+
+        // ==================== УМНЫЕ СВАЙПЫ (SRS) ====================
+        async function fetchDueReviews() {
+            if (!AUTH_HEADER) return [];
+            try {
+                const res = await fetch(`${API_BASE}/api/reviews`, {
+                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                });
+                const data = await res.json();
+                if(data.success && data.cards.length > 0) return data.cards;
+            } catch(e) { console.warn(e); }
+            return [];
+        }
+
+        async function startSwipe() {
+            const swipeScreenEl = document.getElementById('swipeScreen');
+            const nav = document.getElementById('bottomNav');
+            
+            if (swipeScreenEl) swipeScreenEl.style.display = 'flex';
+            if(nav) nav.style.display = 'none';
+            
+            const swipeCharEl = document.getElementById('swipeChar');
+            const swipeHintEl = document.getElementById('swipeHint');
+            
+            if (swipeCharEl) swipeCharEl.textContent = "⏳";
+            if (swipeHintEl) swipeHintEl.textContent = "Ищем забытые карточки...";
+            
+            let reviewCards = await fetchDueReviews();
+            let items = [];
+            
+            if (reviewCards && reviewCards.length > 0) {
+                items = reviewCards; // ИСПОЛЬЗУЕМ УМНЫЕ КАРТОЧКИ!
+                const titleEl = document.querySelector('#swipeScreen h2');
+                if (titleEl) titleEl.innerHTML = '🧠 Повторение';
+            } else {
+                // Если нечего повторять, даем случайные
+                let allKana = [];
+                if (typeof HIRAGANA_ROWS !== 'undefined' && typeof KATAKANA_ROWS !== 'undefined') {
+                    allKana = [...HIRAGANA_ROWS, ...KATAKANA_ROWS].flatMap(r => r.chars);
+                }
+                items = shuffle(allKana).slice(0, 10);
+                const titleEl = document.querySelector('#swipeScreen h2');
+                if (titleEl) titleEl.innerHTML = '🃏 Практика';
+            }
+            
+            swipe = { items: shuffle(items).slice(0,15), index: 0, correct: 0, wrong: 0, history: [] };
+            renderSwipeCard();
+            initSwipeGestures();
+        }
+
+        // Логика жестов свайпа
+        function initSwipeGestures() {
+            let card = document.getElementById('swipeCard');
+            if (!card) return;
+            
+            // Клонируем элемент, чтобы удалить старые обработчики событий
+            const newCard = card.cloneNode(true);
+            card.parentNode.replaceChild(newCard, card);
+            card = newCard; // Работаем с новым элементом
+
+            let startX = 0;
+            let currentX = 0;
+            let isDragging = false;
+            const threshold = 100; // Порог срабатывания
+
+            const onStart = (e) => {
+                if (swipe.index >= swipe.items.length) return;
+                startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                isDragging = true;
+                card.style.transition = 'none';
+            };
+
+            const onMove = (e) => {
+                if (!isDragging) return;
+                // Не блокируем скролл, если движение вертикальное? 
+                // Но у нас свайп влево-вправо. Блокируем всё для надежности на карточке.
+                e.preventDefault(); 
+                currentX = (e.type.includes('mouse') ? e.clientX : e.touches[0].clientX) - startX;
+                
+                const rotate = currentX * 0.05;
+                card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+
+                const knowInd = document.querySelector('.indicator.know');
+                const learnInd = document.querySelector('.indicator.learn');
+                
+                if (currentX > 0) {
+                    if(knowInd) knowInd.style.opacity = Math.min(currentX / 100, 1);
+                    if(learnInd) learnInd.style.opacity = 0;
+                } else {
+                    if(learnInd) learnInd.style.opacity = Math.min(Math.abs(currentX) / 100, 1);
+                    if(knowInd) knowInd.style.opacity = 0;
+                }
+            };
+
+            const onEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                if (currentX > threshold) {
+                    swipeYes();
+                } else if (currentX < -threshold) {
+                    swipeNo();
+                } else {
+                    card.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                    card.style.transform = 'translateX(0) rotate(0)';
+                    document.querySelectorAll('.indicator').forEach(i => i.style.opacity = '0');
+                }
+                currentX = 0;
+            };
+
+            // Touch events
+            card.addEventListener('touchstart', onStart, {passive: false});
+            card.addEventListener('touchmove', onMove, {passive: false}); // Вешаем прямо на карту
+            card.addEventListener('touchend', onEnd);
+
+            // Mouse events
+            card.addEventListener('mousedown', onStart);
+            
+            // Для мыши move/up лучше вешать на document, чтобы не срывалось
+            const onMouseMove = (e) => { if(isDragging) onMove(e); }
+            const onMouseUp = (e) => { if(isDragging) onEnd(e); }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            
+            // Очистка глобальных слушателей при уничтожении (не идеально, но для SPA сойдет, 
+            // так как мышь используется редко на мобилках)
+        }
+
+        function renderSwipeCard() {
+            if (swipe.index >= swipe.items.length) { 
+                showSwipeResults(); 
+                return; 
+            }
+            
+            const item = swipe.items[swipe.index];
+            const card = document.getElementById('swipeCard');
+            
+            // Проверяем существование элементов
+            const swipeCharEl = document.getElementById('swipeChar');
+            const swipeAnswerEl = document.getElementById('swipeAnswer');
+            const swipeHintEl = document.getElementById('swipeHint');
+            const swipeCountEl = document.getElementById('swipeCount');
+            const swipeProgressEl = document.getElementById('swipeProgress');
+            
+            if (!card || !swipeCharEl || !swipeAnswerEl) {
+                console.warn("Элементы свайпа не найдены");
+                return;
+            }
+            
+            // Устанавливаем текст
+            swipeCharEl.textContent = item.char || '';
+            swipeAnswerEl.textContent = item.reading || '';
+
+            // Динамический размер шрифта для длинных текстов
+            swipeCharEl.className = 'japanese'; // сброс
+            if (item.char && item.char.length > 5) {
+                swipeCharEl.classList.add('very-long-text');
+            } else if (item.char && item.char.length > 1) {
+                swipeCharEl.classList.add('long-text');
+            }
+            
+            // Сбрасываем стили и анимации
+            card.style.transition = 'none';
+            card.style.transform = 'translateX(0) rotate(0) scale(1)';
+            card.style.opacity = '1';
+            card.style.left = '0';
+            card.style.top = '0';
+            
+            if (swipeHintEl) swipeHintEl.style.display = 'block';
+            if (swipeAnswerEl) swipeAnswerEl.style.opacity = '0';
+            
+            // Обновляем прогресс
+            if (swipeCountEl) swipeCountEl.textContent = `${swipe.index+1} / ${swipe.items.length}`;
+            if (swipeProgressEl) swipeProgressEl.style.width = `${swipe.index / swipe.items.length * 100}%`;
+            
+            // Сбрасываем индикаторы
+            document.querySelectorAll('.indicator').forEach(i => {
+                i.style.opacity = '0';
+            });
+        }
+
+        function swipeReveal() {
+            document.getElementById('swipeAnswer').style.opacity = '1';
+            document.getElementById('swipeHint').style.display = 'none';
+            haptic('light');
+        }
+
+        function swipeYes() {
+            if (!swipe.items || swipe.items.length === 0 || swipe.index >= swipe.items.length) return;
+            
+            swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: true });
+            
+            const card = document.getElementById('swipeCard');
+            const indicator = document.querySelector('.indicator.know');
+            
+            if (card) {
+                // Правильная анимация свайпа вправо
+                card.style.transition = 'all 0.3s ease-out';
+                card.style.transform = 'translateX(150px) rotate(10deg) scale(0.8)';
+                card.style.opacity = '0';
+            }
+            
+            if (indicator) indicator.style.opacity = '1';
+            
+            swipe.correct++; 
+            haptic('medium');
+            
+            setTimeout(() => { 
+                swipe.index++; 
+                renderSwipeCard(); 
+            }, 300);
+        }
+
+        function swipeNo() {
+            if (!swipe.items || swipe.items.length === 0 || swipe.index >= swipe.items.length) return;
+
+            swipe.history.push({ char: swipe.items[swipe.index].char, type: swipe.items[swipe.index].type || 'hiragana', isCorrect: false });
+            
+            const card = document.getElementById('swipeCard');
+            const indicator = document.querySelector('.indicator.learn');
+            
+            if (card) {
+                // Правильная анимация свайпа влево
+                card.style.transition = 'all 0.3s ease-out';
+                card.style.transform = 'translateX(-150px) rotate(-10deg) scale(0.8)';
+                card.style.opacity = '0';
+            }
+            
+            if (indicator) indicator.style.opacity = '1';
+            
+            swipe.wrong++; 
+            haptic('medium');
+            
+            setTimeout(() => { 
+                swipe.index++; 
+                renderSwipeCard(); 
+            }, 300);
+        }
+
+        function showSwipeResults() {
+            document.getElementById('swipeScreen').style.display = 'none';
+            const xp = swipe.correct * 10;
+            
+            // Немедленно начисляем очки и обновляем UI
+            if (xp > 0) {
+                user.xp += xp;
+                saveUser();
+                updateUI(); // Немедленное обновление счетчика
+                showNotification(`🎯 +${xp} XP за карточки!`, 'success', 2000);
+            }
+            
+            document.getElementById('resultsScreen').style.display = 'flex';
+            document.getElementById('resultsIcon').textContent = swipe.correct === swipe.items.length ? '🏆' : '👍';
+            document.getElementById('resultsTitle').textContent = 'Карточки пройдены!';
+            document.getElementById('resultsScore').textContent = `${swipe.correct} / ${swipe.items.length}`;
+            document.getElementById('resultsXp').textContent = xp > 0 ? `+${xp} XP` : '';
+            document.getElementById('resultsSubtitle').textContent = `Знал: ${swipe.correct}, Учить: ${swipe.wrong}`;
+            haptic('success');
+            
+            sendResult('swipe_result', swipe.correct, swipe.history);
+        }
+
+        // ==================== РУЛЕТКА ====================
+        function createWheel() {
+            const svg = document.getElementById('wheel');
+            if (!svg) {
+                console.warn("Элемент wheel не найден");
+                return;
+            }
+            
+            const angle = 360 / WHEEL_PRIZES.length;
+            let html = '';
+            
+            WHEEL_PRIZES.forEach((prize, i) => {
+                const startRad = (i * angle - 90) * Math.PI / 180;
+                const endRad = (i * angle + angle - 90) * Math.PI / 180;
+                
+                const x1 = 50 + 45 * Math.cos(startRad);
+                const y1 = 50 + 45 * Math.sin(startRad);
+                const x2 = 50 + 45 * Math.cos(endRad);
+                const y2 = 50 + 45 * Math.sin(endRad);
+                
+                const largeArc = angle > 180 ? 1 : 0;
+                
+                html += `
+                    <path d="M 50 50 L ${x1} ${y1} A 45 45 0 ${largeArc} 1 ${x2} ${y2} Z"
+                          fill="${prize.color}" stroke="white" stroke-width="2"/>
+                    <text x="${50 + 25 * Math.cos((startRad + endRad) / 2)}" 
+                          y="${50 + 25 * Math.sin((startRad + endRad) / 2)}" 
+                          fill="white" font-size="10" font-weight="bold" text-anchor="middle">
+                          +${prize.value}
+                    </text>
+                `;
+            });
+            
+            svg.innerHTML = html;
+        }
+
+        function openWheel() {
+            document.getElementById('wheelScreen').style.display = 'flex';
+            document.getElementById('wheelResult').style.display = 'none';
+            
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.style.display = 'none';
+            
+            if (user.lastDaily === new Date().toDateString()) {
+                document.getElementById('wheelSpinBtn').disabled = true;
+                document.getElementById('wheelSpinBtn').textContent = 'Завтра!';
+                document.getElementById('wheelSpinBtn').style.background = 'gray';
+            } else {
+                document.getElementById('wheelSpinBtn').disabled = false;
+                document.getElementById('wheelSpinBtn').textContent = '🎲 КРУТИТЬ!';
+                document.getElementById('wheelSpinBtn').style.background = 'var(--primary)';
+            }
+        }
+
+        function closeWheel() { 
+            document.getElementById('wheelScreen').style.display = 'none'; 
+            const nav = document.getElementById('bottomNav');
+            if(nav) nav.style.display = 'flex';
+        }
+
+        let wheelRotation = 0;
+        function spinWheel() {
+            const today = new Date().toDateString();
+            if (user.lastDaily === today) return;
+            
+            const btn = document.getElementById('wheelSpinBtn');
+            btn.disabled = true; 
+            btn.textContent = '🎰 Крутится...';
+            btn.style.background = 'gray';
+            
+            const prizeIndex = Math.floor(Math.random() * WHEEL_PRIZES.length);
+            wheelRotation += (5 + Math.random() * 3) * 360 + (360 - (prizeIndex * (360 / WHEEL_PRIZES.length) + (360 / WHEEL_PRIZES.length) / 2)) - (wheelRotation % 360);
+            
+            document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
+            haptic('medium');
+            
+            setTimeout(() => {
+                const xpWon = WHEEL_PRIZES[prizeIndex].value;
+                user.xp += xpWon; 
+                user.coins += Math.floor(xpWon / 5);
+                user.lastDaily = today;
+                saveUser(); 
+                updateUI(); // Немедленное обновление счетчика
+                
+                // Показываем анимированное уведомление
+                showNotification(`🎡 Выиграли +${xpWon} XP и +${Math.floor(xpWon / 5)} 🪙!`, 'success', 4000);
+                
+                document.getElementById('wheelResultXp').textContent = `+${xpWon} XP`;
+                document.getElementById('wheelResult').style.display = 'block';
+                
+                btn.textContent = '✅ Готово!'; 
+                haptic('success');
+                sendResult('wheel_reward', xpWon);
+            }, 4500);
+        }
+
+        // ==================== УТИЛИТЫ И ОТПРАВКА ДАННЫХ ====================
+        function shuffle(arr) { 
+            const a = [...arr]; 
+            for (let i = a.length - 1; i > 0; i--) { 
+                const j = Math.floor(Math.random() * (i + 1)); 
+                [a[i], a[j]] = [a[j], a[i]]; 
+            } 
+            return a; 
+        }
+
+        function haptic(type) { 
+            if (!user.settings.vibration) return; 
+            try { 
+                if (type === 'success') tg.HapticFeedback.notificationOccurred('success'); 
+                else if (type === 'error') tg.HapticFeedback.notificationOccurred('error'); 
+                else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium'); 
+                else tg.HapticFeedback.impactOccurred('light'); 
+            } catch(e){} 
+        }
+
+        async function sendResult(type, score, detailedHistory = []) {
+            try {
+                if (AUTH_HEADER) {
+                    let action = 'quiz_complete';
+                    let correct = score;
+                    let total = score;
+                    
+                    // Хак для рулетки: сервер умножает correct на 10, поэтому делим очки рулетки на 10
+                    if (type === 'wheel_reward') {
+                        correct = score / 10;
+                        total = score / 10;
+                    }
+                    
+                    await fetch(`${API_BASE}/api/progress`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'X-Telegram-Init-Data': AUTH_HEADER, 
+                            'ngrok-skip-browser-warning': 'true' 
+                        },
+                        body: JSON.stringify({ action: action, correct: correct, total: total, results: detailedHistory })
+                    });
+                }
+            } catch (e) { console.warn("API Error:", e); }
+        }
+
+        // Запуск
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(init, 100); // Небольшая задержка для стабильности
+            });
+        } else {
+            setTimeout(init, 100); // Небольшая задержка для стабильности
+        }
+    </script>
+</body>
+</html>
