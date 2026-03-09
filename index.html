@@ -1511,6 +1511,18 @@
         async function checkApiAvailability() {
             if (!isOnline) return false;
             
+            // Если мы уже нашли рабочий API и он работает - ничего не меняем
+            if (apiAvailable) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/health`, { 
+                        method: 'GET',
+                        headers: { 'ngrok-skip-browser-warning': 'true' }
+                    });
+                    if (response.ok) return true;
+                } catch(e) {}
+            }
+            
+            // Если текущий API не работает, пробуем все из списка
             for (let i = 0; i < API_ENDPOINTS.length; i++) {
                 try {
                     const controller = new AbortController();
@@ -1528,6 +1540,8 @@
                         API_BASE = API_ENDPOINTS[i];
                         currentApiIndex = i;
                         apiAvailable = true;
+                        // Если это первый запуск или восстановление - сразу обновим данные
+                        fetchUserFromServer();
                         return true;
                     }
                 } catch (e) {
@@ -1537,6 +1551,9 @@
             apiAvailable = false;
             return false;
         }
+
+        // Автоматическая проверка соединения каждые 10 секунд
+        setInterval(checkApiAvailability, 10000);
 
         // Улучшенная функция fetch с обработкой ошибок
         async function safeFetch(url, options = {}) {
@@ -2270,16 +2287,39 @@
         function setAvatar() {
             const tgUser = tg.initDataUnsafe?.user;
             let avatarUrl = '';
+            
+            // Если у пользователя есть фото в Telegram, используем его
             if (tgUser && tgUser.photo_url) {
                 avatarUrl = tgUser.photo_url;
             } else {
+                // Если нет фото, генерируем аватар с инициалами
                 const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
                 avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff`;
             }
             
-            document.getElementById('userAvatar').style.backgroundImage = `url(${avatarUrl})`;
+            // Функция для установки фона с проверкой загрузки
+            const applyBg = (elementId, url) => {
+                const el = document.getElementById(elementId);
+                if (!el) return;
+                
+                // Проверяем доступность URL перед установкой
+                const img = new Image();
+                img.onload = () => { el.style.backgroundImage = `url(${url})`; };
+                img.onerror = () => {
+                    // Если не загрузилось (404/403), ставим заглушку
+                    console.warn(`Ошибка загрузки аватара для ${elementId}: ${url}`);
+                    const initial = user.name ? user.name.charAt(0).toUpperCase() : '?';
+                    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(initial)}&background=667eea&color=fff`;
+                    el.style.backgroundImage = `url(${fallback})`;
+                };
+                img.src = url;
+            };
+
+            applyBg('userAvatar', avatarUrl);
+            applyBg('profileAvatar', avatarUrl);
+            
+            // Очищаем текст внутри, так как картинка будет фоном
             document.getElementById('userAvatar').textContent = '';
-            document.getElementById('profileAvatar').style.backgroundImage = `url(${avatarUrl})`;
             document.getElementById('profileAvatar').textContent = '';
         }
 
@@ -2315,6 +2355,11 @@
 
         async function init() {
             try {
+                if (!tg.initData) {
+                    tg.showAlert("⚠️ Ошибка авторизации: Пожалуйста, откройте приложение через Telegram.");
+                    document.getElementById('userName').textContent = "Ошибка авторизации";
+                }
+
                 loadUserFromStorage();
                 
                 // Запускаем мониторинг статуса сервера
