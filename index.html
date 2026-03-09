@@ -1447,7 +1447,7 @@
             return false;
         }
         
-        const AUTH_HEADER = tg.initData || '';
+        let AUTH_HEADER = tg.initData || '';
         
         // Определение сетевого подключения
         let isOnline = navigator.onLine;
@@ -2192,12 +2192,23 @@
                     container.innerHTML = '<div style="text-align: center; color: var(--text-hint);">Нет данных</div>';
                 }
             } catch (e) { 
-                container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; 
+                if (e.message && e.message.includes('401')) {
+                     container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка авторизации</div>`; 
+                } else {
+                     container.innerHTML = `<div style="text-align: center; color: var(--error);">Ошибка соединения</div>`; 
+                }
             }
         }
 
         async function fetchUserStats() {
-            if (!AUTH_HEADER) return;
+            if (!AUTH_HEADER) {
+                // Если нет авторизации, попробуем обновить токен из TG (вдруг появился)
+                if (tg.initData) {
+                    // Перезагрузка страницы для обновления AUTH_HEADER (он константа)
+                    // Но лучше просто предупредить
+                }
+                return;
+            }
             const container = document.getElementById('progressDetails');
             
             try {
@@ -2356,8 +2367,13 @@
         async function init() {
             try {
                 if (!tg.initData) {
-                    tg.showAlert("⚠️ Ошибка авторизации: Пожалуйста, откройте приложение через Telegram.");
-                    document.getElementById('userName').textContent = "Ошибка авторизации";
+                    console.warn("initData отсутствует. Возможно, запуск вне Telegram или проблема с API.");
+                    // Пробуем получить initData еще раз, вдруг она появилась
+                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+                         AUTH_HEADER = window.Telegram.WebApp.initData;
+                    }
+                } else {
+                    AUTH_HEADER = tg.initData;
                 }
 
                 loadUserFromStorage();
