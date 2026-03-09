@@ -5,28 +5,22 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
 
 
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton, WebAppInfo
+
+# Добавьте ссылку на ваш GitHub в начало файла, если её там нет
+WEBAPP_URL = "https://froncs4.github.io/applanguagejapanese/"
+
 def get_main_menu_keyboard() -> InlineKeyboardMarkup:
     """Главное inline-меню."""
     return InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="🔤 Азбука", callback_data="menu:alphabet"),
-            InlineKeyboardButton(text="🎓 JLPT", callback_data="menu:jlpt"),
+            InlineKeyboardButton(text="📱 Открыть приложение", web_app=WebAppInfo(url=WEBAPP_URL))
         ],
         [
-            InlineKeyboardButton(text="🧠 Практика", callback_data="menu:learn"),
-            InlineKeyboardButton(text="📖 Повторение", callback_data="menu:review"),
-        ],
-        [
-            InlineKeyboardButton(text="🗣️ ИИ-Сенсей", callback_data="menu:tutor"),
-        ],
-        [
-            InlineKeyboardButton(text="📊 Статистика", callback_data="menu:stats"),
-            InlineKeyboardButton(text="🏆 Рейтинг", callback_data="menu:top:xp"),
-        ],
-        [
-            InlineKeyboardButton(text="❓ Помощь", callback_data="menu:help"),
-        ],
+            InlineKeyboardButton(text="🗣️ Чат с ИИ-Сенсеем", callback_data="menu:tutor")
+        ]
     ])
+
 
 
 def get_alphabet_keyboard(webapp_url: str) -> InlineKeyboardMarkup:
