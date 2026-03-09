@@ -12,6 +12,7 @@
         window.WORDS_N5 = {};
         window.KANJI_N4 = {};
         window.WORDS_N4 = {};
+        window.GRAMMAR_N5 = []; // <--- NEW
         window.CONTENT_LOADED = false;
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -970,6 +971,11 @@
                     <div class="card-icon">🎡</div>
                     <div class="card-title">Рулетка</div>
                     <div class="card-subtitle">Ежедневный бонус</div>
+                </div>
+                <div class="menu-card" onclick="goTo('grammar')">
+                    <div class="card-icon">📖</div>
+                    <div class="card-title">Грамматика</div>
+                    <div class="card-subtitle">Правила N5</div>
                 </div>
                 <div class="menu-card" onclick="goTo('shop')">
                     <div class="card-icon">🛒</div>
@@ -2490,6 +2496,7 @@
             currentScreen = screen;
             
             if (screen === 'alphabet') renderAlphabet();
+            if (screen === 'grammar') renderGrammar(); // <--- Добавлено
             if (screen === 'stories') renderStories(); // Обновляем истории при каждом переходе
             if (screen === 'profile') renderProfile();
             if (screen === 'leaderboard') fetchLeaderboard();
@@ -2530,25 +2537,34 @@
                 
                 // Запрашиваем все категории (можно оптимизировать и запрашивать по одной)
                 const categories = ['kanji_n5', 'words_n5']; 
-                let allItems = [];
                 
-                // В реальном приложении лучше сделать один запрос на всё, или использовать GraphQL
-                // Но пока сделаем параллельные запросы
-                const promises = categories.map(cat => 
+                // Параллельные запросы: контент и грамматика
+                const contentPromises = categories.map(cat => 
                     fetch(`${API_BASE}/api/content?category=${cat}`, {
                         headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
                     }).then(r => r.json())
                 );
                 
-                const results = await Promise.all(promises);
+                const grammarPromise = fetch(`${API_BASE}/api/grammar?level=N5`, {
+                    headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                }).then(r => r.json());
+                
+                const [contentResults, grammarResult] = await Promise.all([
+                    Promise.all(contentPromises),
+                    grammarPromise
+                ]);
                 
                 const contentData = {};
-                results.forEach((res, index) => {
+                contentResults.forEach((res, index) => {
                     if (res.success) {
                         const cat = categories[index];
                         contentData[cat] = res.items;
                     }
                 });
+                
+                if (grammarResult.success) {
+                    contentData['grammar_n5'] = grammarResult.grammar;
+                }
                 
                 applyContent(contentData);
                 localStorage.setItem('japanese_content_v1', JSON.stringify(contentData));
@@ -2584,8 +2600,11 @@
                     };
                 });
             }
+            if (data.grammar_n5) {
+                window.GRAMMAR_N5 = data.grammar_n5;
+            }
             window.CONTENT_LOADED = true;
-            updateUI(); // Обновить интерфейс если нужно
+            updateUI(); 
         }
 
         function showLoader(show) {
@@ -2815,6 +2834,73 @@
         }
 
         // ==================== ИНТЕРАКТИВНЫЕ ИСТОРИИ (РЕНДЕРИНГ) ====================
+        function renderGrammar() {
+            const container = document.getElementById('grammarList');
+            if (!container) return;
+            
+            if (!window.GRAMMAR_N5 || window.GRAMMAR_N5.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--text-hint);">
+                        <div style="font-size: 40px; margin-bottom: 20px;">📭</div>
+                        Нет доступных правил.<br>Проверьте подключение к интернету.
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            window.GRAMMAR_N5.forEach((point, index) => {
+                let examplesHtml = '';
+                if (point.examples && point.examples.length > 0) {
+                    examplesHtml = point.examples.map(ex => `
+                        <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-top: 8px; border-left: 3px solid var(--accent);">
+                            <div class="japanese" style="font-size: 16px; margin-bottom: 4px;">${ex.japanese}</div>
+                            <div style="font-size: 12px; color: var(--text-hint);">${ex.reading || ''}</div>
+                            <div style="font-size: 13px; margin-top: 4px;">${ex.translation}</div>
+                        </div>
+                    `).join('');
+                }
+                
+                html += `
+                    <div class="story-card-enhanced" onclick="this.classList.toggle('active')" style="cursor: pointer;">
+                        <div class="story-header">
+                            <div class="story-image" style="background: rgba(118, 75, 162, 0.2); color: var(--secondary);">
+                                ${index + 1}
+                            </div>
+                            <div class="story-info">
+                                <div class="story-title" style="font-size: 16px;">${point.title}</div>
+                                <div style="font-size: 12px; color: var(--text-hint); font-family: monospace; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; display: inline-block;">${point.structure || ''}</div>
+                            </div>
+                            <div style="font-size: 20px; opacity: 0.5;">▼</div>
+                        </div>
+                        <div style="font-size: 14px; line-height: 1.5; color: #ddd; margin-bottom: 10px;">
+                            ${point.description}
+                        </div>
+                        <div class="grammar-examples" style="display: none;">
+                            <div style="font-size: 12px; font-weight: bold; color: var(--text-hint); margin-bottom: 5px; text-transform: uppercase;">Примеры:</div>
+                            ${examplesHtml}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Добавляем обработчики для раскрытия
+            container.querySelectorAll('.story-card-enhanced').forEach(card => {
+                card.addEventListener('click', function() {
+                    const examples = this.querySelector('.grammar-examples');
+                    const arrow = this.querySelector('.story-header div:last-child');
+                    if (examples) {
+                        const isVisible = examples.style.display === 'block';
+                        examples.style.display = isVisible ? 'none' : 'block';
+                        arrow.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+                        arrow.style.transition = 'transform 0.3s';
+                    }
+                });
+            });
+        }
+
         function renderStories() {
             const container = document.getElementById('storiesList');
             if (!container) {
