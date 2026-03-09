@@ -864,11 +864,12 @@
     <div class="app-bg-layer" id="appBgLayer"></div>
     <div class="app-bg-overlay"></div>
 
-    <!-- Загрузка -->
+    <!-- ЗАГРУЗКА -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loading-logo">🎌</div>
         <div style="color: white; font-size: 26px; font-weight: 800; letter-spacing: 1px;">YomuBot</div>
         <div class="loading-spinner"></div>
+        <div id="debugInfo" style="margin-top: 20px; color: rgba(255,255,255,0.5); font-size: 10px; font-family: monospace; white-space: pre-wrap; text-align: left; width: 90%;">Initializing...</div>
     </div>
 
     <!-- ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ И СТАТУСОМ -->
@@ -1368,6 +1369,22 @@
         const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : { initData: '', initDataUnsafe: {}, expand(){}, ready(){}, showAlert(m){ try{ alert(m) }catch(e){} }, sendData(){}, HapticFeedback: { notificationOccurred(){}, impactOccurred(){} }, colorScheme: 'dark' };
         try { tg.expand(); tg.ready(); } catch(e){}
 
+        // ДИАГНОСТИКА
+        function updateDebug(msg) {
+            const el = document.getElementById('debugInfo');
+            if(el) {
+                const lines = el.innerText.split('\n');
+                if (lines.length > 5) lines.shift();
+                lines.push(msg);
+                el.innerText = lines.join('\n');
+            }
+            console.log(msg);
+        }
+
+        updateDebug('WebApp ready');
+        updateDebug('UA: ' + navigator.userAgent);
+        updateDebug('Platform: ' + (tg.platform || 'unknown'));
+
         // ======= НАСТРОЙКИ API С РЕЗЕРВНЫМИ СЕРВЕРАМИ =======
         const API_ENDPOINTS = [
             'https://endless-max-jowly.ngrok-free.dev',  // Основной
@@ -1509,7 +1526,10 @@
         };
 
         async function checkApiAvailability() {
-            if (!isOnline) return false;
+            if (!isOnline) {
+                updateDebug('Offline');
+                return false;
+            }
             
             // Если мы уже нашли рабочий API и он работает - ничего не меняем
             if (apiAvailable) {
@@ -1519,10 +1539,13 @@
                         headers: { 'ngrok-skip-browser-warning': 'true' }
                     });
                     if (response.ok) return true;
-                } catch(e) {}
+                } catch(e) {
+                    updateDebug('API check failed: ' + e.message);
+                }
             }
             
             // Если текущий API не работает, пробуем все из списка
+            updateDebug('Checking endpoints...');
             for (let i = 0; i < API_ENDPOINTS.length; i++) {
                 try {
                     const controller = new AbortController();
@@ -1540,14 +1563,16 @@
                         API_BASE = API_ENDPOINTS[i];
                         currentApiIndex = i;
                         apiAvailable = true;
+                        updateDebug('Connected: ' + API_BASE);
                         // Если это первый запуск или восстановление - сразу обновим данные
                         fetchUserFromServer();
                         return true;
                     }
                 } catch (e) {
-                    console.warn(`API ${API_ENDPOINTS[i]} недоступен:`, e.message);
+                    // console.warn(`API ${API_ENDPOINTS[i]} недоступен:`, e.message);
                 }
             }
+            updateDebug('All endpoints failed');
             apiAvailable = false;
             return false;
         }
@@ -2368,12 +2393,15 @@
             try {
                 if (!tg.initData) {
                     console.warn("initData отсутствует. Возможно, запуск вне Telegram или проблема с API.");
+                    updateDebug('No initData found!');
                     // Пробуем получить initData еще раз, вдруг она появилась
                     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
                          AUTH_HEADER = window.Telegram.WebApp.initData;
+                         updateDebug('initData recovered');
                     }
                 } else {
                     AUTH_HEADER = tg.initData;
+                    updateDebug('initData OK (' + AUTH_HEADER.length + ' chars)');
                 }
 
                 loadUserFromStorage();
@@ -2383,6 +2411,7 @@
                 
                 // Проверяем доступность API
                 showNotification('🔄 Проверка соединения...', 'info', 2000);
+                updateDebug('Starting API check...');
                 const apiOk = await checkApiAvailability();
                 
                 if (apiOk) {
@@ -2392,6 +2421,7 @@
                     await Promise.race([fetchPromise, timeoutPromise]);
                 } else {
                     showNotification('📱 Работаем в оффлайн режиме', 'info', 3000);
+                    updateDebug('Offline Mode active');
                 }
                 
                 applyBackground(user.settings?.bg || 'bg-dark');
