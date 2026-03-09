@@ -6,18 +6,13 @@
     <title>YomuBot - Японский язык</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='50' x='50' font-size='50' text-anchor='middle'>🎌</text></svg>">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Если ваши словари лежат прямо в этом файле, они должны быть ниже в теге script. 
-         Если они в отдельном файле, оставляем эту строку: -->
-    <script src="data.js" onerror="console.warn('data.js не загружен, используем резервные данные'); window.dataLoaded=false;"></script>
     <script>
-        // Резервные данные, если data.js не загрузился
-        if (typeof window.dataLoaded === 'undefined') {
-            window.KANJI_N5 = window.KANJI_N5 || {};
-            window.WORDS_N5 = window.WORDS_N5 || {};
-            window.KANJI_N4 = window.KANJI_N4 || {};
-            window.WORDS_N4 = window.WORDS_N4 || {};
-            console.log('Используются резервные данные');
-        }
+        // Инициализация глобальных переменных для контента
+        window.KANJI_N5 = {};
+        window.WORDS_N5 = {};
+        window.KANJI_N4 = {};
+        window.WORDS_N4 = {};
+        window.CONTENT_LOADED = false;
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -873,6 +868,12 @@
     </div>
 
     <!-- ВЕРХНЯЯ ПАНЕЛЬ С МОНЕТАМИ И СТАТУСОМ -->
+    <!-- Глобальный лоадер -->
+    <div id="globalLoader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="font-size: 40px; margin-bottom: 20px;">⛩️</div>
+        <div style="color: white; font-weight: bold;">Загрузка уроков...</div>
+    </div>
+
     <div class="top-bar">
         <div class="server-status" id="serverStatus">
             <div class="status-dot" id="statusDot"></div>
@@ -2499,6 +2500,97 @@
             }
             
             haptic('light');
+        }
+
+        // ==================== ЗАГРУЗКА КОНТЕНТА (API) ====================
+        async function loadContent() {
+            if (window.CONTENT_LOADED) return;
+
+            // Пробуем загрузить из кэша
+            const cachedContent = localStorage.getItem('japanese_content_v1');
+            if (cachedContent) {
+                try {
+                    const data = JSON.parse(cachedContent);
+                    applyContent(data);
+                    console.log('Контент загружен из кэша');
+                    // Фоново обновляем кэш
+                    fetchContent(true);
+                    return;
+                } catch (e) {
+                    console.error('Ошибка чтения кэша', e);
+                }
+            }
+
+            await fetchContent();
+        }
+
+        async function fetchContent(background = false) {
+            try {
+                if (!background) showLoader(true);
+                
+                // Запрашиваем все категории (можно оптимизировать и запрашивать по одной)
+                const categories = ['kanji_n5', 'words_n5']; 
+                let allItems = [];
+                
+                // В реальном приложении лучше сделать один запрос на всё, или использовать GraphQL
+                // Но пока сделаем параллельные запросы
+                const promises = categories.map(cat => 
+                    fetch(`${API_BASE}/api/content?category=${cat}`, {
+                        headers: { 'X-Telegram-Init-Data': AUTH_HEADER, 'ngrok-skip-browser-warning': 'true' }
+                    }).then(r => r.json())
+                );
+                
+                const results = await Promise.all(promises);
+                
+                const contentData = {};
+                results.forEach((res, index) => {
+                    if (res.success) {
+                        const cat = categories[index];
+                        contentData[cat] = res.items;
+                    }
+                });
+                
+                applyContent(contentData);
+                localStorage.setItem('japanese_content_v1', JSON.stringify(contentData));
+                
+                if (!background) showLoader(false);
+            } catch (e) {
+                console.error('Ошибка загрузки контента:', e);
+                if (!background) {
+                    showLoader(false);
+                    tg.showAlert('Не удалось загрузить уроки. Проверьте интернет.');
+                }
+            }
+        }
+
+        function applyContent(data) {
+            if (data.kanji_n5) {
+                window.KANJI_N5 = {};
+                data.kanji_n5.forEach(item => {
+                    window.KANJI_N5[item.char] = {
+                        reading: item.reading,
+                        meaning: item.meaning,
+                        hint: item.hint
+                    };
+                });
+            }
+            if (data.words_n5) {
+                window.WORDS_N5 = {};
+                data.words_n5.forEach(item => {
+                    window.WORDS_N5[item.char] = {
+                        reading: item.reading,
+                        meaning: item.meaning,
+                        hint: item.hint
+                    };
+                });
+            }
+            window.CONTENT_LOADED = true;
+            updateUI(); // Обновить интерфейс если нужно
+        }
+
+        function showLoader(show) {
+            const el = document.getElementById('globalLoader');
+            if (el) el.style.display = show ? 'flex' : 'none';
         }
 
         // ==================== ОПТИМИЗАЦИЯ ПРОИЗВОДИТЕЛЬНОСТИ ====================
