@@ -24,7 +24,7 @@ from database import (
     get_top_players, add_daily_progress
 )
 import aiosqlite
-from models import LessonGroup, LessonItem
+from models import LessonGroup, LessonItem, GrammarPoint, GrammarExample
 
 # --- DB SETUP FOR API ---
 DB_URL = f"sqlite+aiosqlite:///{DB_PATH}"
@@ -286,6 +286,45 @@ async def handle_admin_add_content(request: web.Request) -> web.Response:
     except Exception as e:
         return web.json_response({'error': str(e)}, status=500)
 
+async def handle_admin_add_grammar(request: web.Request) -> web.Response:
+    """Добавление грамматики через админку"""
+    key = request.headers.get("X-Admin-Key")
+    if key != ADMIN_SECRET:
+        return web.json_response({'error': 'Forbidden'}, status=403)
+
+    try:
+        data = await request.json()
+        if not data.get('title') or not data.get('description'):
+            return web.json_response({'error': 'Missing fields'}, status=400)
+            
+        async with async_session() as session:
+            # Create Point
+            point = GrammarPoint(
+                level=data.get('level', 'N5'),
+                title=data['title'],
+                description=data['description'],
+                structure=data.get('structure', '')
+            )
+            session.add(point)
+            await session.flush() # get ID
+            
+            # Create Examples
+            examples = data.get('examples', [])
+            for ex in examples:
+                g_ex = GrammarExample(
+                    grammar_id=point.id,
+                    japanese=ex['japanese'],
+                    reading=ex.get('reading', ''),
+                    translation=ex['translation']
+                )
+                session.add(g_ex)
+                
+            await session.commit()
+            
+        return web.json_response({'success': True})
+    except Exception as e:
+        return web.json_response({'error': str(e)}, status=500)
+
 async def handle_get_content(request: web.Request) -> web.Response:
     """Получение контента уроков из БД"""
     category = request.query.get('category')
@@ -315,6 +354,49 @@ async def handle_get_content(request: web.Request) -> web.Response:
         'items': items
     })
 
+async def handle_get_grammar(request: web.Request) -> web.Response:
+    """Получение грамматики из БД"""
+    level = request.query.get('level', 'N5')
+    
+    async with async_session() as session:
+        # Fetch grammar points
+        from sqlalchemy.orm import selectinload
+        query = GrammarPoint.__table__.select().where(GrammarPoint.level == level)
+        
+        # Note: raw SQL/core doesn't support selectinload easily, better to use ORM session.execute(select(...))
+        # But for consistency with previous code, let's do 2 queries
+        
+        # 1. Get Points
+        result = await session.execute(query)
+        points = []
+        point_ids = []
+        for row in result.mappings():
+            p = dict(row)
+            p['examples'] = []
+            points.append(p)
+            point_ids.append(p['id'])
+            
+        if point_ids:
+            # 2. Get Examples
+            ex_query = GrammarExample.__table__.select().where(GrammarExample.grammar_id.in_(point_ids))
+            ex_result = await session.execute(ex_query)
+            
+            examples_map = {}
+            for row in ex_result.mappings():
+                ex = dict(row)
+                gid = ex['grammar_id']
+                if gid not in examples_map: examples_map[gid] = []
+                examples_map[gid].append(ex)
+            
+            # Merge
+            for p in points:
+                p['examples'] = examples_map.get(p['id'], [])
+
+    return web.json_response({
+        'success': True,
+        'grammar': points
+    })
+
 def create_api_app() -> web.Application:
     app = web.Application()
 
@@ -335,6 +417,8 @@ def create_api_app() -> web.Application:
     app.router.add_get('/api/leaderboard', handle_get_leaderboard)
     app.router.add_get('/api/content', handle_get_content) # <--- NEW
     app.router.add_post('/api/admin/content', handle_admin_add_content) # <--- ADMIN
+    app.router.add_get('/api/grammar', handle_get_grammar) # <--- GRAMMAR
+    app.router.add_post('/api/admin/grammar', handle_admin_add_grammar) # <--- NEW
     app.router.add_post('/api/daily', handle_claim_daily)
     app.router.add_get('/api/user/stats', handle_user_stats)
     app.router.add_get('/api/tts', handle_tts)
