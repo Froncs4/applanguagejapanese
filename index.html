@@ -912,7 +912,7 @@
         </div>
 
         <div class="section">
-            <div class="progress-container" id="dailyProgressCard">
+            <div class="progress-container" id="dailyProgressCard" onclick="goTo('study')" style="cursor: pointer;">
                 <div class="progress-header">
                     <span>🎯 Цель дня</span>
                     <span id="dailyProgressValue">0/10</span>
@@ -3521,6 +3521,7 @@
         }
 
         function finishQuiz() { 
+            document.getElementById('resultsScreen').style.display = 'none'; // Скрываем экран результатов
             sendResult('quiz_result', quiz.correct); 
             setTimeout(() => { 
                 hideQuizScreen(); 
