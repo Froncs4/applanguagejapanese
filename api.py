@@ -428,4 +428,13 @@ def create_api_app() -> web.Application:
     app.router.add_post('/api/buy', handle_buy_item)
     app.router.add_post('/api/log', handle_log_error)
 
+    # === SERVE FRONTEND STATIC FILES ===
+    docs_path = os.path.join(os.path.dirname(__file__), 'docs')
+    if os.path.exists(docs_path):
+        async def handle_index(request):
+            return web.FileResponse(os.path.join(docs_path, 'index.html'))
+            
+        app.router.add_get('/', handle_index)
+        app.router.add_static('/', docs_path, name='static')
+
     return app
